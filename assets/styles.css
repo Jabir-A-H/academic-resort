@@ -1,0 +1,498 @@
+/* ========================================
+   GLOBAL STYLES
+   ======================================== */
+
+/* Custom Properties (Design Tokens) */
+:root {
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --muted: #6b7786;
+  --text: #0b1630;
+  --brand: #2b6cff;
+  --brand-2: #00aaff;
+  --border: #e6edf6;
+  --success: #2ecc71;
+  --warn: #e67e22;
+  --danger: #e74c3c;
+}
+
+/* Box sizing & reset */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text);
+  background: 
+    radial-gradient(1200px 800px at 70% -10%, rgba(43, 108, 255, 0.06), transparent),
+    radial-gradient(800px 600px at 10% 10%, rgba(0, 170, 255, 0.04), transparent),
+    var(--bg);
+}
+
+
+/* ========================================
+   LAYOUT & CONTAINERS
+   ======================================== */
+
+.container {
+  width: clamp(320px, 94vw, 1200px);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+@media (min-width: 1400px) {
+  .container {
+    width: calc(100% - 96px);
+    max-width: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 12px;
+  }
+}
+
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.app-header {
+  padding: 28px 20px 6px;
+  text-align: center;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.2px;
+}
+
+.app-header .subtitle {
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 16px;
+}
+
+.header-note {
+  margin-top: 8px;
+  color: #dbe9ff;
+  opacity: 0.95;
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+
+/* ========================================
+   TYPOGRAPHY & UTILITY CLASSES
+   ======================================== */
+
+h2 {
+  font-size: 1.05rem;
+  margin: 0 0 8px 0;
+}
+p {
+  color: #374151;
+  line-height: 1.5;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.trunc {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 520px;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.hint {
+  margin-top: 6px;
+}
+
+.hint summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+
+/* ========================================
+   FORM ELEMENTS
+   ======================================== */
+
+label {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="search"] {
+  width: 100%;
+  background: #fbfdff;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 10px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #3856cc;
+  box-shadow: 0 0 0 3px rgba(79, 121, 255, 0.15);
+}
+
+
+/* ========================================
+   BUTTONS & INTERACTIVE COMPONENTS
+   ======================================== */
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  border: none;
+  color: #fff;
+}
+
+.btn:hover {
+  filter: brightness(1.08);
+}
+
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 6px 10px;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ========================================
+   CARDS & SURFACES
+   ======================================== */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 18px rgba(11, 22, 48, 0.06);
+}
+
+.quick-links {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  margin-top: 10px;
+}
+.link-card {
+  display: block;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border-radius: 12px;
+  padding: 12px 10px;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid rgba(15, 23, 36, 0.06);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
+  font-weight: 600;
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms ease, border-color 160ms ease;
+  will-change: transform, box-shadow;
+}
+
+/* Hover / focus interactions */
+.link-card:hover,
+.link-card:focus {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
+  border-color: rgba(43,108,255,0.12);
+}
+
+.link-card:active {
+  transform: translateY(-2px) scale(0.998);
+  box-shadow: 0 8px 18px rgba(2,6,23,0.08);
+}
+
+/* Visible focus for keyboard users */
+.link-card:focus {
+  outline: 3px solid rgba(43,108,255,0.12);
+  outline-offset: 4px;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .link-card { transition: none; transform: none; }
+}
+
+
+.table-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.drive-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.drive-table thead {
+  background: #f3f6fb;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.drive-table th,
+.drive-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef3fb;
+  font-size: 14px;
+}
+
+.drive-table tbody tr:hover {
+  background: rgba(11, 22, 48, 0.03);
+}
+
+.drive-table td .name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drive-table tr.hidden-collapse {
+  display: none;
+}
+
+
+/* ========================================
+   CONFIG & FORM LAYOUTS
+   ======================================== */
+
+.config .row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 220px 1fr;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.config .row.actions {
+  grid-template-columns: 1fr auto auto 1fr;
+  gap: 10px;
+}
+
+
+/* ========================================
+   FILTERS GRID
+   ======================================== */
+
+.filters .filters-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .filters .filters-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .filters .filters-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ========================================
+   FILE TREE & TABLE INTERACTIONS
+   ======================================== */
+
+.tree-toggle {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  border: 5px solid transparent;
+  border-left-color: #99b3ff;
+  margin-right: 4px;
+  transform: rotate(0deg);
+  transition: transform 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
+  transform: rotate(90deg);
+}
+
+.indent {
+  display: inline-block;
+  width: var(--indent, 0px);
+}
+
+
+/* ========================================
+   BADGES & CHIPS
+   ======================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text);
+  box-shadow: 0 6px 18px rgba(11, 22, 48, 0.04);
+}
+
+
+/* ========================================
+   PREVIEW PANEL (Modal-like floating view)
+   ======================================== */
+
+.preview {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: min(720px, calc(100vw - 36px));
+  height: min(70vh, 640px);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(11, 22, 48, 0.06);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.preview.hidden {
+  display: none;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.preview .title {
+  font-weight: 600;
+}
+
+.preview iframe {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  background: #0b1320;
+}
+
+
+/* ========================================
+   FOOTER & MISC
+   ======================================== */
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 12px;
+}
+
+.message {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+  border: 1px solid rgba(255,255,255,0.02);
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.message.small {
+  font-size: 12px;
+  padding: 8px 10px;
+}
+
+.charm {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(79, 121, 255, 0.08);
+}
+
+.file-icon {
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.3));
+}
