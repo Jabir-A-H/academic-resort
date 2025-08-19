@@ -113,6 +113,7 @@ h2 {
 p {
   color: #374151;
   line-height: 1.5;
+  text-align: justify;
 }
 
 .small {
