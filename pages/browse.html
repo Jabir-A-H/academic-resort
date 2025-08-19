@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Browse Materials • Academic Resort</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Academic Resort</h1>
+      <nav style="margin-top: 10px">
+        <a class="chip" href="../index.html">Home</a>
+        <a class="chip" href="./browse.html">Browse</a>
+        <a class="chip" href="./1st.html">1st Semester</a>
+        <a class="chip" href="./2nd.html">2nd Semester</a>
+        <a class="chip" href="./3rd.html">3rd Semester</a>
+        <a class="chip" href="./4th.html">4th Semester</a>
+        <a class="chip" href="./5th.html">5th Semester</a>
+        <a class="chip" href="./6th.html">6th Semester</a>
+        <a class="chip" href="./7th.html">7th Semester</a>
+        <a class="chip" href="./8th.html">8th Semester</a>
+        <a class="chip" href="./mba-1st.html">MBA 1st Semester</a>
+        <a class="chip" href="./mba-2nd.html">MBA 2nd Semester</a>
+        <a class="chip" href="./course-tutors.html">Course Tutors</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="card filters">
+        <div class="filters-grid">
+          <div>
+            <label for="selectSemester">Semester</label>
+            <select id="selectSemester"></select>
+          </div>
+          <div>
+            <label for="selectBatch">Batch / Section</label>
+            <select id="selectBatch"></select>
+          </div>
+          <div style="display: flex; align-items: end; gap: 8px">
+            <button id="loadFolderBtn" class="btn primary">Load Folder</button>
+            <span
+              id="mappingStatus"
+              class="small"
+              style="color: var(--muted)"
+            ></span>
+          </div>
+          <!-- existing search & filters -->
+          <div>
+            <label for="searchAll">Search</label>
+            <input
+              id="searchAll"
+              type="search"
+              placeholder="Any text (name, path)…"
+            />
+          </div>
+          <div>
+            <label for="filterCourse">Course code</label>
+            <input id="filterCourse" type="text" placeholder="e.g. 3101" />
+          </div>
+          <div>
+            <label for="filterTeacher">Teacher</label>
+            <input
+              id="filterTeacher"
+              type="text"
+              placeholder="e.g. Tareq or DMH"
+            />
+          </div>
+          <div>
+            <label for="filterBatch">Batch</label>
+            <input id="filterBatch" type="text" placeholder="e.g. 28" />
+          </div>
+        </div>
+      </section>
+
+      <section class="data-card">
+        <div class="table-wrap">
+          <table id="driveTable" class="drive-table">
+            <thead>
+              <tr>
+                <th style="width: 44%">Name</th>
+                <th>Type</th>
+                <th>Course</th>
+                <th>Teacher</th>
+                <th>Batch</th>
+                <th>Modified</th>
+                <th>Size</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <aside id="preview" class="preview hidden">
+          <div class="preview-header">
+            <div class="title" id="previewTitle">Preview</div>
+            <button id="closePreview" class="icon-btn" title="Close">✖</button>
+          </div>
+          <iframe
+            id="previewFrame"
+            title="File Preview"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+          ></iframe>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <small>Built for DU Accounting Students</small>
+    </footer>
+
+    <!-- API-driven explorer removed; use static semester pages instead -->
+  </body>
+</html>

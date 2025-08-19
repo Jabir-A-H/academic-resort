@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tutors' Profiles — Academic Resort</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <style>
+      /* Tabs */
+      .tabs { display:flex; gap:8px; margin:12px 0 18px 0; }
+      .tab { padding:8px 12px; border-radius:6px; background:var(--muted-bg,#f2f2f2); cursor:pointer; color:var(--text); border:1px solid transparent }
+      .tab.active { background:var(--accent,#0b63ce); color:#fff; border-color:rgba(0,0,0,0.05) }
+
+      /* Accordion */
+      .accordion .item { border:1px solid rgba(0,0,0,0.06); border-radius:6px; margin:8px 0; overflow:hidden }
+      .accordion .hdr { padding:10px 12px; background:var(--muted-bg,#fafafa); cursor:pointer; font-weight:600 }
+  .accordion .body { padding:8px 12px; max-height:0; overflow:hidden; transition:max-height .22s ease }
+  /* only expand the direct .body child of an opened .item to avoid cascading open */
+  .accordion .item.open > .body { max-height:2000px; }
+
+      /* course view */
+      .course-entry { margin:6px 0; }
+      .byline { font-size:90%; color:var(--muted); margin-left:6px }
+
+      /* small helpers */
+      .small { font-size:0.92rem }
+    </style>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Academic Resort</h1>
+      <nav style="margin-top: 10px">
+        <a class="chip" href="../index.html">Home</a>
+        <a class="chip" href="./browse.html">Browse</a>
+        <a class="chip" href="./1st.html">1st Semester</a>
+        <a class="chip" href="./2nd.html">2nd Semester</a>
+        <a class="chip" href="./3rd.html">3rd Semester</a>
+        <a class="chip" href="./4th.html">4th Semester</a>
+        <a class="chip" href="./5th.html">5th Semester</a>
+        <a class="chip" href="./6th.html">6th Semester</a>
+        <a class="chip" href="./7th.html">7th Semester</a>
+        <a class="chip" href="./8th.html">8th Semester</a>
+        <a class="chip" href="./mba-1st.html">MBA 1st Semester</a>
+        <a class="chip" href="./mba-2nd.html">MBA 2nd Semester</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2>Tutors' Profiles</h2>
+
+
+
+        <div style="margin-top: 12px">
+          <!-- Tabs: Batch view and Course view -->
+          <div class="tabs" role="tablist" aria-label="Tutor views">
+            <div class="tab active" data-view="batch">By batch</div>
+            <div class="tab" data-view="course">By course</div>
+          </div>
+
+          <div id="view-batch" class="view">
+            <!-- Batch accordion will be rendered here -->
+          </div>
+
+          <div id="view-course" class="view" style="display:none">
+            <!-- Course-by-course view will be rendered here -->
+          </div>
+
+          <!-- Hidden source: original structured HTML is preserved here and used to build the interactive views -->
+          <div id="raw-archive" style="display:none">
+            <div class="archive">
+              <p class="small">Below are t for A&amp;IS (24th to 28th batches). If you want contact details or course assignment changes added, tell me which batch/semester to do next.</p>
+
+            <h3>24th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Principles of Accounting (1101)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Dr. Mahmuda Akter</li>
+              <li>Al-Amin</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Dr. Yousuf Kamal</li>
+              <li>Hasina Begum</li>
+            </ul>
+
+            <h5>Business Communication and Report Writing (1103)</h5>
+            <ul>
+              <li>Dr. Riazur Rahman Chowdhury</li>
+              <li>Dr Mohammed Mehadi Masud Mazumder</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- I (1104)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>Bangladesh Studies (1105)</h5>
+            <ul>
+              <li>Moshahida Sultana</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h4>2nd Semester</h4>
+            <h5>Intermediate Accounting (1201)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Al-Amin</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1202)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Principles of Management (1203)</h5>
+            <ul>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+              <li>Ms. Hasina Begum</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- II (1204)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>General Science and Environment (1205)</h5>
+            <ul>
+              <li>Dr. Mohammed Almujaddade Alfasane</li>
+              <li>Rumana Ahmed</li>
+            </ul>
+
+            <h4>3rd Semester</h4>
+            <h5>Advanced Financial Accounting- I (2101)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Dr. Ranjan Kumar Mitra</li>
+            </ul>
+
+            <h5>Business and Commercial Laws (2102)</h5>
+            <ul>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+              <li>Shah Alam</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Basic Business Statistics (2103)</h5>
+            <ul>
+              <li>Kawsar Jahan</li>
+              <li>Sir Jagadish</li>
+            </ul>
+
+            <h5>Microeconomics (2104)</h5>
+            <ul>
+              <li>Dr. Tahmina Khatun</li>
+              <li>Hasina Begum</li>
+            </ul>
+
+            <h5>Principles of Marketing (2105)</h5>
+            <ul>
+              <li>Ms. Sadia Afroze</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h4>4th Semester</h4>
+            <h5>Advanced Financial Accounting (2201)</h5>
+            <ul>
+              <li>Md. Mahadi Hasan</li>
+              <li>Dr. Md. Mushfiqur Rahman</li>
+              <li>Bilkis Akhter</li>
+            </ul>
+
+            <h5>Applied Business Statistics (2203)</h5>
+            <ul>
+              <li>Md. Mazharul Anwar</li>
+              <li>Ishter Mahal</li>
+            </ul>
+
+            <h5>Introduction to Programming and Database Management (2202)</h5>
+            <ul>
+              <li>Dr. Md. Monzur Morshed</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Macroeconomics (2204)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h5>Principles of Finance (2205)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Md. Ahasan Uddin</li>
+            </ul>
+
+            <h4>5th Semester</h4>
+            <h5>Cost Accounting - I (3101)</h5>
+            <ul>
+              <li>Dr. Md. Musfiqur Rahman</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Financial Management (3102)</h5>
+            <ul>
+              <li>Bilkis Akhter</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+              <li>Md. Hashem</li>
+            </ul>
+
+            <h5>Auditing and Assurance - I (3103)</h5>
+            <ul>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h5>Corporate Laws and Governance (3104)</h5>
+            <ul>
+              <li>Ahmed Rizvan Hasan</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Principles and Practices of Taxation - I (3105)</h5>
+            <ul>
+              <li>Md. Ahasan Uddin</li>
+              <li>Hasina Begum</li>
+            </ul>
+
+            <h4>6th Semester</h4>
+            <h5>Cost Accounting - II (3201)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Tanzina Haque</li>
+            </ul>
+
+            <h5>Corporate Finance (3202)</h5>
+            <ul>
+              <li>Dr. Ranjan Kumar Mitra</li>
+              <li>Md. Nazim Uddin Bhuiyan</li>
+            </ul>
+
+            <h5>Auditing and Assurance - II (3203)</h5>
+            <ul>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h5>Organizational Behavior (3204)</h5>
+            <ul>
+              <li>Dr. Riazur Rahman Chowdhury</li>
+              <li>Ms. Sadia Afroze</li>
+            </ul>
+
+            <h5>Principles and Practices of Taxation - II (3205)</h5>
+            <ul>
+              <li>Dr. Dhiman Kumar Chowdhury</li>
+              <li>Dr. Mohammad Tareq</li>
+            </ul>
+
+            <hr />
+
+            <h3>25th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Principles of Accounting (1101)</h5>
+            <ul>
+              <li>Dr Mohammed Mehadi Masud Mazumder</li>
+              <li>Al-Amin</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Md. Mahadi Hasan</li>
+              <li>Tanzina Haque</li>
+            </ul>
+
+            <h5>Business Communication and Report Writing (1103)</h5>
+            <ul>
+              <li>Tahmina Ahmed</li>
+              <li>Dr. Dewan Mahboob Hossain</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- I (1104)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>Bangladesh Studies (1105)</h5>
+            <ul>
+              <li>Ms. Hasina Begum</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h4>2nd Semester</h4>
+            <h5>Intermediate Accounting (1201)</h5>
+            <ul>
+              <li>Al-Amin</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1202)</h5>
+            <ul>
+              <li>Dr. Minhaj Ferdous</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Principles of Management (1203)</h5>
+            <ul>
+              <li>Ms. Hasina Begum</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- II (1204)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>General Science and Environment (1205)</h5>
+            <ul>
+              <li>Dr. Mohammed Almujaddade Alfasane</li>
+              <li>Rumana Ahmed</li>
+            </ul>
+
+            <h4>3rd Semester</h4>
+            <h5>Advanced Financial Accounting- I (2101)</h5>
+            <ul>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+              <li>Dr. Ranjan Kumar Mitra</li>
+            </ul>
+
+            <h5>Business and Commercial Laws (2102)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h5>Basic Business Statistics (2103)</h5>
+            <ul>
+              <li>Dr. Minhaj Ferdous</li>
+              <li>Kawsar Jahan</li>
+            </ul>
+
+            <h5>Microeconomics (2104)</h5>
+            <ul>
+              <li>Dr. Tahmina Khatun</li>
+              <li>Dr. Md. Sharif Hossain</li>
+            </ul>
+
+            <h5>Principles of Marketing (2105)</h5>
+            <ul>
+              <li>Md. Mahadi Hasan</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h4>4th Semester</h4>
+            <h5>Advanced Financial Accounting - II (2201)</h5>
+            <ul>
+              <li>Bilkis Akhter</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Applied Business Statistics (2203)</h5>
+            <ul>
+              <li>Rumana Ahmed</li>
+              <li>Ishter Mahal</li>
+            </ul>
+
+            <h5>Introduction to Programming and Database Management (2202)</h5>
+            <ul>
+              <li>Dr. Md. Monzur Morshed</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Macroeconomics (2204)</h5>
+            <ul>
+              <li>Dr. Tahmina Khatun</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h5>Principles of Finance (2205)</h5>
+            <ul>
+              <li>Md. Ahasan Uddin</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h4>5th Semester</h4>
+            <h5>Cost Accounting - I (3101)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h5>Financial Management (3102)</h5>
+            <ul>
+              <li>Md. Maksudur Rahman Sarker, FCMA</li>
+              <li>Dr. Anup Kumar Saha, FCMA</li>
+            </ul>
+
+            <h5>Auditing and Assurance - I (3103)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Corporate Laws and Governance (3104)</h5>
+            <ul>
+              <li>Md. Mahadi Hasan</li>
+              <li>Md. Sahid Hossain</li>
+            </ul>
+
+            <h5>Principles and Practices of Taxation - I (3105)</h5>
+            <ul>
+              <li>Md. Ahasan Uddin</li>
+              <li>Raihan Sobhan</li>
+            </ul>
+
+            <h4>6th Semester</h4>
+            <h5>Cost Accounting - II (3201)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h5>Corporate Finance (3202)</h5>
+            <ul>
+              <li>Dr. Ranjan Kumar Mitra</li>
+              <li>Md. Nazim Uddin Bhuiyan</li>
+            </ul>
+
+            <h5>Auditing and Assurance - II (3203)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Asia Khatun</li>
+            </ul>
+
+            <h5>Organizational Behavior (3204)</h5>
+            <ul>
+              <li>Ms. Sadia Afroze</li>
+              <li>Md. Sahid Hossain</li>
+            </ul>
+
+            <h5>Principles and Practices of Taxation - II (3205)</h5>
+            <ul>
+              <li>Md. Ahasan Uddin</li>
+              <li>Raihan Sobhan</li>
+            </ul>
+
+            <hr />
+
+            <h3>26th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Principles of Accounting (1101)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Al-Amin</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Ishter Mahal</li>
+              <li>Tanzina Haque</li>
+            </ul>
+
+            <h5>Business Communication and Report Writing (1103)</h5>
+            <ul>
+              <li>Bilkis Akhter</li>
+              <li>Ms. Sadia Afroze</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- I (1104)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>Bangladesh Studies (1105)</h5>
+            <ul>
+              <li>Md. Nazim Uddin Bhuiyan</li>
+              <li>Ms. Hasina Begum</li>
+            </ul>
+
+            <h4>2nd Semester</h4>
+            <h5>Intermediate Accounting (1201)</h5>
+            <ul>
+              <li>Amirus Salat</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1202)</h5>
+            <ul>
+              <li>Dr. Minhaj Ferdous</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h5>Principles of Management (1203)</h5>
+            <ul>
+              <li>Ms. Hasina Begum</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- II (1204)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Dr. Md. Monzur Morshed</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>General Science and Environment (1205)</h5>
+            <ul>
+              <li>Dr. Mohammed Almujaddade Alfasane</li>
+              <li>Kawsar Jahan</li>
+            </ul>
+
+            <h4>3rd Semester</h4>
+            <h5>Advanced Financial Accounting- I (2101)</h5>
+            <ul>
+              <li>Dr. Md. Musfiqur Rahman</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Business and Commercial Laws (2102)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Raihan Subhan</li>
+            </ul>
+
+            <h5>Basic Business Statistics (2103)</h5>
+            <ul>
+              <li>Kawsar Jahan</li>
+              <li>Dr. Anup Kumar Saha, FCMA</li>
+            </ul>
+
+            <h5>Microeconomics (2104)</h5>
+            <ul>
+              <li>Dr. Tahmina Khatun</li>
+              <li>Ms. Hasina Begum</li>
+            </ul>
+
+            <h5>Principles of Marketing (2105)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Asiya Khatun</li>
+            </ul>
+
+            <h4>4th Semester</h4>
+            <h5>Advanced Financial Accounting (2201)</h5>
+            <ul>
+              <li>Md. Mahadi Hasan</li>
+              <li>Bilkis Akhter</li>
+            </ul>
+
+            <h5>Applied Business Statistics (2203)</h5>
+            <ul>
+              <li>Md. Mazharul Anwar</li>
+              <li>Dr. Anup Kumar Saha, FCMA</li>
+            </ul>
+
+            <h5>Principles of Finance (2205)</h5>
+            <ul>
+              <li>Md. Ahasan Uddin</li>
+              <li>Raihan Sobhan</li>
+            </ul>
+
+            <h5>Introduction to Programming and DBM (2202)</h5>
+            <ul>
+              <li>Dr. Minhaj Ferdous</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Macroeconomics (2204)</h5>
+            <ul>
+              <li>Dr. Tahmina Khatun</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h4>5th Semester</h4>
+            <h5>Cost Accounting-I (3101)</h5>
+            <ul>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Auditing and Assurance-I (3103)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Dr. Mohammad Moniruzzaman</li>
+            </ul>
+
+            <h5>Financial Management (3102)</h5>
+            <ul>
+              <li>Md. Maksudur Rahman Sarker, FCMA</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Corporate Laws and Governance (3104)</h5>
+            <ul>
+              <li>Md. Mahadi Hasan</li>
+              <li>Asia Khatun</li>
+            </ul>
+
+            <h5>Principles and Practices of Taxation-I (3105)</h5>
+            <ul>
+              <li>Md. Ahasan Uddin</li>
+              <li>Dr. Mohammad Tareq</li>
+            </ul>
+
+            <hr />
+
+            <h3>27th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Introduction to Financial Accounting (1101)</h5>
+            <ul>
+              <li>Al-Amin (A)</li>
+              <li>Dr. Md. Jamil Sharif, ACMA (B+C)</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Tanzina Haque (A)</li>
+              <li>Md. Nazim Uddin Bhuiyan (B+C)</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1103)</h5>
+            <ul>
+              <li>Md. Rezaul Karim (A)</li>
+              <li>Ahmed Rizvan Hasan (B+C)</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- I (1104)</h5>
+            <ul>
+              <li>Md. Abdul Hakim (A)</li>
+              <li>Md. Mazharul Anwar (B+C)</li>
+            </ul>
+
+            <h5>Business Communication (1105)</h5>
+            <ul>
+              <li>Ms. Sadia Afroze (A)</li>
+              <li>Bilkis Akhter (B+C)</li>
+            </ul>
+
+            <hr />
+
+            <h3>28th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Introduction to Financial Accounting (1101)</h5>
+            <ul>
+              <li>Amirus Salat (A)</li>
+              <li>Al-Amin (B)</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Md. Nazim Uddin Bhuiyan (A)</li>
+              <li>Tanzina Haque (B)</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1103)</h5>
+            <ul>
+              <li>Md. Rezaul Karim (A)</li>
+              <li>Raihan Sobhan (B)</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions - I (1104)</h5>
+            <ul>
+              <li>Kawsar Jahan (A)</li>
+              <li>Md. Mazharul Anwar (B)</li>
+            </ul>
+
+            <h5>Business Communication (1105)</h5>
+            <ul>
+              <li>Dr. Riazur Rahman Chowdhury (A)</li>
+              <li>Bilkis Akhter (B)</li>
+            </ul>
+
+            
+          </div>
+        </div>
+<div style="margin-top:12px">
+              <p class="small">Department of Accounting &amp; Information Systems - Official Website Link: <a href="https://du.ac.bd/body/FacultyMembers/ACC" target="_blank" rel="noopener">https://du.ac.bd/body/FacultyMembers/ACC</a></p>
+            </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div style="text-align: center">
+        <p style="margin-top: 6px; font-size: 90%; color: var(--muted)">
+          Built for DU Accounting Students
+        </p>
+      </div>
+    </footer>
+    <script>
+      // Utility - collapse/expand helpers
+      function toggleItem(el){ el.classList.toggle('open'); }
+
+      // Parse the hidden raw archive DOM into structured JS object
+      function parseArchive(root){
+        const batches = [];
+        const nodes = Array.from(root.children);
+        let currentBatch = null;
+        let currentSemester = null;
+
+        nodes.forEach(n=>{
+          if(n.tagName==='H3'){
+            currentBatch = {title:n.textContent.trim(), semesters:[]};
+            batches.push(currentBatch);
+            currentSemester = null;
+            return;
+          }
+          if(n.tagName==='H4' && currentBatch){
+            currentSemester = {title:n.textContent.trim(), courses:[]};
+            currentBatch.semesters.push(currentSemester);
+            return;
+          }
+          if(n.tagName==='H5' && currentSemester){
+            // next element is expected to be UL with li entries
+            const courseTitle = n.textContent.trim();
+            let next = n.nextElementSibling;
+            const tutors = [];
+            if(next && next.tagName==='UL'){
+              Array.from(next.querySelectorAll('li')).forEach(li=> tutors.push(li.textContent.trim()));
+            }
+            currentSemester.courses.push({title:courseTitle, tutors});
+            return;
+          }
+        });
+        return batches;
+      }
+
+      // Render batch view: batches -> semesters -> courses
+      function renderBatchView(batches, container){
+        container.innerHTML = '';
+        const acc = document.createElement('div'); acc.className='accordion';
+        batches.forEach(batch=>{
+          const batchItem = document.createElement('div'); batchItem.className='item';
+          const hdr = document.createElement('div'); hdr.className='hdr'; hdr.textContent = batch.title;
+          const body = document.createElement('div'); body.className='body';
+
+          // semesters
+          batch.semesters.forEach(sem=>{
+            const semWrap = document.createElement('div'); semWrap.className='item'; semWrap.style.marginBottom='8px';
+            const semHdr = document.createElement('div'); semHdr.className='hdr'; semHdr.textContent = sem.title;
+            const semBody = document.createElement('div'); semBody.className='body';
+
+            // courses under this semester - each course is its own accordion item (nested)
+            sem.courses.forEach(course=>{
+              const courseItem = document.createElement('div'); courseItem.className='item';
+              const courseHdr = document.createElement('div'); courseHdr.className='hdr'; courseHdr.textContent = course.title;
+              const courseBody = document.createElement('div'); courseBody.className='body';
+
+              // tutors list inside courseBody
+              const ul = document.createElement('ul');
+              course.tutors.forEach(tutor=>{ const li = document.createElement('li'); li.textContent = tutor; ul.appendChild(li); });
+              courseBody.appendChild(ul);
+
+              courseHdr.style.cursor='pointer';
+              courseHdr.addEventListener('click', ()=> courseItem.classList.toggle('open'));
+
+              courseItem.appendChild(courseHdr);
+              courseItem.appendChild(courseBody);
+              semBody.appendChild(courseItem);
+            });
+
+            semHdr.style.cursor='pointer'; semHdr.addEventListener('click', ()=> semWrap.classList.toggle('open'));
+            semWrap.appendChild(semHdr); semWrap.appendChild(semBody);
+            body.appendChild(semWrap);
+          });
+
+          hdr.addEventListener('click', ()=> batchItem.classList.toggle('open'));
+          batchItem.appendChild(hdr); batchItem.appendChild(body);
+          acc.appendChild(batchItem);
+        });
+        container.appendChild(acc);
+      }
+
+      // Render course view: group by semester (new syllabus) first
+      function renderCourseView(batches, container){
+        // New syllabus mapping: code -> {semester, title}
+        const syllabus = {
+          '1101': {semester:'Semester 1', title:'Introduction to Financial Accounting'},
+          '1102': {semester:'Semester 1', title:'Introduction to Business'},
+          '1103': {semester:'Semester 1', title:'Computer Concepts and Applications'},
+          '1104': {semester:'Semester 1', title:'Mathematics for Business Decisions-I'},
+          '1105': {semester:'Semester 1', title:'Business Communication'},
+
+          '1201': {semester:'Semester 2', title:'Intermediate Accounting'},
+          '1202': {semester:'Semester 2', title:'Microeconomics'},
+          '1203': {semester:'Semester 2', title:'Management and Organizational Behavior'},
+          '1204': {semester:'Semester 2', title:'Mathematics for Business Decisions-II'},
+          '1205': {semester:'Semester 2', title:'Bangladesh Studies'},
+
+          '2101': {semester:'Semester 3', title:'Advanced Financial Accounting-I'},
+          '2102': {semester:'Semester 3', title:'Macroeconomics'},
+          '2103': {semester:'Semester 3', title:'Programming and Database Management'},
+          '2104': {semester:'Semester 3', title:'General Science and Environment'},
+          '2105': {semester:'Semester 3', title:'Business Statistics-I'},
+
+          '2201': {semester:'Semester 4', title:'Advanced Financial Accounting-II'},
+          '2202': {semester:'Semester 4', title:'Financial Management'},
+          '2203': {semester:'Semester 4', title:'Cost Accounting'},
+          '2204': {semester:'Semester 4', title:'Marketing'},
+          '2205': {semester:'Semester 4', title:'Business Statistics-II'},
+
+          '3101': {semester:'Semester 5', title:'Management Accounting'},
+          '3102': {semester:'Semester 5', title:'Banking and Insurance'},
+          '3103': {semester:'Semester 5', title:'Audit and Assurance'},
+          '3104': {semester:'Semester 5', title:'Income Tax: Laws and Practice'},
+          '3105': {semester:'Semester 5', title:'Business Laws'},
+
+          '3201': {semester:'Semester 6', title:'Forensic Accounting and Fraud Investigation'},
+          '3202': {semester:'Semester 6', title:'Corporate Finance'},
+          '3203': {semester:'Semester 6', title:'Accounting Information Systems'},
+          '3204': {semester:'Semester 6', title:'VAT and Cross-border Taxation'},
+          '3205': {semester:'Semester 6', title:'Corporate Laws, Governance and Secretarial Practices'},
+
+          '4101': {semester:'Semester 7', title:'Advanced Management Accounting'},
+          '4102': {semester:'Semester 7', title:'Financial Market and Investment Analysis'},
+          '4103': {semester:'Semester 7', title:'IT Governance and Information System Audit'},
+          '4104': {semester:'Semester 7', title:'Supply Chain and Operation Management'},
+          '4105': {semester:'Semester 7', title:'Public Sector Accounting and Financial Management'},
+
+          '4201': {semester:'Semester 8', title:'Accounting Theory'},
+          '4202': {semester:'Semester 8', title:'Business Analysis and Valuation'},
+          '4203': {semester:'Semester 8', title:'Data Analytics'},
+          '4204': {semester:'Semester 8', title:'Strategic Management'},
+          '4205': {semester:'Semester 8', title:'Research Methodology'}
+        };
+
+        const semesterOrder = ['Semester 1','Semester 2','Semester 3','Semester 4','Semester 5','Semester 6','Semester 7','Semester 8','Unmapped (old)'];
+
+        // Build new-semester -> courses -> entries map
+        const semMap = new Map();
+        batches.forEach(batch=>{
+          batch.semesters.forEach(sem=>{
+            sem.courses.forEach(course=>{
+              // try to extract code like (1101) or first 4-digit number
+              const m = course.title.match(/(\d{4})/);
+              let code = m ? m[1] : null;
+              let mappedSem = 'Unmapped (old)';
+              let courseTitle = course.title;
+              if(code && syllabus[code]){
+                mappedSem = syllabus[code].semester;
+                courseTitle = syllabus[code].title;
+              } else {
+                // mark old if this course code/title isn't in new syllabus
+                if(!/\(old\)$/i.test(courseTitle)) courseTitle = courseTitle + ' (old)';
+              }
+
+              if(!semMap.has(mappedSem)) semMap.set(mappedSem, {title:mappedSem, courses: new Map()});
+              const semObj = semMap.get(mappedSem);
+              if(!semObj.courses.has(courseTitle)) semObj.courses.set(courseTitle, {title:courseTitle, entries: []});
+              semObj.courses.get(courseTitle).entries.push({batch: batch.title, semesterOriginal: sem.title, tutors: course.tutors});
+            });
+          });
+        });
+
+        container.innerHTML = '';
+        const semAcc = document.createElement('div'); semAcc.className='accordion';
+
+        // render semesters in defined order
+        semesterOrder.forEach(semKey=>{
+          if(!semMap.has(semKey)) return;
+          const semObj = semMap.get(semKey);
+          const semItem = document.createElement('div'); semItem.className='item';
+          const semHdr = document.createElement('div'); semHdr.className='hdr'; semHdr.textContent = semObj.title;
+          const semBody = document.createElement('div'); semBody.className='body';
+
+          Array.from(semObj.courses.values()).forEach(course=>{
+            const courseItem = document.createElement('div'); courseItem.className='item';
+            const courseHdr = document.createElement('div'); courseHdr.className='hdr'; courseHdr.textContent = course.title;
+            const courseBody = document.createElement('div'); courseBody.className='body';
+
+            course.entries.forEach(e=>{
+              const entryItem = document.createElement('div'); entryItem.className='item';
+              const entryHdr = document.createElement('div'); entryHdr.className='hdr byline'; entryHdr.textContent = e.batch + ' — ' + e.semesterOriginal;
+              const entryBody = document.createElement('div'); entryBody.className='body';
+              const ul = document.createElement('ul'); e.tutors.forEach(t=>{ const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+              entryBody.appendChild(ul);
+
+              entryHdr.addEventListener('click', ()=> entryItem.classList.toggle('open'));
+              entryItem.appendChild(entryHdr); entryItem.appendChild(entryBody);
+              courseBody.appendChild(entryItem);
+            });
+
+            courseHdr.addEventListener('click', ()=> courseItem.classList.toggle('open'));
+            courseItem.appendChild(courseHdr); courseItem.appendChild(courseBody);
+            semBody.appendChild(courseItem);
+          });
+
+          semHdr.addEventListener('click', ()=> semItem.classList.toggle('open'));
+          semItem.appendChild(semHdr); semItem.appendChild(semBody);
+          semAcc.appendChild(semItem);
+        });
+
+        container.appendChild(semAcc);
+      }
+
+      // On load: parse hidden archive and render
+      document.addEventListener('DOMContentLoaded', ()=>{
+        const raw = document.querySelector('#raw-archive .archive');
+        const batches = parseArchive(raw);
+
+        const batchView = document.getElementById('view-batch');
+        const courseView = document.getElementById('view-course');
+        renderBatchView(batches, batchView);
+        renderCourseView(batches, courseView);
+
+        // tab switching
+        document.querySelectorAll('.tab').forEach(t=> t.addEventListener('click', (e)=>{
+          document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+          t.classList.add('active');
+          const view = t.dataset.view;
+          document.getElementById('view-batch').style.display = view==='batch' ? '' : 'none';
+          document.getElementById('view-course').style.display = view==='course' ? '' : 'none';
+        }));
+      });
+    </script>
+  </body>
+</html>
