@@ -1,6 +1,7 @@
 /.env
 /data
-/assets/*
-!/assets/styles.
-!/assets/includes/*
 /AcademicResort
+/assets/app.js
+/assets/browse.js
+/assets/settings.js
+/assets/shared-drive.js
