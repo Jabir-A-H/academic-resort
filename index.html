@@ -4,34 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Academic Resort</title>
-    <meta
-      name="description"
-      content="Academic Resort — Semester-wise course materials (archived) for DU Accounting & Information Systems students."
-    />
     <link rel="stylesheet" href="./assets/styles.css" />
+    <!-- Modern, mobile-first styles for the index page -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Index-specific overrides (mobile-first) */
+      body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: #f6f7fb; color: #0f1720; margin:0; }
+      .app-header { padding: 20px 16px; text-align: center; background: linear-gradient(180deg,#ffffffcc,#f6f7fb); }
+      .app-header h1 { margin: 0; font-size: 1.4rem; letter-spacing: -0.01em; }
+      .subtitle { margin: 6px 0 0 0; color: #57606a; font-size: 0.95rem; }
+      main.container { padding: 16px; max-width: 940px; margin: 0 auto; }
+      .card { background: #fff; border-radius: 12px; padding: 14px; box-shadow: 0 6px 20px rgba(16,24,40,0.04); border: 1px solid rgba(15,23,36,0.04); margin-bottom: 14px; }
+      h2 { font-size: 1.05rem; margin: 0 0 8px 0; }
+      p { color: #374151; line-height: 1.5; }
+
+      /* Quick links grid */
+      .quick-links { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin-top: 10px; }
+      .link-card { display: block; background: linear-gradient(180deg,#ffffff,#fbfdff); border-radius: 12px; padding: 12px 10px; text-align: center; text-decoration: none; color: inherit; border: 1px solid rgba(15,23,36,0.06); box-shadow: 0 4px 12px rgba(2,6,23,0.04); font-weight: 600; }
+      .link-card small { display:block; margin-top:6px; font-weight:400; color:#6b7280; font-size:0.82rem; }
+
+      @media (max-width:420px){
+        .quick-links { gap: 8px; grid-template-columns: 1fr; }
+        .app-header { padding: 16px 12px; }
+        main.container { padding: 12px; }
+      }
+    </style>
   </head>
 
   <body>
     <!-- App Header -->
     <header class="app-header">
       <h1>Academic Resort</h1>
-      <p class="subtitle">Your one-stop academic resource hub</p>
-      
-      <!-- Main Navigation -->
-      <nav aria-label="Semester Navigation" style="margin-top: 16px">
-        <a class="chip" href="./pages/browse.html">Browse</a>
-        <a class="chip" href="./pages/1st.html">1st Semester</a>
-        <a class="chip" href="./pages/2nd.html">2nd Semester</a>
-        <a class="chip" href="./pages/3rd.html">3rd Semester</a>
-        <a class="chip" href="./pages/4th.html">4th Semester</a>
-        <a class="chip" href="./pages/5th.html">5th Semester</a>
-        <a class="chip" href="./pages/6th.html">6th Semester</a>
-        <a class="chip" href="./pages/7th.html">7th Semester</a>
-        <a class="chip" href="./pages/8th.html">8th Semester</a>
-        <a class="chip" href="./pages/mba-1st.html">MBA 1st Semester</a>
-        <a class="chip" href="./pages/mba-2nd.html">MBA 2nd Semester</a>
-        <a class="chip" href="./pages/course-tutors.html">Course Tutors</a>
-      </nav>
+      <p class="subtitle">Welcome To Academic Confrontation Site</p>
     </header>
 
     <!-- Main Content -->
@@ -39,37 +45,41 @@
       <section class="card">
         <h2>About This Site</h2>
         <p>
-          The Academic Resort is designed to simplify access to semester-wise course materials,
-          helping reduce the struggle of finding notes, books, slides, and other academic resources.
-          Whether you're looking for senior notes or tutor-provided sheets, everything you need is just a click away.
+          The Academic Resort is designed to simplify access to
+          semester-teacher-wise course materials, helping reduce the struggle of
+          finding notes, books, slides, and other academic resources. Whether
+          you're looking for senior notes or teacher-provided sheets, everything
+          you need is just a click away.
         </p>
         <p>
-          The archive includes content from the 1st through 8th semesters, as well as MBA semesters.
-          Additionally, you can find information about course tutors from various batches—making it easier to locate previous year resources.
-          Best wishes to all Accounting & Information Systems fellows!
+          The archive includes content from the 1st through 8th semesters, as
+          well as MBA semesters. Additionally, you can find information about
+          course teachers from various batches—making it easier to locate
+          previous year resources. Best wishes to all Accounting & Information
+          Systems fellows!
         </p>
 
         <h3>Quick Links</h3>
-        <ul class="small">
-          <li><a href="./pages/1st.html">1st Semester</a></li>
-          <li><a href="./pages/2nd.html">2nd Semester</a></li>
-          <li><a href="./pages/3rd.html">3rd Semester</a></li>
-          <li><a href="./pages/4th.html">4th Semester</a></li>
-          <li><a href="./pages/5th.html">5th Semester</a></li>
-          <li><a href="./pages/6th.html">6th Semester</a></li>
-          <li><a href="./pages/7th.html">7th Semester</a></li>
-          <li><a href="./pages/8th.html">8th Semester</a></li>
-          <li><a href="./pages/mba-1st.html">MBA 1st Semester</a></li>
-          <li><a href="./pages/mba-2nd.html">MBA 2nd Semester</a></li>
-          <li><a href="./pages/course-tutors.html">Course Tutors</a></li>
-        </ul>
+        <div class="quick-links">
+          <a class="link-card" href="./pages/1st.html">1st Semester<small>Core BBA courses</small></a>
+          <a class="link-card" href="./pages/2nd.html">2nd Semester<small>Core BBA courses</small></a>
+          <a class="link-card" href="./pages/3rd.html">3rd Semester<small>Core BBA courses</small></a>
+          <a class="link-card" href="./pages/4th.html">4th Semester<small>Core BBA courses</small></a>
+          <a class="link-card" href="./pages/5th.html">5th Semester<small>Major-specific</small></a>
+          <a class="link-card" href="./pages/6th.html">6th Semester<small>Advanced topics</small></a>
+          <a class="link-card" href="./pages/7th.html">7th Semester<small>Electives & projects</small></a>
+          <a class="link-card" href="./pages/8th.html">8th Semester<small>Capstone & thesis</small></a>
+          <a class="link-card" href="./pages/mba-1st.html">MBA 1st<small>MBA resources</small></a>
+          <a class="link-card" href="./pages/mba-2nd.html">MBA 2nd<small>MBA resources</small></a>
+          <a class="link-card" href="./pages/course-tutors.html">Course Teachers<small>Profiles & assignments</small></a>
+        </div>
       </section>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
       <div class="container">
-        <p class="small" style="margin: 0; padding: 16px 0;">
+        <p class="small" style="margin: 0; padding: 16px 0">
           Built for DU Accounting Students
         </p>
       </div>
