@@ -723,17 +723,25 @@
             currentBatch.semesters.push(currentSemester);
             return;
           }
-          if(n.tagName==='H5' && currentSemester){
-            // next element is expected to be UL with li entries
-            const courseTitle = n.textContent.trim();
-            let next = n.nextElementSibling;
-            const tutors = [];
-            if(next && next.tagName==='UL'){
-              Array.from(next.querySelectorAll('li')).forEach(li=> tutors.push(li.textContent.trim()));
-            }
-            currentSemester.courses.push({title:courseTitle, tutors});
-            return;
-          }
+              if(n.tagName==='H5' && currentSemester){
+                // next element is expected to be UL with li entries
+                const original = n.textContent.trim();
+                // extract a 4-digit course code if present
+                const codeMatch = original.match(/(\d{4})/);
+                const code = codeMatch ? codeMatch[1] : null;
+                // remove the code (and surrounding parentheses if any) to get the clean name
+                const name = original.replace(/\s*\(?\d{4}\)?\s*/,'').trim();
+                // display as "CODE: Name" when code exists, otherwise keep original
+                const displayTitle = code ? (code + ': ' + (name || original)) : original;
+                let next = n.nextElementSibling;
+                const tutors = [];
+                if(next && next.tagName==='UL'){
+                  Array.from(next.querySelectorAll('li')).forEach(li=> tutors.push(li.textContent.trim()));
+                }
+                // store code and rawTitle for downstream rendering logic
+                currentSemester.courses.push({title: displayTitle, rawTitle: name || original, code, tutors});
+                return;
+              }
         });
         return batches;
       }
@@ -844,23 +852,28 @@
         batches.forEach(batch=>{
           batch.semesters.forEach(sem=>{
             sem.courses.forEach(course=>{
-              // try to extract code like (1101) or first 4-digit number
-              const m = course.title.match(/(\d{4})/);
-              let code = m ? m[1] : null;
+              // prefer course.code if parseArchive provided it, otherwise try to extract 4-digit code
+              const code = course.code || ( (course.title||'').match(/(\d{4})/) ? RegExp.$1 : null );
               let mappedSem = 'Unmapped (old)';
-              let courseTitle = course.title;
+              let courseTitle = course.rawTitle || course.title || '';
               if(code && syllabus[code]){
                 mappedSem = syllabus[code].semester;
+                // use the mapped (clean) syllabus title for readability
                 courseTitle = syllabus[code].title;
               } else {
                 // mark old if this course code/title isn't in new syllabus
                 if(!/\(old\)$/i.test(courseTitle)) courseTitle = courseTitle + ' (old)';
               }
 
+              // prefix with code when available so titles look like "3202: Corporate Finance"
+              const displayTitle = code ? (code + ': ' + courseTitle) : courseTitle;
+
               if(!semMap.has(mappedSem)) semMap.set(mappedSem, {title:mappedSem, courses: new Map()});
               const semObj = semMap.get(mappedSem);
-              if(!semObj.courses.has(courseTitle)) semObj.courses.set(courseTitle, {title:courseTitle, entries: []});
-              semObj.courses.get(courseTitle).entries.push({batch: batch.title, semesterOriginal: sem.title, tutors: course.tutors});
+              // use the displayTitle as the course key so the renderer can use course.title safely
+              const courseKey = displayTitle;
+              if(!semObj.courses.has(courseKey)) semObj.courses.set(courseKey, {title: displayTitle, code: code, rawTitle: course.rawTitle || '', entries: []});
+              semObj.courses.get(courseKey).entries.push({batch: batch.title, semesterOriginal: sem.title, tutors: course.tutors});
             });
           });
         });
@@ -883,7 +896,18 @@
 
             course.entries.forEach(e=>{
               const entryItem = document.createElement('div'); entryItem.className='item';
-              const entryHdr = document.createElement('div'); entryHdr.className='hdr byline'; entryHdr.textContent = e.batch + ' — ' + e.semesterOriginal;
+              const entryHdr = document.createElement('div'); entryHdr.className='hdr byline';
+              // Avoid repeating semester name if it's the same as the outer semester heading
+              let displayByline = e.batch;
+              try{
+                const origNum = (e.semesterOriginal || '').toString().match(/(\d+)/);
+                const outerNum = (semObj.title || '').toString().match(/(\d+)/);
+                if(!(origNum && outerNum && origNum[1] === outerNum[1])){
+                  // only append semesterOriginal when it differs
+                  if(e.semesterOriginal) displayByline = e.batch + ' — ' + e.semesterOriginal;
+                }
+              }catch(_){ /* ignore and fall back to showing batch only */ }
+              entryHdr.textContent = displayByline;
               const entryBody = document.createElement('div'); entryBody.className='body';
               const ul = document.createElement('ul'); e.tutors.forEach(t=>{ const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
               entryBody.appendChild(ul);
@@ -906,23 +930,37 @@
         container.appendChild(semAcc);
       }
 
-      // On load: parse hidden archive and render
+      // On load: parse hidden archive and render (robust to errors)
       document.addEventListener('DOMContentLoaded', ()=>{
         const raw = document.querySelector('#raw-archive .archive');
-        const batches = parseArchive(raw);
+        if(!raw) console.warn('raw archive element not found; no data to render');
+        const batches = raw ? parseArchive(raw) : [];
 
         const batchView = document.getElementById('view-batch');
         const courseView = document.getElementById('view-course');
-        renderBatchView(batches, batchView);
-        renderCourseView(batches, courseView);
+        try{
+          renderBatchView(batches, batchView);
+        }catch(err){
+          console.error('renderBatchView failed', err);
+          if(batchView) batchView.innerHTML = '<p style="color:#a00">Failed to render batch view. See console for details.</p>';
+        }
 
-        // tab switching
+        try{
+          renderCourseView(batches, courseView);
+        }catch(err){
+          console.error('renderCourseView failed', err);
+          if(courseView) courseView.innerHTML = '<p style="color:#a00">Failed to render course view. See console for details.</p>';
+        }
+
+        // tab switching - always attach listeners so tabs work even if rendering failed
         document.querySelectorAll('.tab').forEach(t=> t.addEventListener('click', (e)=>{
           document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
           t.classList.add('active');
           const view = t.dataset.view;
-          document.getElementById('view-batch').style.display = view==='batch' ? '' : 'none';
-          document.getElementById('view-course').style.display = view==='course' ? '' : 'none';
+          const batchEl = document.getElementById('view-batch');
+          const courseEl = document.getElementById('view-course');
+          if(batchEl) batchEl.style.display = view==='batch' ? '' : 'none';
+          if(courseEl) courseEl.style.display = view==='course' ? '' : 'none';
         }));
       });
     </script>
