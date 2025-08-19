@@ -1,4 +1,5 @@
 /.env
 /data
-/assets
+/assets/*
+!/assets/styles.css
 /AcademicResort
