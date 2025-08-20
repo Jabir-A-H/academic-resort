@@ -70,20 +70,32 @@ body {
    ======================================== */
 
 .app-header.sidebar {
-  width: 60px; /* collapsed by default */
-  min-width: 60px;
+  width: 100%; /* take full grid column width */
+  min-width: unset; /* remove fixed min-width */
   height: 100vh;
+  /* Fixed positioning to always stay visible */
   position: fixed;
   top: 0;
   left: 0;
-  padding: 16px 12px;
+  padding: 16px 8px; /* reduced horizontal padding for narrow widths */
   background: var(--card);
   border-right: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  /* Enhanced visual depth */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
   z-index: 1000;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  transition: width 300ms ease;
+  /* Remove internal scrolling - content should fit */
+  overflow: visible;
+  scrollbar-width: none;
+  transition: width 300ms ease; /* animate width changes for fixed positioning */
+  
+  /* Add subtle gradient background for depth */
+  background: linear-gradient(180deg, 
+    var(--card) 0%, 
+    #f8fafc 50%, 
+    var(--card) 100%);
 }
 
 .app-header.sidebar h1 {
@@ -107,63 +119,74 @@ body {
   color: var(--muted);
 }
 
-/* Navigation links */
+/* Navigation links - compact to fit without scrolling */
 .app-header.sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px; /* reduced gap to fit more items */
+  height: calc(100vh - 120px); /* reserve space for header and toggle */
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  overflow: visible;
 }
 
 .app-header.sidebar .menu-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: transparent;
+  width: 32px; /* slightly smaller */
+  height: 32px;
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
   border: 1px solid var(--border);
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
   color: var(--text);
   padding: 0;
-  margin-bottom: 12px;
-  border-radius: 8px;
+  margin-bottom: 8px; /* reduced margin */
+  border-radius: 6px;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 160ms ease;
 }
 
-@media (max-width: 768px) {
-  .app-header.sidebar .menu-toggle {
-    display: block;
-  }
-
-  /* Keep sidebar visible in collapsed state on mobile; expanded width handled below */
-  .app-header.sidebar {
-    transform: none;
-  }
-
-  /* Push main content so it doesn't get covered */
-  body {
-    margin-left: 0;
-  }
+.app-header.sidebar .menu-toggle:hover {
+  background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
 }
 
-/* Expanded state (desktop and tablet) */
+/* Collapsed state - default width */
+body.has-sidebar .app-header.sidebar {
+  width: 60px;
+}
+
+/* Expanded state - more padding when there's more space */
 body.sidebar-expanded .app-header.sidebar {
   width: 260px;
-  min-width: 260px;
   padding: 24px 16px;
 }
 
-/* Content offset only when a sidebar exists */
-body.has-sidebar .container {
-  transition: margin-left 300ms ease;
+/* Grid-based layout where sidebar and content share viewport space */
+body.has-sidebar {
+  display: grid;
+  grid-template-columns: 60px 1fr; /* collapsed: 60px sidebar + remaining space for content */
+  min-height: 100vh;
+  transition: grid-template-columns 300ms ease;
 }
-/* default collapsed */
-body.has-sidebar:not(.sidebar-expanded) .container {
-  margin-left: 72px; /* 60px + spacing */
+
+body.has-sidebar.sidebar-expanded {
+  grid-template-columns: 260px 1fr; /* expanded: 260px sidebar + remaining space for content */
 }
-/* expanded */
-body.has-sidebar.sidebar-expanded .container {
-  margin-left: 276px; /* 260px + spacing */
+
+/* Main content area takes the second grid column */
+.main-content-area {
+  grid-column: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Hide title text when collapsed to icon-only */
@@ -172,25 +195,32 @@ body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar h1 a {
   left: -9999px;
 }
 
-/* Sidebar-specific nav item layout */
+/* Sidebar-specific nav item layout - more compact */
 .app-header.sidebar .nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px; /* reduced gap */
   text-decoration: none;
   color: inherit;
-  padding: 10px 10px;
+  padding: 6px 8px; /* reduced padding for compactness */
   margin: 0;
-  border-radius: 8px;
+  border-radius: 6px; /* smaller radius */
   border: 1px solid transparent;
-  background: transparent;
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.4); /* subtle background */
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6); /* inner highlight */
   transform: none;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  transition: all 160ms ease;
+  font-size: 13px; /* smaller font for compactness */
 }
 .app-header.sidebar .nav-item:hover {
-  background: #f6f9ff;
+  background: rgba(43, 108, 255, 0.08);
   border-color: rgba(43,108,255,0.18);
+  box-shadow: 
+    0 4px 8px rgba(43, 108, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px); /* subtle lift on hover */
 }
 .app-header.sidebar .nav-item .icon {
   width: 20px;
@@ -213,10 +243,46 @@ body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item {
   justify-content: center;
 }
 
-/* Mobile: keep collapsed strip visible; do not offset content */
+/* Mobile: smaller sidebar to fit both sidebar and content nicely */
 @media (max-width: 768px) {
-  body.has-sidebar .container {
-    margin-left: 0;
+  body.has-sidebar {
+    grid-template-columns: 40px 1fr; /* even narrower collapsed sidebar on mobile */
+    overflow-x: hidden; /* prevent horizontal scroll */
+  }
+  
+  body.has-sidebar.sidebar-expanded {
+    grid-template-columns: 160px 1fr; /* much narrower expanded sidebar on mobile */
+  }
+  
+  /* Fixed sidebar widths for mobile */
+  body.has-sidebar .app-header.sidebar {
+    width: 40px;
+    padding: 8px 2px; /* minimal padding on mobile */
+    font-size: 12px; /* smaller text */
+  }
+  
+  body.sidebar-expanded .app-header.sidebar {
+    width: 160px;
+    padding: 12px 6px; /* expanded mobile padding */
+  }
+  
+  /* Ensure main content doesn't overflow */
+  .main-content-area {
+    min-width: 0; /* allow flex shrinking */
+    overflow-x: hidden; /* prevent content overflow */
+  }
+  
+  /* Make container more mobile-friendly */
+  .container {
+    width: 100%;
+    max-width: none;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  
+  /* Hide sidebar labels on mobile when collapsed to save space */
+  body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item .label {
+    display: none;
   }
 }
 
@@ -715,7 +781,6 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
 .footer {
   text-align: center;
   color: var(--muted);
-  padding: 12px;
 }
 
 .message {

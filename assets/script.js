@@ -67,6 +67,32 @@ function setupSidebarToggle() {
   // Mark body that sidebar exists so layout CSS can offset
   document.body.classList.add('has-sidebar');
 
+  // Create grid structure: wrap all non-sidebar content in a main content area
+  const sidebarInclude = document.querySelector('[data-include*="sidebar"]');
+  if (sidebarInclude) {
+    // Get all elements after the sidebar include
+    const elementsAfterSidebar = [];
+    let nextSibling = sidebarInclude.nextSibling;
+    while (nextSibling) {
+      if (nextSibling.nodeType === Node.ELEMENT_NODE) {
+        elementsAfterSidebar.push(nextSibling);
+      }
+      nextSibling = nextSibling.nextSibling;
+    }
+    
+    // Create main content wrapper
+    const mainContentWrapper = document.createElement('div');
+    mainContentWrapper.className = 'main-content-area';
+    
+    // Move all non-sidebar content into the wrapper
+    elementsAfterSidebar.forEach(element => {
+      mainContentWrapper.appendChild(element);
+    });
+    
+    // Add the wrapper after the sidebar
+    sidebarInclude.parentNode.insertBefore(mainContentWrapper, sidebarInclude.nextSibling);
+  }
+
   // Ensure collapsed by default
   document.body.classList.remove('sidebar-expanded');
 
