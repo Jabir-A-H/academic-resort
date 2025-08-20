@@ -60,128 +60,18 @@ body {
   }
 }
 
-
-/* ========================================
-   HEADER
-   ======================================== */
-
-/* ========================================
-   SIDEBAR NAVIGATION
-   ======================================== */
-
-.app-header.sidebar {
-  width: 100%; /* take full grid column width */
-  min-width: unset; /* remove fixed min-width */
-  height: 100vh;
-  /* Fixed positioning to always stay visible */
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding: 16px 8px; /* reduced horizontal padding for narrow widths */
-  background: var(--card);
-  border-right: 1px solid var(--border);
-  /* Enhanced visual depth */
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.12),
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  z-index: 1000;
-  /* Remove internal scrolling - content should fit */
-  overflow: visible;
-  scrollbar-width: none;
-  transition: width 300ms ease; /* animate width changes for fixed positioning */
-  
-  /* Add subtle gradient background for depth */
-  background: linear-gradient(180deg, 
-    var(--card) 0%, 
-    #f8fafc 50%, 
-    var(--card) 100%);
-}
-
-.app-header.sidebar h1 {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 16px 0;
-  color: var(--text);
-}
-
-.app-header.sidebar h1 a {
-  color: inherit;
-  text-decoration: none;
-  display: block;
-}
-
-/* Optional: subtitle or note (if you want to keep it) */
-.app-header.sidebar .subtitle,
-.app-header.sidebar .header-note {
-  margin-bottom: 16px;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-/* Navigation links - compact to fit without scrolling */
-.app-header.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 4px; /* reduced gap to fit more items */
-  height: calc(100vh - 120px); /* reserve space for header and toggle */
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-  overflow: visible;
-}
-
-.app-header.sidebar .menu-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px; /* slightly smaller */
-  height: 32px;
-  background: linear-gradient(145deg, #ffffff, #f1f5f9);
-  border: 1px solid var(--border);
-  font-size: 16px;
-  cursor: pointer;
-  color: var(--text);
-  padding: 0;
-  margin-bottom: 8px; /* reduced margin */
-  border-radius: 6px;
-  box-shadow: 
-    0 2px 6px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  transition: all 160ms ease;
-}
-
-.app-header.sidebar .menu-toggle:hover {
-  background: linear-gradient(145deg, #f8fafc, #e2e8f0);
-  box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  transform: translateY(-1px);
-}
-
-/* Collapsed state - default width */
-body.has-sidebar .app-header.sidebar {
-  width: 60px;
-}
-
-/* Expanded state - more padding when there's more space */
-body.sidebar-expanded .app-header.sidebar {
-  width: 260px;
-  padding: 24px 16px;
-}
-
-/* Grid-based layout where sidebar and content share viewport space */
+/* Grid layout for sidebar + content */
 body.has-sidebar {
   display: grid;
-  grid-template-columns: 60px 1fr; /* collapsed: 60px sidebar + remaining space for content */
+  grid-template-columns: 60px 1fr;
   min-height: 100vh;
   transition: grid-template-columns 300ms ease;
 }
 
 body.has-sidebar.sidebar-expanded {
-  grid-template-columns: 260px 1fr; /* expanded: 260px sidebar + remaining space for content */
+  grid-template-columns: 260px 1fr;
 }
 
-/* Main content area takes the second grid column */
 .main-content-area {
   grid-column: 2;
   min-height: 100vh;
@@ -189,90 +79,33 @@ body.has-sidebar.sidebar-expanded {
   flex-direction: column;
 }
 
-/* Hide title text when collapsed to icon-only */
-body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar h1 a {
-  position: absolute;
-  left: -9999px;
-}
-
-/* Sidebar-specific nav item layout - more compact */
-.app-header.sidebar .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* reduced gap */
-  text-decoration: none;
-  color: inherit;
-  padding: 6px 8px; /* reduced padding for compactness */
-  margin: 0;
-  border-radius: 6px; /* smaller radius */
-  border: 1px solid transparent;
-  background: rgba(255, 255, 255, 0.4); /* subtle background */
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6); /* inner highlight */
-  transform: none;
-  transition: all 160ms ease;
-  font-size: 13px; /* smaller font for compactness */
-}
-.app-header.sidebar .nav-item:hover {
-  background: rgba(43, 108, 255, 0.08);
-  border-color: rgba(43,108,255,0.18);
-  box-shadow: 
-    0 4px 8px rgba(43, 108, 255, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  transform: translateY(-1px); /* subtle lift on hover */
-}
-.app-header.sidebar .nav-item .icon {
-  width: 20px;
-  height: 20px;
-  display: inline-flex;
-  flex: 0 0 20px;
-  align-items: center;
-  justify-content: center;
-  color: #2b6cff;
-}
-.app-header.sidebar .nav-item .label {
-  white-space: nowrap;
-}
-
-/* Hide labels and center icons when collapsed */
-body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item .label {
-  display: none;
-}
-body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item {
-  justify-content: center;
-}
-
-/* Mobile: smaller sidebar to fit both sidebar and content nicely */
+/* Mobile: narrower sidebar */
 @media (max-width: 768px) {
   body.has-sidebar {
-    grid-template-columns: 40px 1fr; /* even narrower collapsed sidebar on mobile */
-    overflow-x: hidden; /* prevent horizontal scroll */
+    grid-template-columns: 40px 1fr;
+    overflow-x: hidden;
   }
   
   body.has-sidebar.sidebar-expanded {
-    grid-template-columns: 160px 1fr; /* much narrower expanded sidebar on mobile */
+    grid-template-columns: 160px 1fr;
   }
   
-  /* Fixed sidebar widths for mobile */
   body.has-sidebar .app-header.sidebar {
     width: 40px;
-    padding: 8px 2px; /* minimal padding on mobile */
-    font-size: 12px; /* smaller text */
+    padding: 8px 2px;
+    font-size: 12px;
   }
   
   body.sidebar-expanded .app-header.sidebar {
     width: 160px;
-    padding: 12px 6px; /* expanded mobile padding */
+    padding: 12px 6px;
   }
   
-  /* Ensure main content doesn't overflow */
   .main-content-area {
-    min-width: 0; /* allow flex shrinking */
-    overflow-x: hidden; /* prevent content overflow */
+    min-width: 0;
+    overflow-x: hidden;
   }
   
-  /* Make container more mobile-friendly */
   .container {
     width: 100%;
     max-width: none;
@@ -280,26 +113,15 @@ body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item {
     box-sizing: border-box;
   }
   
-  /* Hide sidebar labels on mobile when collapsed to save space */
   body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item .label {
     display: none;
   }
 }
 
-/* Overlay shown when sidebar expanded on mobile */
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(11,22,48,0.28);
-  z-index: 900;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 200ms ease;
-}
-body.sidebar-expanded .sidebar-overlay {
-  opacity: 1;
-  pointer-events: auto;
-}
+
+/* ========================================
+   HEADER
+   ======================================== */
 
 .app-header {
   padding: 28px 20px 6px;
@@ -330,6 +152,176 @@ body.sidebar-expanded .sidebar-overlay {
 }
 
 
+/* ========================================
+   SIDEBAR NAVIGATION
+   ======================================== */
+
+.app-header.sidebar {
+  width: 100%;
+  min-width: unset;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 16px 8px;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  z-index: 1000;
+  overflow: visible;
+  scrollbar-width: none;
+  transition: width 300ms ease;
+  background: linear-gradient(180deg, 
+    var(--card) 0%, 
+    #f8fafc 50%, 
+    var(--card) 100%);
+}
+
+.app-header.sidebar h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--text);
+}
+
+.app-header.sidebar h1 a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+.app-header.sidebar .subtitle,
+.app-header.sidebar .header-note {
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.app-header.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: calc(100vh - 120px);
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  overflow: visible;
+}
+
+.app-header.sidebar .menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
+  border: 1px solid var(--border);
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text);
+  padding: 0;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 160ms ease;
+}
+
+.app-header.sidebar .menu-toggle:hover {
+  background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+/* Sidebar collapsed/expanded states */
+body.has-sidebar .app-header.sidebar {
+  width: 60px;
+}
+
+body.sidebar-expanded .app-header.sidebar {
+  width: 260px;
+  padding: 24px 16px;
+}
+
+/* Hide title text when collapsed */
+body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar h1 a {
+  position: absolute;
+  left: -9999px;
+}
+
+/* Sidebar nav items */
+.app-header.sidebar .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  padding: 6px 8px;
+  margin: 0;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: none;
+  transition: all 160ms ease;
+  font-size: 13px;
+}
+
+.app-header.sidebar .nav-item:hover {
+  background: rgba(43, 108, 255, 0.08);
+  border-color: rgba(43,108,255,0.18);
+  box-shadow: 
+    0 4px 8px rgba(43, 108, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+.app-header.sidebar .nav-item .icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  flex: 0 0 20px;
+  align-items: center;
+  justify-content: center;
+  color: #2b6cff;
+}
+
+.app-header.sidebar .nav-item .label {
+  white-space: nowrap;
+}
+
+/* Hide labels when collapsed */
+body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item .label {
+  display: none;
+}
+
+body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item {
+  justify-content: center;
+}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11,22,48,0.28);
+  z-index: 900;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+body.sidebar-expanded .sidebar-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 
 /* ========================================
    TYPOGRAPHY & UTILITY CLASSES
@@ -339,6 +331,7 @@ h2 {
   font-size: 1.05rem;
   margin: 0 0 8px 0;
 }
+
 p {
   color: #374151;
   line-height: 1.5;
@@ -442,6 +435,86 @@ input:focus {
 
 
 /* ========================================
+   NAVIGATION ITEMS (Top Navbar)
+   ======================================== */
+
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  margin: 0 6px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border: 1px solid rgba(15, 23, 36, 0.08);
+  box-shadow: 0 4px 12px rgba(2, 6, 23, 0.04);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text, #1a1f2d);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: 
+    transform 220ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    box-shadow 220ms ease,
+    border-color 160ms ease;
+  will-change: transform, box-shadow;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.09);
+  border-color: rgba(43, 108, 255, 0.16);
+}
+
+.nav-item:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(2, 6, 23, 0.06);
+}
+
+.nav-item:focus {
+  outline: 2px solid rgba(43, 108, 255, 0.3);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.nav-item.active {
+  font-weight: 600;
+  border-color: rgba(43, 108, 255, 0.3);
+  box-shadow: 0 6px 16px rgba(43, 108, 255, 0.1);
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-item {
+    transition: none;
+  }
+  .nav-item:hover,
+  .nav-item:focus,
+  .nav-item:active {
+    transform: none;
+    box-shadow: 0 4px 12px rgba(2, 6, 23, 0.04);
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .nav-item {
+    padding: 10px 16px;
+    font-size: 15px;
+    margin: 0;
+  }
+}
+
+
+/* ========================================
    CARDS & SURFACES
    ======================================== */
 
@@ -460,6 +533,7 @@ input:focus {
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   margin-top: 10px;
 }
+
 .link-card {
   display: block;
   background: linear-gradient(180deg, #ffffff, #fbfdff);
@@ -475,7 +549,6 @@ input:focus {
   will-change: transform, box-shadow;
 }
 
-/* Hover / focus interactions */
 .link-card:hover,
 .link-card:focus {
   transform: translateY(-6px) scale(1.01);
@@ -488,17 +561,19 @@ input:focus {
   box-shadow: 0 8px 18px rgba(2,6,23,0.08);
 }
 
-/* Visible focus for keyboard users */
 .link-card:focus {
   outline: 3px solid rgba(43,108,255,0.12);
   outline-offset: 4px;
 }
 
-/* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .link-card { transition: none; transform: none; }
 }
 
+
+/* ========================================
+   TABLES
+   ======================================== */
 
 .table-wrap {
   background: var(--card);
@@ -643,91 +718,6 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
   box-shadow: 0 6px 18px rgba(11, 22, 48, 0.04);
 }
 
-.nav-item {
-  /* Layout & Sizing */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 14px; /* Balanced: roomy but not bulky */
-  margin: 0 6px;     /* Space between items */
-
-  /* Shape & Style */
-  border-radius: 12px; /* Softer than pill, not blocky */
-  background: linear-gradient(180deg, #ffffff, #fbfdff);
-  border: 1px solid rgba(15, 23, 36, 0.08);
-  box-shadow: 0 4px 12px rgba(2, 6, 23, 0.04);
-  font-size: 14px;     /* Readable on mobile */
-  font-weight: 500;    /* Slightly bolder than default, not heavy */
-  color: var(--text, #1a1f2d); /* Fallback if --text defined */
-  text-decoration: none; /* If <a> tag */
-  white-space: nowrap; /* Prevent text wrap */
-
-  /* Transitions */
-  transition: 
-    transform 220ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    box-shadow 220ms ease,
-    border-color 160ms ease;
-  will-change: transform, box-shadow;
-
-  /* Reset tap highlight on mobile */
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Hover: lift effect */
-.nav-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.09);
-  border-color: rgba(43, 108, 255, 0.16);
-}
-
-/* Active: pressed state */
-.nav-item:active {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(2, 6, 23, 0.06);
-}
-
-/* Focus: accessibility */
-.nav-item:focus {
-  outline: 2px solid rgba(43, 108, 255, 0.3);
-  outline-offset: 2px;
-  z-index: 1; /* Prevents outline clipping */
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .nav-item {
-    transition: none;
-  }
-  .nav-item:hover,
-  .nav-item:focus,
-  .nav-item:active {
-    transform: none;
-    box-shadow: 0 4px 12px rgba(2, 6, 23, 0.04);
-  }
-}
-
-@media (max-width: 768px) {
-  .navbar {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 0;
-  }
-
-  .nav-item {
-    padding: 10px 16px; /* Slightly larger touch target */
-    font-size: 15px;
-    margin: 0; /* Let gap handle spacing */
-  }
-}
-
-.nav-item.active {
-  font-weight: 600;
-  border-color: rgba(43, 108, 255, 0.3);
-  box-shadow: 0 6px 16px rgba(43, 108, 255, 0.1);
-  transform: translateY(0);
-}
 
 /* ========================================
    PREVIEW PANEL (Modal-like floating view)
