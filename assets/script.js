@@ -1,16 +1,16 @@
 /**
  * Simple HTML include loader
- * Usage: <div data-include="/assets/includes/header.html"></div>
+ * Usage: <div data-include="/assets/includes/sidebar.html"></div>
  */
 async function loadInclude(el) {
   const src = el.getAttribute('data-include');
   if (!src) return;
 
   try {
-    // Skip injecting the sidebar header on index.html
+  // Skip injecting the sidebar include on index.html
     const path = location.pathname || '';
     const isIndex = /(^|\/)index\.html$/.test(path) || /\/$/.test(path);
-    if (isIndex && /\/includes\/header\.html$/.test(src)) {
+  if (isIndex && /\/includes\/sidebar\.html$/.test(src)) {
       el.removeAttribute('data-include');
       el.innerHTML = '';
       return;
