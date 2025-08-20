@@ -65,6 +65,176 @@ body {
    HEADER
    ======================================== */
 
+/* ========================================
+   SIDEBAR NAVIGATION
+   ======================================== */
+
+.app-header.sidebar {
+  width: 60px; /* collapsed by default */
+  min-width: 60px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 16px 12px;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  z-index: 1000;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  transition: width 300ms ease;
+}
+
+.app-header.sidebar h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--text);
+}
+
+.app-header.sidebar h1 a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+/* Optional: subtitle or note (if you want to keep it) */
+.app-header.sidebar .subtitle,
+.app-header.sidebar .header-note {
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Navigation links */
+.app-header.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-header.sidebar .menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--border);
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text);
+  padding: 0;
+  margin-bottom: 12px;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .app-header.sidebar .menu-toggle {
+    display: block;
+  }
+
+  /* Keep sidebar visible in collapsed state on mobile; expanded width handled below */
+  .app-header.sidebar {
+    transform: none;
+  }
+
+  /* Push main content so it doesn't get covered */
+  body {
+    margin-left: 0;
+  }
+}
+
+/* Expanded state (desktop and tablet) */
+body.sidebar-expanded .app-header.sidebar {
+  width: 260px;
+  min-width: 260px;
+  padding: 24px 16px;
+}
+
+/* Content offset only when a sidebar exists */
+body.has-sidebar .container {
+  transition: margin-left 300ms ease;
+}
+/* default collapsed */
+body.has-sidebar:not(.sidebar-expanded) .container {
+  margin-left: 72px; /* 60px + spacing */
+}
+/* expanded */
+body.has-sidebar.sidebar-expanded .container {
+  margin-left: 276px; /* 260px + spacing */
+}
+
+/* Hide title text when collapsed to icon-only */
+body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar h1 a {
+  position: absolute;
+  left: -9999px;
+}
+
+/* Sidebar-specific nav item layout */
+.app-header.sidebar .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px 10px;
+  margin: 0;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.app-header.sidebar .nav-item:hover {
+  background: #f6f9ff;
+  border-color: rgba(43,108,255,0.18);
+}
+.app-header.sidebar .nav-item .icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  flex: 0 0 20px;
+  align-items: center;
+  justify-content: center;
+  color: #2b6cff;
+}
+.app-header.sidebar .nav-item .label {
+  white-space: nowrap;
+}
+
+/* Hide labels and center icons when collapsed */
+body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item .label {
+  display: none;
+}
+body.has-sidebar:not(.sidebar-expanded) .app-header.sidebar .nav-item {
+  justify-content: center;
+}
+
+/* Mobile: keep collapsed strip visible; do not offset content */
+@media (max-width: 768px) {
+  body.has-sidebar .container {
+    margin-left: 0;
+  }
+}
+
+/* Overlay shown when sidebar expanded on mobile */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11,22,48,0.28);
+  z-index: 900;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+body.sidebar-expanded .sidebar-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .app-header {
   padding: 28px 20px 6px;
   text-align: center;
@@ -93,13 +263,6 @@ body {
   justify-content: center;
 }
 
-.app-header nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
-}
 
 
 /* ========================================
@@ -414,6 +577,91 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
   box-shadow: 0 6px 18px rgba(11, 22, 48, 0.04);
 }
 
+.nav-item {
+  /* Layout & Sizing */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px; /* Balanced: roomy but not bulky */
+  margin: 0 6px;     /* Space between items */
+
+  /* Shape & Style */
+  border-radius: 12px; /* Softer than pill, not blocky */
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border: 1px solid rgba(15, 23, 36, 0.08);
+  box-shadow: 0 4px 12px rgba(2, 6, 23, 0.04);
+  font-size: 14px;     /* Readable on mobile */
+  font-weight: 500;    /* Slightly bolder than default, not heavy */
+  color: var(--text, #1a1f2d); /* Fallback if --text defined */
+  text-decoration: none; /* If <a> tag */
+  white-space: nowrap; /* Prevent text wrap */
+
+  /* Transitions */
+  transition: 
+    transform 220ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    box-shadow 220ms ease,
+    border-color 160ms ease;
+  will-change: transform, box-shadow;
+
+  /* Reset tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Hover: lift effect */
+.nav-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.09);
+  border-color: rgba(43, 108, 255, 0.16);
+}
+
+/* Active: pressed state */
+.nav-item:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(2, 6, 23, 0.06);
+}
+
+/* Focus: accessibility */
+.nav-item:focus {
+  outline: 2px solid rgba(43, 108, 255, 0.3);
+  outline-offset: 2px;
+  z-index: 1; /* Prevents outline clipping */
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .nav-item {
+    transition: none;
+  }
+  .nav-item:hover,
+  .nav-item:focus,
+  .nav-item:active {
+    transform: none;
+    box-shadow: 0 4px 12px rgba(2, 6, 23, 0.04);
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .nav-item {
+    padding: 10px 16px; /* Slightly larger touch target */
+    font-size: 15px;
+    margin: 0; /* Let gap handle spacing */
+  }
+}
+
+.nav-item.active {
+  font-weight: 600;
+  border-color: rgba(43, 108, 255, 0.3);
+  box-shadow: 0 6px 16px rgba(43, 108, 255, 0.1);
+  transform: translateY(0);
+}
 
 /* ========================================
    PREVIEW PANEL (Modal-like floating view)
