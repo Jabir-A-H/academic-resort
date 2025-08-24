@@ -112,8 +112,9 @@
       // Batch folders - loaded from JSON
       let batches = {};
 
-      // Get API key from environment variable (set in GitHub secrets)
-      const DRIVE_API_KEY = window.GOOGLE_DRIVE_API_KEY || "";
+      // API key from GitHub repository secrets
+      const DRIVE_API_KEY =
+        "{{ site.github.repository.secrets.GOOGLE_DRIVE_API_KEY }}" || "";
 
       // Load mapping from JSON file
       async function loadBatchMapping() {

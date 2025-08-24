@@ -102,8 +102,9 @@
     <div data-include="../assets/includes/footer.html"></div>
 
     <script>
-      // Get API key from environment variable (set in GitHub secrets)
-      const DRIVE_API_KEY = window.GOOGLE_DRIVE_API_KEY || "";
+      // API key from GitHub repository secrets
+      const DRIVE_API_KEY =
+        "{{ site.github.repository.secrets.GOOGLE_DRIVE_API_KEY }}" || "";
       let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
       let allFiles = []; // Store all loaded files for filtering
       let deepSearchEnabled = false;
