@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Browse Materials • Academic Resort</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Browse All Resources - Academic Resort</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,39 +15,62 @@
   </head>
   <body>
     <div data-include="../assets/includes/sidebar.html"></div>
-    <!-- App Header -->
-    <header class="app-header">
-      <h1>Academic Resort</h1>
-    </header>
-
+    <header class="app-header"><h1>Academic Resort</h1></header>
     <main class="container">
-      <section class="card filters">
-        <div class="filters-grid">
-          <div>
-            <label for="selectSemester">Semester</label>
-            <select id="selectSemester"></select>
-          </div>
-          <div>
-            <label for="selectBatch">Batch / Section</label>
-            <select id="selectBatch"></select>
-          </div>
-          <div style="display: flex; align-items: end; gap: 8px">
-            <button id="loadFolderBtn" class="btn primary">Load Folder</button>
-            <span
-              id="mappingStatus"
-              class="small"
-              style="color: var(--muted)"
-            ></span>
-          </div>
-          <!-- existing search & filters -->
-          <div>
-            <label for="searchAll">Search</label>
-            <input
-              id="searchAll"
-              type="search"
-              placeholder="Any text (name, path)…"
-            />
-          </div>
+      <div style="margin-bottom:24px">
+        <h1 style="text-align:center;margin:48px 0;font-size:2.5rem;font-weight:600;">Browse All Resources</h1>
+        <p><b>Search and filter through all academic resources across all semesters and batches.</b></p>
+      </div>
+
+      <!-- Advanced Search/Filter -->
+      <div class="search-panel">
+        <div class="search-row">
+          <input type="text" id="globalSearch" placeholder="Search files, folders, teachers, courses..." oninput="globalFilter()" />
+        </div>
+        
+        <div class="filter-row">
+          <select id="semesterFilter" onchange="globalFilter()">
+            <option value="">All Semesters</option>
+            <option value="1st">1st Semester</option>
+            <option value="2nd">2nd Semester</option>
+            <option value="3rd">3rd Semester</option>
+            <option value="4th">4th Semester</option>
+            <option value="5th">5th Semester</option>
+            <option value="6th">6th Semester</option>
+            <option value="7th">7th Semester</option>
+            <option value="8th">8th Semester</option>
+          </select>
+
+          <select id="batchFilter" onchange="globalFilter()">
+            <option value="">All Batches</option>
+            <option value="30">30th Batch</option>
+            <option value="29">29th Batch</option>
+            <option value="28">28th Batch</option>
+            <option value="27">27th Batch</option>
+            <option value="26">26th Batch</option>
+          </select>
+
+          <select id="typeFilter" onchange="globalFilter()">
+            <option value="">All Types</option>
+            <option value="folder">Folders</option>
+            <option value="file">Files</option>
+            <option value="personal">Personal Notes</option>
+            <option value="solution">Solutions</option>
+            <option value="books">Books & Slides</option>
+            <option value="syllabus">Syllabus</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Results Container -->
+      <div id="results-container">
+        <div class="results-stats" id="resultsStats">Loading resources...</div>
+        
+        <!-- All Drive Resources will be loaded here -->
+        <div id="all-resources"></div>
+      </div>
+
+    </main>
           <div>
             <label for="filterCourse">Course code</label>
             <input id="filterCourse" type="text" placeholder="e.g. 3101" />
