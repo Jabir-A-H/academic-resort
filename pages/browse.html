@@ -17,17 +17,36 @@
     <div data-include="../assets/includes/sidebar.html"></div>
     <header class="app-header"><h1>Academic Resort</h1></header>
     <main class="container">
-      <div style="margin-bottom:24px">
-        <h1 style="text-align:center;margin:48px 0;font-size:2.5rem;font-weight:600;">Browse All Resources</h1>
-        <p><b>Search and filter through all academic resources across all semesters and batches.</b></p>
+      <div style="margin-bottom: 24px">
+        <h1
+          style="
+            text-align: center;
+            margin: 48px 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+          "
+        >
+          Browse All Resources
+        </h1>
+        <p>
+          <b
+            >Search and filter through all academic resources across all
+            semesters and batches.</b
+          >
+        </p>
       </div>
 
       <!-- Advanced Search/Filter -->
       <div class="search-panel">
         <div class="search-row">
-          <input type="text" id="globalSearch" placeholder="Search files, folders, teachers, courses..." oninput="globalFilter()" />
+          <input
+            type="text"
+            id="globalSearch"
+            placeholder="Search files, folders, teachers, courses..."
+            oninput="globalFilter()"
+          />
         </div>
-        
+
         <div class="filter-row">
           <select id="semesterFilter" onchange="globalFilter()">
             <option value="">All Semesters</option>
@@ -65,65 +84,515 @@
       <!-- Results Container -->
       <div id="results-container">
         <div class="results-stats" id="resultsStats">Loading resources...</div>
-        
+
         <!-- All Drive Resources will be loaded here -->
         <div id="all-resources"></div>
       </div>
-
-    </main>
-          <div>
-            <label for="filterCourse">Course code</label>
-            <input id="filterCourse" type="text" placeholder="e.g. 3101" />
-          </div>
-          <div>
-            <label for="filterTeacher">Teacher</label>
-            <input
-              id="filterTeacher"
-              type="text"
-              placeholder="e.g. Tareq or DMH"
-            />
-          </div>
-          <div>
-            <label for="filterBatch">Batch</label>
-            <input id="filterBatch" type="text" placeholder="e.g. 28" />
-          </div>
-        </div>
-      </section>
-
-      <section class="data-card">
-        <div class="table-wrap">
-          <table id="driveTable" class="drive-table">
-            <thead>
-              <tr>
-                <th style="width: 44%">Name</th>
-                <th>Type</th>
-                <th>Course</th>
-                <th>Teacher</th>
-                <th>Batch</th>
-                <th>Modified</th>
-                <th>Size</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-
-        <aside id="preview" class="preview hidden">
-          <div class="preview-header">
-            <div class="title" id="previewTitle">Preview</div>
-            <button id="closePreview" class="icon-btn" title="Close">✖</button>
-          </div>
-          <iframe
-            id="previewFrame"
-            title="File Preview"
-            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-          ></iframe>
-        </aside>
-      </section>
     </main>
 
     <div data-include="../assets/includes/footer.html"></div>
 
-    <!-- API-driven explorer removed; use static semester pages instead -->
+    <script>
+      // Unified drive mapping - all semesters and batches
+      const ALL_DRIVE_RESOURCES = {
+        "1st": {
+          30: {
+            folderId: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+            label: "30th Batch",
+          },
+          29: {
+            folderId: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
+            label: "29th Batch",
+          },
+          28: {
+            folderId: "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
+            label: "28th Batch",
+          },
+          27: {
+            folderId: "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
+            label: "27th Batch",
+          },
+          26: {
+            folderId: "1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu",
+            label: "26th Batch",
+          },
+        },
+        "2nd": {
+          30: {
+            folderId: "1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
+            label: "30th Batch",
+          },
+          29: {
+            folderId: "1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8",
+            label: "29th Batch",
+          },
+          28: {
+            folderId: "1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj",
+            label: "28th Batch",
+          },
+          27: {
+            folderId: "17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_",
+            label: "27th Batch",
+          },
+          books: {
+            folderId: "1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU",
+            label: "Books & Slides",
+          },
+          math: {
+            folderId: "10Xl4jThcLbNF_5Iq2-9-zL9gxZKF8tlx",
+            label: "Math II Notes",
+          },
+          personal: {
+            folderId: "1GqE1mLi-ir3OCvBdMBgChCIpws8dTGI7",
+            label: "Personal Notes",
+          },
+          syllabus: {
+            folderId: "1WkOJq5ep_6p3YZw3tENrH6wbAOWdWrjI",
+            label: "Syllabus",
+          },
+        },
+        "3rd": {
+          29: {
+            folderId: "1cD9UZpwr4F4u79N6iI4rJk_J6jVocnGX",
+            label: "29th Batch",
+          },
+          28: {
+            folderId: "11X8KpIfn1Jkh8_sy96xNbg8a1Z8EWy-I",
+            label: "28th Batch",
+          },
+          27: {
+            folderId: "1fZuFo3qsPUtaN53ZvKOrwgb-fVIr8B4N",
+            label: "27th Batch",
+          },
+          26: {
+            folderId: "1-rpP6GshMYj7QoCRRSGWBmRsren-tfWZ",
+            label: "26th Batch",
+          },
+          personal: {
+            folderId: "15d1gjiKGXu_FixNjxdVVwyny4cFVAwMV",
+            label: "Personal Notes",
+          },
+          class26: {
+            folderId: "10MaWyjpRPbdrTfxxEWiXw2c3xor9gZnA",
+            label: "26th Class Updates",
+          },
+        },
+        "4th": {
+          29: {
+            folderId: "1G2KfcJhwNg2arCpn22pGnqYmTMNU83VZ",
+            label: "29th Batch",
+          },
+          28: {
+            folderId: "1MiupaUP-RJQCyounSK2LA32BPlr2s_jo",
+            label: "28th Batch",
+          },
+          27: {
+            folderId: "1GdxoRIoO8dnqZAf7PxWXDB3-pYpNep-Q",
+            label: "27th Batch",
+          },
+          26: {
+            folderId: "13A4naTmdqQlJax8agk_CPoyzHD1dsZ8B",
+            label: "26th Batch",
+          },
+          personal: {
+            folderId: "1DBwDKIjWozsnq8CJyiRnANKwTcgmmzWp",
+            label: "Personal Notes",
+          },
+          solution: {
+            folderId: "1phHQxq37Qvke5KSmHIvMX_uuGqQHUM8u",
+            label: "Solution Manuals",
+          },
+        },
+        "5th": {
+          28: {
+            folderId: "1xU30Tj4q6oXZWb17ubqszqwLVBi-a6N_",
+            label: "28th Batch",
+          },
+          27: {
+            folderId: "1AjQxHD_A3HjKA0tKyBNb-A2p5ypf6hi6",
+            label: "27th Batch",
+          },
+          26: {
+            folderId: "155q0US7eYWzDnHxMmtg3iFO9kXQZJIUJ",
+            label: "26th Batch",
+          },
+          seniors: {
+            folderId: "1dWMahU0ugtF9Em5sGZ0aywkuGY1noN81",
+            label: "Materials from Seniors",
+          },
+          personal: {
+            folderId: "1S0SFn1__66OTcOu5GoLo8iC-GKFrihqE",
+            label: "Personal Notes",
+          },
+          solution: {
+            folderId: "10iW_oE4mGqIL9Ft3JtvGowJmNPgPasaJ",
+            label: "Solution Manuals",
+          },
+        },
+        "6th": {
+          28: {
+            folderId: "1cSYiB69iMz2czYOHZAlI7nzVniD4bmH9",
+            label: "28th Batch",
+          },
+          27: {
+            folderId: "1V1bC-dZV6_NrHvA8q75TmfLIp-tXN-pj",
+            label: "27th Batch",
+          },
+          26: {
+            folderId: "1U7chsBvKxAoiN_VRlAQC1mG5jggPYDvb",
+            label: "26th Batch",
+          },
+          prior: {
+            folderId: "1SDMCnjAHNYDd0WXApaAQ9swaYw75U9Zl",
+            label: "Prior to 26th",
+          },
+          syllabus: {
+            folderId: "1WkOJq5ep_6p3YZw3tENrH6wbAOWdWrjI",
+            label: "Syllabus",
+          },
+        },
+        "7th": {
+          27: {
+            folderId: "1_cGrDFivmX1Bkw2iLnP_KKriNMBOfJGx",
+            label: "27th Batch",
+          },
+          26: {
+            folderId: "1nWPYjT2HU6W8JBIyBV9Qpj5LVdDdsJ6J",
+            label: "26th Class Updates",
+          },
+          books: {
+            folderId: "1CcclN8x_xjGXolCP0cFg-FfkHSg_b6b6",
+            label: "Books & Course Files",
+          },
+          personal: {
+            folderId: "1_VhhpUP71NeGNxBXFBFQsdpHrnOyUXcT",
+            label: "Personal Notes",
+          },
+          seniors: {
+            folderId: "1LNyyBYeYuMLOaHmLnICivLDC29lBO3Ru",
+            label: "Materials from Seniors",
+          },
+          solution: {
+            folderId: "1ctFA9VJod6YmkuDy5t6MHgnE4UQZ1mI3",
+            label: "Solution Manuals",
+          },
+          syllabus: {
+            folderId: "14OQvH90cP3W2mPGOuLPgdS0Wv5alSEIP",
+            label: "Syllabus",
+          },
+        },
+        "8th": {
+          27: {
+            folderId: "1dHSV2wI96GMIRyk_31fA2RaHbeAydGVo",
+            label: "27th Batch",
+          },
+          26: {
+            folderId: "10nJhRpeqDOQ3ALWgmvyPp_OCRXgr_1EX",
+            label: "26th Class Updates",
+          },
+          books: {
+            folderId: "1wJ0tr2F-pCtnzxtNxuMR7-eYvK2h0LkS",
+            label: "Books & Course Files",
+          },
+          personal: {
+            folderId: "1y0OVqiBSdYKwVRa2REztPozfMg-PFfkK",
+            label: "Personal Notes",
+          },
+          seniors: {
+            folderId: "1ZTwgGlgpDwYgwbifq-m-42O_L_WN7kMP",
+            label: "Materials from Seniors",
+          },
+          solution: {
+            folderId: "15DjY7GTUvGpXxA1bogcH18mBRkBXKkgN",
+            label: "Solution Manuals",
+          },
+          syllabus: {
+            folderId: "14OQvH90cP3W2mPGOuLPgdS0Wv5alSEIP",
+            label: "Syllabus",
+          },
+        },
+      };
+
+      const DRIVE_API_KEY = "AIzaSyDb3zn-YDS42TONfEMI4FPlbBR8BTfDprw";
+      let allFiles = []; // Store all loaded files for filtering
+
+      // Load all files from all drives
+      async function loadAllResources() {
+        const container = document.getElementById("all-resources");
+        const stats = document.getElementById("resultsStats");
+
+        stats.textContent = "Loading all resources...";
+        allFiles = [];
+
+        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
+          for (const [batchKey, batchInfo] of Object.entries(batches)) {
+            try {
+              const response = await fetch(
+                `https://www.googleapis.com/drive/v3/files?q='${batchInfo.folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
+              );
+              const data = await response.json();
+
+              if (data.files) {
+                data.files.forEach((file) => {
+                  allFiles.push({
+                    ...file,
+                    semester: semester,
+                    batch: batchKey,
+                    batchLabel: batchInfo.label,
+                    isFolder:
+                      file.mimeType === "application/vnd.google-apps.folder",
+                  });
+                });
+              }
+            } catch (error) {
+              console.error(
+                `Error loading ${semester} - ${batchInfo.label}:`,
+                error
+              );
+            }
+          }
+        }
+
+        displayResults(allFiles);
+        updateStats(allFiles.length, allFiles.length);
+      }
+
+      // Display search results
+      function displayResults(files) {
+        const container = document.getElementById("all-resources");
+        container.innerHTML = "";
+
+        if (files.length === 0) {
+          container.innerHTML =
+            '<div class="no-results">No files found matching your criteria.</div>';
+          return;
+        }
+
+        // Group by semester
+        const grouped = {};
+        files.forEach((file) => {
+          if (!grouped[file.semester]) grouped[file.semester] = {};
+          if (!grouped[file.semester][file.batch])
+            grouped[file.semester][file.batch] = [];
+          grouped[file.semester][file.batch].push(file);
+        });
+
+        Object.entries(grouped).forEach(([semester, batches]) => {
+          const semesterDiv = document.createElement("div");
+          semesterDiv.className = "semester-group";
+          semesterDiv.innerHTML = `<h2>${semester.toUpperCase()} Semester</h2>`;
+
+          Object.entries(batches).forEach(([batch, files]) => {
+            const batchDiv = document.createElement("div");
+            batchDiv.className = "batch-group";
+            batchDiv.innerHTML = `<h3>${files[0].batchLabel}</h3>`;
+
+            const filesList = document.createElement("ul");
+            filesList.className = "files-list";
+
+            files.forEach((file) => {
+              const li = document.createElement("li");
+              li.className = `file-item ${file.isFolder ? "folder" : "file"}`;
+
+              const icon = file.isFolder ? "📁" : "📄";
+              const link =
+                file.webViewLink ||
+                `https://drive.google.com/file/d/${file.id}/view`;
+
+              li.innerHTML = `
+                <a href="${link}" target="_blank" class="file-link">
+                  ${icon} ${file.name}
+                </a>
+                <span class="file-meta">${file.semester} - ${file.batchLabel}</span>
+              `;
+
+              filesList.appendChild(li);
+            });
+
+            batchDiv.appendChild(filesList);
+            semesterDiv.appendChild(batchDiv);
+          });
+
+          container.appendChild(semesterDiv);
+        });
+      }
+
+      // Global filter function
+      function globalFilter() {
+        const searchTerm = document
+          .getElementById("globalSearch")
+          .value.toLowerCase();
+        const semesterFilter = document.getElementById("semesterFilter").value;
+        const batchFilter = document.getElementById("batchFilter").value;
+        const typeFilter = document.getElementById("typeFilter").value;
+
+        let filtered = allFiles.filter((file) => {
+          // Text search
+          const matchesSearch =
+            !searchTerm ||
+            file.name.toLowerCase().includes(searchTerm) ||
+            file.batchLabel.toLowerCase().includes(searchTerm);
+
+          // Semester filter
+          const matchesSemester =
+            !semesterFilter || file.semester === semesterFilter;
+
+          // Batch filter
+          const matchesBatch = !batchFilter || file.batch === batchFilter;
+
+          // Type filter
+          const matchesType =
+            !typeFilter ||
+            (typeFilter === "folder" && file.isFolder) ||
+            (typeFilter === "file" && !file.isFolder) ||
+            (typeFilter === "personal" && file.batch.includes("personal")) ||
+            (typeFilter === "solution" && file.batch.includes("solution")) ||
+            (typeFilter === "books" && file.batch.includes("books")) ||
+            (typeFilter === "syllabus" && file.batch.includes("syllabus"));
+
+          return (
+            matchesSearch && matchesSemester && matchesBatch && matchesType
+          );
+        });
+
+        displayResults(filtered);
+        updateStats(filtered.length, allFiles.length);
+      }
+
+      // Update results statistics
+      function updateStats(shown, total) {
+        const stats = document.getElementById("resultsStats");
+        stats.textContent = `Showing ${shown} of ${total} resources`;
+      }
+
+      // Initialize on page load
+      window.addEventListener("DOMContentLoaded", () => {
+        loadAllResources();
+      });
+    </script>
+
+    <style>
+      .search-panel {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+      }
+
+      .search-row {
+        margin-bottom: 16px;
+      }
+
+      .search-row input {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 1.1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+
+      .filter-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .filter-row select {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        min-width: 150px;
+      }
+
+      .results-stats {
+        margin-bottom: 16px;
+        font-weight: 600;
+        color: #666;
+      }
+
+      .semester-group {
+        margin-bottom: 32px;
+        border-left: 4px solid #2196f3;
+        padding-left: 16px;
+      }
+
+      .semester-group h2 {
+        margin: 0 0 16px 0;
+        color: #2196f3;
+      }
+
+      .batch-group {
+        margin-bottom: 24px;
+        background: #fff;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .batch-group h3 {
+        margin: 0 0 12px 0;
+        color: #333;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+      }
+
+      .files-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .file-item {
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .file-item:last-child {
+        border-bottom: none;
+      }
+
+      .file-link {
+        text-decoration: none;
+        color: #2196f3;
+        font-weight: 500;
+      }
+
+      .file-link:hover {
+        text-decoration: underline;
+      }
+
+      .file-meta {
+        font-size: 0.9rem;
+        color: #666;
+        font-style: italic;
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 48px;
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      @media (max-width: 768px) {
+        .filter-row {
+          flex-direction: column;
+        }
+
+        .filter-row select {
+          min-width: 100%;
+        }
+
+        .file-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 4px;
+        }
+      }
+    </style>
   </body>
 </html>

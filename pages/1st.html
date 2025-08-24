@@ -11,20 +11,45 @@
     <div data-include="../assets/includes/sidebar.html"></div>
     <header class="app-header"><h1>Academic Resort</h1></header>
     <main class="container">
-      <div style="margin-bottom:24px">
-        <h1 style="text-align:center;margin:48px 0;font-size:2.5rem;font-weight:600;">1st Semester - Getting started</h1>
-        <p><b>This page contains resources for 1st Semester courses: Introduction to Financial Accounting (1101), Introduction to Business (1102), Computer Concepts and Applications (1103), Mathematics for Business Decisions-I (1104), and Business Communication (1105).</b></p>
-        <h3 style="margin-top:12px">Table of Contents</h3>
+      <div style="margin-bottom: 24px">
+        <h1
+          style="
+            text-align: center;
+            margin: 48px 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+          "
+        >
+          1st Semester - Getting started
+        </h1>
+        <p>
+          <b
+            >This page contains resources for 1st Semester courses: Introduction
+            to Financial Accounting (1101), Introduction to Business (1102),
+            Computer Concepts and Applications (1103), Mathematics for Business
+            Decisions-I (1104), and Business Communication (1105).</b
+          >
+        </p>
+        <h3 style="margin-top: 12px">Table of Contents</h3>
         <ul class="small">
           {%- assign keys = site.data.drive_mapping['1st'].batches | keys -%}
           {%- for k in keys -%}
-            <li><a href="#batch-{{ k }}">{{ site.data.drive_mapping['1st'].batches[k].label }}</a></li>
+          <li>
+            <a href="#batch-{{ k }}"
+              >{{ site.data.drive_mapping['1st'].batches[k].label }}</a
+            >
+          </li>
           {%- endfor -%}
         </ul>
       </div>
 
       <div class="drive-search-bar">
-        <input type="text" id="batchSearch" placeholder="Search batches, teachers, courses..." oninput="filterBatches()" />
+        <input
+          type="text"
+          id="batchSearch"
+          placeholder="Search batches, teachers, courses..."
+          oninput="filterBatches()"
+        />
       </div>
 
       <!-- Simple batch list -->
@@ -32,39 +57,53 @@
         <section class="drive-batch-container">
           <div class="card drive-embed-card">
             <h2>30th Batch</h2>
-            <div class="drive-list-wrapper"><div class="drive-spinner" id="spinner-30"></div><ul id="drive-list-30" class="drive-list"></ul></div>
+            <div class="drive-list-wrapper">
+              <div class="drive-spinner" id="spinner-30"></div>
+              <ul id="drive-list-30" class="drive-list"></ul>
+            </div>
           </div>
         </section>
 
         <section class="drive-batch-container">
           <div class="card drive-embed-card">
             <h2>29th Batch</h2>
-            <div class="drive-list-wrapper"><div class="drive-spinner" id="spinner-29"></div><ul id="drive-list-29" class="drive-list"></ul></div>
+            <div class="drive-list-wrapper">
+              <div class="drive-spinner" id="spinner-29"></div>
+              <ul id="drive-list-29" class="drive-list"></ul>
+            </div>
           </div>
         </section>
 
         <section class="drive-batch-container">
           <div class="card drive-embed-card">
             <h2>28th Batch</h2>
-            <div class="drive-list-wrapper"><div class="drive-spinner" id="spinner-28"></div><ul id="drive-list-28" class="drive-list"></ul></div>
+            <div class="drive-list-wrapper">
+              <div class="drive-spinner" id="spinner-28"></div>
+              <ul id="drive-list-28" class="drive-list"></ul>
+            </div>
           </div>
         </section>
 
         <section class="drive-batch-container">
           <div class="card drive-embed-card">
             <h2>27th Batch</h2>
-            <div class="drive-list-wrapper"><div class="drive-spinner" id="spinner-27"></div><ul id="drive-list-27" class="drive-list"></ul></div>
+            <div class="drive-list-wrapper">
+              <div class="drive-spinner" id="spinner-27"></div>
+              <ul id="drive-list-27" class="drive-list"></ul>
+            </div>
           </div>
         </section>
 
         <section class="drive-batch-container">
           <div class="card drive-embed-card">
             <h2>26th Batch</h2>
-            <div class="drive-list-wrapper"><div class="drive-spinner" id="spinner-26"></div><ul id="drive-list-26" class="drive-list"></ul></div>
+            <div class="drive-list-wrapper">
+              <div class="drive-spinner" id="spinner-26"></div>
+              <ul id="drive-list-26" class="drive-list"></ul>
+            </div>
           </div>
         </section>
       </div>
-
     </main>
 
     <div data-include="../assets/includes/footer.html"></div>
@@ -72,20 +111,24 @@
     <script>
       // Simple batch folders - add new batches here
       const batches = {
-        '30': '1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat',
-        '29': '1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO', 
-        '28': '1hbZPTPxzgyrwVzeUVCljT72E6Scsx303',
-        '27': '1if_tJp5_wFGut07jmvAUUQXt9hapoxmu',
-        '26': '1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu'
+        30: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+        29: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
+        28: "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
+        27: "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
+        26: "1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu",
       };
 
-      const DRIVE_API_KEY = 'AIzaSyDb3zn-YDS42TONfEMI4FPlbBR8BTfDprw';
+      const DRIVE_API_KEY = "AIzaSyDb3zn-YDS42TONfEMI4FPlbBR8BTfDprw";
 
       // Simple search function
-      function filterBatches(){
-        const search = document.getElementById('batchSearch').value.toLowerCase();
-        document.querySelectorAll('.drive-list li').forEach(li => {
-          li.style.display = li.textContent.toLowerCase().includes(search) ? '' : 'none';
+      function filterBatches() {
+        const search = document
+          .getElementById("batchSearch")
+          .value.toLowerCase();
+        document.querySelectorAll(".drive-list li").forEach((li) => {
+          li.style.display = li.textContent.toLowerCase().includes(search)
+            ? ""
+            : "none";
         });
       }
 
@@ -93,41 +136,47 @@
       async function loadBatch(batchNum, folderId) {
         const spinner = document.getElementById(`spinner-${batchNum}`);
         const list = document.getElementById(`drive-list-${batchNum}`);
-        
-        spinner.style.display = 'block';
-        
+
+        spinner.style.display = "block";
+
         try {
-          const response = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`);
+          const response = await fetch(
+            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
+          );
           const data = await response.json();
-          
-          list.innerHTML = '';
-          
+
+          list.innerHTML = "";
+
           if (data.files) {
-            data.files.forEach(file => {
-              const li = document.createElement('li');
-              li.className = 'drive-list-item';
-              
-              if (file.mimeType === 'application/vnd.google-apps.folder') {
+            data.files.forEach((file) => {
+              const li = document.createElement("li");
+              li.className = "drive-list-item";
+
+              if (file.mimeType === "application/vnd.google-apps.folder") {
                 li.innerHTML = `📁 ${file.name}`;
               } else {
-                li.innerHTML = `<a href="${file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`}" target="_blank">📄 ${file.name}</a>`;
+                li.innerHTML = `<a href="${
+                  file.webViewLink ||
+                  `https://drive.google.com/file/d/${file.id}/view`
+                }" target="_blank">📄 ${file.name}</a>`;
               }
-              
+
               list.appendChild(li);
             });
           }
         } catch (error) {
           list.innerHTML = `<li style="color: red;">Error loading files: ${error.message}</li>`;
         }
-        
-        spinner.style.display = 'none';
+
+        spinner.style.display = "none";
       }
 
       // Initialize
-      window.addEventListener('DOMContentLoaded', () => {
+      window.addEventListener("DOMContentLoaded", () => {
         // Add spinners
-        document.querySelectorAll('.drive-spinner').forEach(spinner => {
-          spinner.innerHTML = '<div style="width:20px;height:20px;border:2px solid #ccc;border-top:2px solid #2196f3;border-radius:50%;animation:spin 1s linear infinite;margin:auto;"></div>';
+        document.querySelectorAll(".drive-spinner").forEach((spinner) => {
+          spinner.innerHTML =
+            '<div style="width:20px;height:20px;border:2px solid #ccc;border-top:2px solid #2196f3;border-radius:50%;animation:spin 1s linear infinite;margin:auto;"></div>';
         });
 
         // Load all batches
@@ -138,22 +187,87 @@
     </script>
 
     <style>
-      .drive-search-bar{ text-align:center; margin-bottom:16px; }
-      .drive-search-bar input{ padding:8px 16px; font-size:1rem; border-radius:8px; border:1px solid #ccc; width:320px; }
-      .drive-batch-container{ margin-bottom:24px; }
-      .drive-embed-card{ box-shadow:0 2px 12px #0001; border-radius:12px; padding:20px; }
-      .drive-desc{ color:#555; margin-bottom:12px; }
-      .drive-list-wrapper{ position:relative; min-height:120px; }
-      .drive-spinner{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; }
-      .drive-list{ list-style:none; padding-left:0; margin:0; }
-      .drive-list-item{ padding:8px 0 8px 20px; border-bottom:1px solid #eee; font-size:1rem; }
-      .drive-list-item .folder-toggle{ cursor:pointer; margin-right:8px; font-size:1.1em; color:#2196f3; }
-      .drive-list-item .folder-name{ font-weight:600; color:#333; }
-      .drive-list-nested{ list-style:none; margin-left:24px; padding-left:0; border-left:2px solid #eee; }
-      .drive-file-link{ color:#2196f3; text-decoration:none; font-weight:500; }
-      .drive-file-link:hover{ text-decoration:underline; }
-      .drive-list-error{ color:#d32f2f; font-weight:600; padding:12px; }
-      @keyframes spin{ 0%{transform:rotate(0deg);}100%{transform:rotate(360deg);} }
+      .drive-search-bar {
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .drive-search-bar input {
+        padding: 8px 16px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        width: 320px;
+      }
+      .drive-batch-container {
+        margin-bottom: 24px;
+      }
+      .drive-embed-card {
+        box-shadow: 0 2px 12px #0001;
+        border-radius: 12px;
+        padding: 20px;
+      }
+      .drive-desc {
+        color: #555;
+        margin-bottom: 12px;
+      }
+      .drive-list-wrapper {
+        position: relative;
+        min-height: 120px;
+      }
+      .drive-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+      }
+      .drive-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+      .drive-list-item {
+        padding: 8px 0 8px 20px;
+        border-bottom: 1px solid #eee;
+        font-size: 1rem;
+      }
+      .drive-list-item .folder-toggle {
+        cursor: pointer;
+        margin-right: 8px;
+        font-size: 1.1em;
+        color: #2196f3;
+      }
+      .drive-list-item .folder-name {
+        font-weight: 600;
+        color: #333;
+      }
+      .drive-list-nested {
+        list-style: none;
+        margin-left: 24px;
+        padding-left: 0;
+        border-left: 2px solid #eee;
+      }
+      .drive-file-link {
+        color: #2196f3;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .drive-file-link:hover {
+        text-decoration: underline;
+      }
+      .drive-list-error {
+        color: #d32f2f;
+        font-weight: 600;
+        padding: 12px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </body>
 </html>
