@@ -109,16 +109,40 @@
     <div data-include="../assets/includes/footer.html"></div>
 
     <script>
-      // Simple batch folders - add new batches here
-      const batches = {
-        30: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
-        29: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
-        28: "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
-        27: "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
-        26: "1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu",
-      };
+      // Batch folders - loaded from JSON
+      let batches = {};
 
-      const DRIVE_API_KEY = "AIzaSyDb3zn-YDS42TONfEMI4FPlbBR8BTfDprw";
+      // Get API key from environment variable (set in GitHub secrets)
+      const DRIVE_API_KEY = window.GOOGLE_DRIVE_API_KEY || "";
+
+      // Load mapping from JSON file
+      async function loadBatchMapping() {
+        try {
+          const response = await fetch("../data/drive-mapping.json");
+          if (!response.ok)
+            throw new Error(`Failed to load mapping: ${response.status}`);
+          const mapping = await response.json();
+
+          // Extract 1st semester batches
+          if (mapping["1st"] && mapping["1st"].batches) {
+            Object.entries(mapping["1st"].batches).forEach(
+              ([batchKey, batchData]) => {
+                batches[batchKey] = batchData.folderId;
+              }
+            );
+          }
+
+          return batches;
+        } catch (error) {
+          console.error("Error loading drive mapping:", error);
+          // Fallback to basic structure if JSON fails
+          batches = {
+            30: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+            29: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
+          };
+          return batches;
+        }
+      }
 
       // Simple search function
       function filterBatches() {
@@ -143,6 +167,11 @@
           const response = await fetch(
             `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
           );
+
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+          }
+
           const data = await response.json();
 
           list.innerHTML = "";
@@ -172,14 +201,15 @@
       }
 
       // Initialize
-      window.addEventListener("DOMContentLoaded", () => {
+      window.addEventListener("DOMContentLoaded", async () => {
         // Add spinners
         document.querySelectorAll(".drive-spinner").forEach((spinner) => {
           spinner.innerHTML =
             '<div style="width:20px;height:20px;border:2px solid #ccc;border-top:2px solid #2196f3;border-radius:50%;animation:spin 1s linear infinite;margin:auto;"></div>';
         });
 
-        // Load all batches
+        // Load mapping first, then load all batches
+        await loadBatchMapping();
         Object.entries(batches).forEach(([batchNum, folderId]) => {
           loadBatch(batchNum, folderId);
         });

@@ -4,7 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Browse All Resources - Academic Resort</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="preconnect"
+      href="https://            try {
+              const response = await fetch(
+                `https://www.googleapis.com/drive/v3/files?q='${batchInfo.folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
+              );
+              
+              if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+              }
+              
+              const data = await response.json();gleapis.com"
+    />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
@@ -45,6 +57,13 @@
             placeholder="Search files, folders, teachers, courses..."
             oninput="globalFilter()"
           />
+          <button
+            id="deepSearchBtn"
+            onclick="toggleDeepSearch()"
+            title="Enable deep search to look inside nested folders"
+          >
+            📁 Deep Search: <span id="deepSearchStatus">OFF</span>
+          </button>
         </div>
 
         <div class="filter-row">
@@ -68,16 +87,6 @@
             <option value="27">27th Batch</option>
             <option value="26">26th Batch</option>
           </select>
-
-          <select id="typeFilter" onchange="globalFilter()">
-            <option value="">All Types</option>
-            <option value="folder">Folders</option>
-            <option value="file">Files</option>
-            <option value="personal">Personal Notes</option>
-            <option value="solution">Solutions</option>
-            <option value="books">Books & Slides</option>
-            <option value="syllabus">Syllabus</option>
-          </select>
         </div>
       </div>
 
@@ -93,231 +102,173 @@
     <div data-include="../assets/includes/footer.html"></div>
 
     <script>
-      // Unified drive mapping - all semesters and batches
-      const ALL_DRIVE_RESOURCES = {
-        "1st": {
-          30: {
-            folderId: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
-            label: "30th Batch",
-          },
-          29: {
-            folderId: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
-            label: "29th Batch",
-          },
-          28: {
-            folderId: "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
-            label: "28th Batch",
-          },
-          27: {
-            folderId: "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
-            label: "27th Batch",
-          },
-          26: {
-            folderId: "1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu",
-            label: "26th Batch",
-          },
-        },
-        "2nd": {
-          30: {
-            folderId: "1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
-            label: "30th Batch",
-          },
-          29: {
-            folderId: "1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8",
-            label: "29th Batch",
-          },
-          28: {
-            folderId: "1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj",
-            label: "28th Batch",
-          },
-          27: {
-            folderId: "17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_",
-            label: "27th Batch",
-          },
-          books: {
-            folderId: "1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU",
-            label: "Books & Slides",
-          },
-          math: {
-            folderId: "10Xl4jThcLbNF_5Iq2-9-zL9gxZKF8tlx",
-            label: "Math II Notes",
-          },
-          personal: {
-            folderId: "1GqE1mLi-ir3OCvBdMBgChCIpws8dTGI7",
-            label: "Personal Notes",
-          },
-          syllabus: {
-            folderId: "1WkOJq5ep_6p3YZw3tENrH6wbAOWdWrjI",
-            label: "Syllabus",
-          },
-        },
-        "3rd": {
-          29: {
-            folderId: "1cD9UZpwr4F4u79N6iI4rJk_J6jVocnGX",
-            label: "29th Batch",
-          },
-          28: {
-            folderId: "11X8KpIfn1Jkh8_sy96xNbg8a1Z8EWy-I",
-            label: "28th Batch",
-          },
-          27: {
-            folderId: "1fZuFo3qsPUtaN53ZvKOrwgb-fVIr8B4N",
-            label: "27th Batch",
-          },
-          26: {
-            folderId: "1-rpP6GshMYj7QoCRRSGWBmRsren-tfWZ",
-            label: "26th Batch",
-          },
-          personal: {
-            folderId: "15d1gjiKGXu_FixNjxdVVwyny4cFVAwMV",
-            label: "Personal Notes",
-          },
-          class26: {
-            folderId: "10MaWyjpRPbdrTfxxEWiXw2c3xor9gZnA",
-            label: "26th Class Updates",
-          },
-        },
-        "4th": {
-          29: {
-            folderId: "1G2KfcJhwNg2arCpn22pGnqYmTMNU83VZ",
-            label: "29th Batch",
-          },
-          28: {
-            folderId: "1MiupaUP-RJQCyounSK2LA32BPlr2s_jo",
-            label: "28th Batch",
-          },
-          27: {
-            folderId: "1GdxoRIoO8dnqZAf7PxWXDB3-pYpNep-Q",
-            label: "27th Batch",
-          },
-          26: {
-            folderId: "13A4naTmdqQlJax8agk_CPoyzHD1dsZ8B",
-            label: "26th Batch",
-          },
-          personal: {
-            folderId: "1DBwDKIjWozsnq8CJyiRnANKwTcgmmzWp",
-            label: "Personal Notes",
-          },
-          solution: {
-            folderId: "1phHQxq37Qvke5KSmHIvMX_uuGqQHUM8u",
-            label: "Solution Manuals",
-          },
-        },
-        "5th": {
-          28: {
-            folderId: "1xU30Tj4q6oXZWb17ubqszqwLVBi-a6N_",
-            label: "28th Batch",
-          },
-          27: {
-            folderId: "1AjQxHD_A3HjKA0tKyBNb-A2p5ypf6hi6",
-            label: "27th Batch",
-          },
-          26: {
-            folderId: "155q0US7eYWzDnHxMmtg3iFO9kXQZJIUJ",
-            label: "26th Batch",
-          },
-          seniors: {
-            folderId: "1dWMahU0ugtF9Em5sGZ0aywkuGY1noN81",
-            label: "Materials from Seniors",
-          },
-          personal: {
-            folderId: "1S0SFn1__66OTcOu5GoLo8iC-GKFrihqE",
-            label: "Personal Notes",
-          },
-          solution: {
-            folderId: "10iW_oE4mGqIL9Ft3JtvGowJmNPgPasaJ",
-            label: "Solution Manuals",
-          },
-        },
-        "6th": {
-          28: {
-            folderId: "1cSYiB69iMz2czYOHZAlI7nzVniD4bmH9",
-            label: "28th Batch",
-          },
-          27: {
-            folderId: "1V1bC-dZV6_NrHvA8q75TmfLIp-tXN-pj",
-            label: "27th Batch",
-          },
-          26: {
-            folderId: "1U7chsBvKxAoiN_VRlAQC1mG5jggPYDvb",
-            label: "26th Batch",
-          },
-          prior: {
-            folderId: "1SDMCnjAHNYDd0WXApaAQ9swaYw75U9Zl",
-            label: "Prior to 26th",
-          },
-          syllabus: {
-            folderId: "1WkOJq5ep_6p3YZw3tENrH6wbAOWdWrjI",
-            label: "Syllabus",
-          },
-        },
-        "7th": {
-          27: {
-            folderId: "1_cGrDFivmX1Bkw2iLnP_KKriNMBOfJGx",
-            label: "27th Batch",
-          },
-          26: {
-            folderId: "1nWPYjT2HU6W8JBIyBV9Qpj5LVdDdsJ6J",
-            label: "26th Class Updates",
-          },
-          books: {
-            folderId: "1CcclN8x_xjGXolCP0cFg-FfkHSg_b6b6",
-            label: "Books & Course Files",
-          },
-          personal: {
-            folderId: "1_VhhpUP71NeGNxBXFBFQsdpHrnOyUXcT",
-            label: "Personal Notes",
-          },
-          seniors: {
-            folderId: "1LNyyBYeYuMLOaHmLnICivLDC29lBO3Ru",
-            label: "Materials from Seniors",
-          },
-          solution: {
-            folderId: "1ctFA9VJod6YmkuDy5t6MHgnE4UQZ1mI3",
-            label: "Solution Manuals",
-          },
-          syllabus: {
-            folderId: "14OQvH90cP3W2mPGOuLPgdS0Wv5alSEIP",
-            label: "Syllabus",
-          },
-        },
-        "8th": {
-          27: {
-            folderId: "1dHSV2wI96GMIRyk_31fA2RaHbeAydGVo",
-            label: "27th Batch",
-          },
-          26: {
-            folderId: "10nJhRpeqDOQ3ALWgmvyPp_OCRXgr_1EX",
-            label: "26th Class Updates",
-          },
-          books: {
-            folderId: "1wJ0tr2F-pCtnzxtNxuMR7-eYvK2h0LkS",
-            label: "Books & Course Files",
-          },
-          personal: {
-            folderId: "1y0OVqiBSdYKwVRa2REztPozfMg-PFfkK",
-            label: "Personal Notes",
-          },
-          seniors: {
-            folderId: "1ZTwgGlgpDwYgwbifq-m-42O_L_WN7kMP",
-            label: "Materials from Seniors",
-          },
-          solution: {
-            folderId: "15DjY7GTUvGpXxA1bogcH18mBRkBXKkgN",
-            label: "Solution Manuals",
-          },
-          syllabus: {
-            folderId: "14OQvH90cP3W2mPGOuLPgdS0Wv5alSEIP",
-            label: "Syllabus",
-          },
-        },
-      };
-
-      const DRIVE_API_KEY = "AIzaSyDb3zn-YDS42TONfEMI4FPlbBR8BTfDprw";
+      // Get API key from environment variable (set in GitHub secrets)
+      const DRIVE_API_KEY = window.GOOGLE_DRIVE_API_KEY || "";
+      let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
       let allFiles = []; // Store all loaded files for filtering
+      let deepSearchEnabled = false;
+      let allDeepFiles = []; // Store deeply nested files when deep search is enabled
+
+      // Recursive function to fetch all files from a folder and its subfolders
+      async function fetchAllFilesRecursively(
+        folderId,
+        path = "",
+        maxDepth = 5,
+        currentDepth = 0
+      ) {
+        if (currentDepth >= maxDepth) return []; // Prevent infinite recursion
+
+        try {
+          const response = await fetch(
+            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000`
+          );
+
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+          }
+
+          const data = await response.json();
+          let allFiles = [];
+
+          if (data.files) {
+            for (const file of data.files) {
+              const filePath = path ? `${path}/${file.name}` : file.name;
+              const fileData = {
+                ...file,
+                path: filePath,
+                depth: currentDepth,
+                isFolder:
+                  file.mimeType === "application/vnd.google-apps.folder",
+              };
+
+              allFiles.push(fileData);
+
+              // If it's a folder, recursively fetch its contents
+              if (file.mimeType === "application/vnd.google-apps.folder") {
+                const subFiles = await fetchAllFilesRecursively(
+                  file.id,
+                  filePath,
+                  maxDepth,
+                  currentDepth + 1
+                );
+                allFiles = allFiles.concat(subFiles);
+              }
+            }
+          }
+
+          return allFiles;
+        } catch (error) {
+          console.error(`Error fetching files from folder ${folderId}:`, error);
+          return [];
+        }
+      }
+
+      // Toggle deep search mode
+      async function toggleDeepSearch() {
+        const btn = document.getElementById("deepSearchBtn");
+        const status = document.getElementById("deepSearchStatus");
+        const stats = document.getElementById("resultsStats");
+
+        deepSearchEnabled = !deepSearchEnabled;
+
+        if (deepSearchEnabled) {
+          status.textContent = "ON";
+          btn.style.backgroundColor = "#4CAF50";
+          btn.style.color = "white";
+          stats.textContent = "Loading deep search... This may take a while.";
+
+          // Load all files recursively
+          allDeepFiles = [];
+          for (const [semester, batches] of Object.entries(
+            ALL_DRIVE_RESOURCES
+          )) {
+            for (const [batchKey, batchInfo] of Object.entries(batches)) {
+              stats.textContent = `Deep scanning ${semester} - ${batchInfo.label}...`;
+              try {
+                const deepFiles = await fetchAllFilesRecursively(
+                  batchInfo.folderId
+                );
+                deepFiles.forEach((file) => {
+                  allDeepFiles.push({
+                    ...file,
+                    semester: semester,
+                    batch: batchKey,
+                    batchLabel: batchInfo.label,
+                  });
+                });
+              } catch (error) {
+                console.error(
+                  `Error deep scanning ${semester} - ${batchInfo.label}:`,
+                  error
+                );
+              }
+            }
+          }
+
+          displayResults(allDeepFiles);
+          updateStats(allDeepFiles.length, allDeepFiles.length);
+          stats.textContent = `Deep search enabled - ${allDeepFiles.length} files found in nested folders`;
+        } else {
+          status.textContent = "OFF";
+          btn.style.backgroundColor = "";
+          btn.style.color = "";
+
+          // Return to regular view
+          displayResults(allFiles);
+          updateStats(allFiles.length, allFiles.length);
+          stats.textContent = `Showing ${allFiles.length} top-level files`;
+        }
+      }
+
+      // Load mapping from JSON file
+      async function loadDriveMapping() {
+        try {
+          const response = await fetch("../data/drive-mapping.json");
+          if (!response.ok)
+            throw new Error(`Failed to load mapping: ${response.status}`);
+          const mapping = await response.json();
+
+          // Convert to the format expected by the rest of the code
+          ALL_DRIVE_RESOURCES = {};
+          Object.entries(mapping).forEach(([semester, semesterData]) => {
+            ALL_DRIVE_RESOURCES[semester] = {};
+            Object.entries(semesterData.batches).forEach(
+              ([batchKey, batchData]) => {
+                ALL_DRIVE_RESOURCES[semester][batchKey] = {
+                  folderId: batchData.folderId,
+                  label: batchData.label,
+                };
+              }
+            );
+          });
+
+          return ALL_DRIVE_RESOURCES;
+        } catch (error) {
+          console.error("Error loading drive mapping:", error);
+          // Fallback to basic structure if JSON fails
+          ALL_DRIVE_RESOURCES = {
+            "1st": {
+              30: {
+                folderId: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+                label: "30th Batch",
+              },
+              29: {
+                folderId: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
+                label: "29th Batch",
+              },
+            },
+          };
+          return ALL_DRIVE_RESOURCES;
+        }
+      }
 
       // Load all files from all drives
       async function loadAllResources() {
+        // First load the mapping if not already loaded
+        if (Object.keys(ALL_DRIVE_RESOURCES).length === 0) {
+          await loadDriveMapping();
+        }
+
         const container = document.getElementById("all-resources");
         const stats = document.getElementById("resultsStats");
 
@@ -327,9 +278,15 @@
         for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
           for (const [batchKey, batchInfo] of Object.entries(batches)) {
             try {
+              // Use local API server instead of direct Google Drive API
               const response = await fetch(
-                `https://www.googleapis.com/drive/v3/files?q='${batchInfo.folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
+                `http://localhost:3000/api/drive/files?folderId=${batchInfo.folderId}`
               );
+
+              if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+              }
+
               const data = await response.json();
 
               if (data.files) {
@@ -399,10 +356,19 @@
                 file.webViewLink ||
                 `https://drive.google.com/file/d/${file.id}/view`;
 
+              // Show file path in deep search mode
+              const displayName =
+                deepSearchEnabled && file.path ? file.path : file.name;
+              const depthIndicator =
+                deepSearchEnabled && file.depth > 0
+                  ? `<span class="depth-indicator">📂 ${file.depth} levels deep</span>`
+                  : "";
+
               li.innerHTML = `
                 <a href="${link}" target="_blank" class="file-link">
-                  ${icon} ${file.name}
+                  ${icon} ${displayName}
                 </a>
+                ${depthIndicator}
                 <span class="file-meta">${file.semester} - ${file.batchLabel}</span>
               `;
 
@@ -424,14 +390,19 @@
           .value.toLowerCase();
         const semesterFilter = document.getElementById("semesterFilter").value;
         const batchFilter = document.getElementById("batchFilter").value;
-        const typeFilter = document.getElementById("typeFilter").value;
 
-        let filtered = allFiles.filter((file) => {
-          // Text search
+        // Use appropriate file array based on search mode
+        const sourceFiles = deepSearchEnabled ? allDeepFiles : allFiles;
+
+        let filtered = sourceFiles.filter((file) => {
+          // Enhanced text search - includes file path for deep search
           const matchesSearch =
             !searchTerm ||
             file.name.toLowerCase().includes(searchTerm) ||
-            file.batchLabel.toLowerCase().includes(searchTerm);
+            file.batchLabel.toLowerCase().includes(searchTerm) ||
+            (deepSearchEnabled &&
+              file.path &&
+              file.path.toLowerCase().includes(searchTerm));
 
           // Semester filter
           const matchesSemester =
@@ -440,23 +411,11 @@
           // Batch filter
           const matchesBatch = !batchFilter || file.batch === batchFilter;
 
-          // Type filter
-          const matchesType =
-            !typeFilter ||
-            (typeFilter === "folder" && file.isFolder) ||
-            (typeFilter === "file" && !file.isFolder) ||
-            (typeFilter === "personal" && file.batch.includes("personal")) ||
-            (typeFilter === "solution" && file.batch.includes("solution")) ||
-            (typeFilter === "books" && file.batch.includes("books")) ||
-            (typeFilter === "syllabus" && file.batch.includes("syllabus"));
-
-          return (
-            matchesSearch && matchesSemester && matchesBatch && matchesType
-          );
+          return matchesSearch && matchesSemester && matchesBatch;
         });
 
         displayResults(filtered);
-        updateStats(filtered.length, allFiles.length);
+        updateStats(filtered.length, sourceFiles.length);
       }
 
       // Update results statistics
@@ -481,14 +440,41 @@
 
       .search-row {
         margin-bottom: 16px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
       }
 
       .search-row input {
-        width: 100%;
+        flex: 1;
         padding: 12px 16px;
         font-size: 1.1rem;
         border: 1px solid #ddd;
         border-radius: 6px;
+      }
+
+      #deepSearchBtn {
+        padding: 12px 16px;
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+      }
+
+      #deepSearchBtn:hover {
+        background-color: #e0e0e0;
+      }
+
+      .depth-indicator {
+        font-size: 0.8rem;
+        color: #666;
+        margin-left: 8px;
+        padding: 2px 6px;
+        background-color: #f0f0f0;
+        border-radius: 3px;
       }
 
       .filter-row {
