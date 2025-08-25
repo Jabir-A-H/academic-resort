@@ -112,9 +112,8 @@
       // Batch folders - loaded from JSON
       let batches = {};
 
-      // API key from GitHub repository secrets
-      const DRIVE_API_KEY =
-        "{{ site.github.repository.secrets.GOOGLE_DRIVE_API_KEY }}" || "";
+      // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
+      const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
 
       // Load mapping from JSON file
       async function loadBatchMapping() {
