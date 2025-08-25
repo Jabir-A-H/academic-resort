@@ -42,7 +42,7 @@
           <input
             type="text"
             id="globalSearch"
-            placeholder="Search files, folders, nested content..."
+            placeholder="Smart search: handles typos, spaces, acronyms, partial matches..."
             oninput="debounce(optimizedSearch, 500)()"
           />
         </div>
@@ -173,6 +173,156 @@
         return removeDuplicatesOptimized(flatResults);
       }
 
+      // Advanced search matching with fuzzy search, typo tolerance, and flexible spacing
+      function smartMatch(searchTerm, fileName, filePath) {
+        const search = searchTerm.toLowerCase().trim();
+        const name = fileName.toLowerCase();
+        const path = filePath.toLowerCase();
+
+        // 1. Exact match (highest priority)
+        if (name.includes(search) || path.includes(search)) {
+          return true;
+        }
+
+        // 2. Space-insensitive matching (remove all spaces)
+        const searchNoSpaces = search.replace(/\s+/g, "");
+        const nameNoSpaces = name.replace(/\s+/g, "");
+        const pathNoSpaces = path.replace(/\s+/g, "");
+
+        if (
+          nameNoSpaces.includes(searchNoSpaces) ||
+          pathNoSpaces.includes(searchNoSpaces)
+        ) {
+          return true;
+        }
+
+        // 3. Flexible word order matching
+        const searchWords = search.split(/\s+/);
+        if (searchWords.length > 1) {
+          const allWordsMatch = searchWords.every(
+            (word) => name.includes(word) || path.includes(word)
+          );
+          if (allWordsMatch) {
+            return true;
+          }
+        }
+
+        // 4. Acronym matching (first letters of words)
+        if (search.length >= 2) {
+          const nameWords = name.split(/[\s\-_\.]+/);
+          const pathWords = path.split(/[\s\-_\.\/]+/);
+
+          const nameAcronym = nameWords.map((word) => word.charAt(0)).join("");
+          const pathAcronym = pathWords.map((word) => word.charAt(0)).join("");
+
+          if (nameAcronym.includes(search) || pathAcronym.includes(search)) {
+            return true;
+          }
+        }
+
+        // 5. Fuzzy matching for typos (Levenshtein distance)
+        if (search.length >= 3) {
+          // Split into words and check each word for fuzzy match
+          const searchWords = search.split(/\s+/);
+          const nameWords = name.split(/[\s\-_\.]+/);
+          const pathWords = path.split(/[\s\-_\.\/]+/);
+
+          for (const searchWord of searchWords) {
+            if (searchWord.length >= 3) {
+              // Check if any word in name/path is similar to search word
+              const similarInName = nameWords.some(
+                (word) =>
+                  word.length >= 3 &&
+                  levenshteinDistance(searchWord, word) <=
+                    Math.floor(searchWord.length * 0.3)
+              );
+              const similarInPath = pathWords.some(
+                (word) =>
+                  word.length >= 3 &&
+                  levenshteinDistance(searchWord, word) <=
+                    Math.floor(searchWord.length * 0.3)
+              );
+
+              if (similarInName || similarInPath) {
+                return true;
+              }
+            }
+          }
+        }
+
+        // 6. Partial word matching (starts with)
+        const searchWords2 = search.split(/\s+/);
+        for (const searchWord of searchWords2) {
+          if (searchWord.length >= 2) {
+            const nameWords = name.split(/[\s\-_\.]+/);
+            const pathWords = path.split(/[\s\-_\.\/]+/);
+
+            const startsWithInName = nameWords.some((word) =>
+              word.startsWith(searchWord)
+            );
+            const startsWithInPath = pathWords.some((word) =>
+              word.startsWith(searchWord)
+            );
+
+            if (startsWithInName || startsWithInPath) {
+              return true;
+            }
+          }
+        }
+
+        // 7. Number and special character flexible matching
+        const searchNormalized = normalizeText(search);
+        const nameNormalized = normalizeText(name);
+        const pathNormalized = normalizeText(path);
+
+        if (
+          nameNormalized.includes(searchNormalized) ||
+          pathNormalized.includes(searchNormalized)
+        ) {
+          return true;
+        }
+
+        return false;
+      }
+
+      // Calculate Levenshtein distance for fuzzy matching
+      function levenshteinDistance(str1, str2) {
+        const matrix = [];
+
+        for (let i = 0; i <= str2.length; i++) {
+          matrix[i] = [i];
+        }
+
+        for (let j = 0; j <= str1.length; j++) {
+          matrix[0][j] = j;
+        }
+
+        for (let i = 1; i <= str2.length; i++) {
+          for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+              matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+              matrix[i][j] = Math.min(
+                matrix[i - 1][j - 1] + 1, // substitution
+                matrix[i][j - 1] + 1, // insertion
+                matrix[i - 1][j] + 1 // deletion
+              );
+            }
+          }
+        }
+
+        return matrix[str2.length][str1.length];
+      }
+
+      // Normalize text for flexible matching
+      function normalizeText(text) {
+        return text
+          .toLowerCase()
+          .replace(/[^\w\s]/g, "") // Remove special characters
+          .replace(/\s+/g, "") // Remove spaces
+          .replace(/(\d+)/g, (match) => match.padStart(3, "0")); // Normalize numbers
+      }
+
       // Recursive folder search that searches all nested folders
       async function searchInFolderRecursive(
         folderId,
@@ -263,11 +413,9 @@
           const isFolder =
             file.mimeType === "application/vnd.google-apps.folder";
 
-          // Check if file matches search criteria
+          // Enhanced fuzzy search with multiple matching strategies
           const matchesSearch =
-            !searchTerm ||
-            file.name.toLowerCase().includes(searchTerm) ||
-            filePath.toLowerCase().includes(searchTerm);
+            !searchTerm || smartMatch(searchTerm, file.name, filePath);
 
           if (matchesSearch) {
             results.push({
