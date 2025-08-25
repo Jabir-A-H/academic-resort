@@ -4,19 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Browse All Resources - Academic Resort</title>
-    <link
-      rel="preconnect"
-      href="https://            try {
-              const response = await fetch(
-                `https://www.googleapis.com/drive/v3/files?q='${batchInfo.folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
-              );
-              
-              if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
-              }
-              
-              const data = await response.json();gleapis.com"
-    />
+    <link rel="preconnect" href="https://www.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
@@ -55,12 +43,12 @@
             type="text"
             id="globalSearch"
             placeholder="Search files, folders, nested content..."
-            oninput="globalFilter()"
+            oninput="debounce(optimizedSearch, 500)()"
           />
         </div>
 
         <div class="filter-row">
-          <select id="semesterFilter" onchange="globalFilter()">
+          <select id="semesterFilter" onchange="optimizedSearch()">
             <option value="">All Semesters</option>
             <option value="1st">1st Semester</option>
             <option value="2nd">2nd Semester</option>
@@ -72,7 +60,7 @@
             <option value="8th">8th Semester</option>
           </select>
 
-          <select id="batchFilter" onchange="globalFilter()">
+          <select id="batchFilter" onchange="optimizedSearch()">
             <option value="">All Batches</option>
             <option value="30">30th Batch</option>
             <option value="29">29th Batch</option>
@@ -100,69 +88,460 @@
       let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
       let allFiles = []; // Store all loaded files for searching
       let isLoading = false;
+      let fileCache = new Map(); // Cache for API responses
+      let loadedFolders = new Set(); // Track which folders we've already loaded
 
-      // Load all files recursively for deep search with progress tracking
-      async function loadAllFiles() {
-        if (isLoading) return;
-
-        isLoading = true;
+      // Optimized search - only load data when user searches (like Google Drive)
+      async function optimizedSearch() {
+        const searchTerm = document
+          .getElementById("globalSearch")
+          .value.toLowerCase()
+          .trim();
+        const semesterFilter = document.getElementById("semesterFilter").value;
+        const batchFilter = document.getElementById("batchFilter").value;
         const stats = document.getElementById("resultsStats");
-        allFiles = [];
 
-        let totalBatches = 0;
-        let processedBatches = 0;
-
-        // Count total batches first
-        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
-          totalBatches += Object.keys(batches).length;
+        if (!searchTerm && !semesterFilter && !batchFilter) {
+          displayResults([]);
+          stats.textContent =
+            "Enter a search term or select filters to find resources.";
+          return;
         }
 
-        stats.textContent = `Starting deep search across ${totalBatches} batches...`;
+        if (searchTerm && searchTerm.length < 2) {
+          stats.textContent = "Type at least 2 characters to search...";
+          return;
+        }
 
+        stats.textContent = "🔍 Searching...";
+
+        try {
+          const results = await smartSearch(
+            searchTerm,
+            semesterFilter,
+            batchFilter,
+            stats
+          );
+          displayResults(results);
+          updateStats(results.length, "∞", ` (smart search results)`);
+          stats.textContent = `✅ Found ${results.length} results`;
+        } catch (error) {
+          console.error("Search error:", error);
+          stats.textContent = "❌ Search failed. Please try again.";
+        }
+      }
+
+      // Smart search that searches all nested folders recursively
+      async function smartSearch(
+        searchTerm,
+        semesterFilter,
+        batchFilter,
+        statsElement
+      ) {
+        const results = [];
+        const searchPromises = [];
+
+        // Search all folders recursively (up to depth 4 for performance)
         for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
-          for (const [batchKey, batchInfo] of Object.entries(batches)) {
-            processedBatches++;
-            stats.textContent = `Scanning ${semester} - ${batchInfo.label} (${processedBatches}/${totalBatches}) - Found ${allFiles.length} files so far...`;
+          if (semesterFilter && semester !== semesterFilter) continue;
 
-            try {
-              const files = await fetchAllFilesRecursively(
+          for (const [batchKey, batchInfo] of Object.entries(batches)) {
+            if (batchFilter && batchKey !== batchFilter) continue;
+
+            // Search recursively through all folders (depth 4)
+            searchPromises.push(
+              searchInFolderRecursive(
                 batchInfo.folderId,
                 "",
-                4, // Reduced max depth for faster loading
+                4, // Search up to 4 levels deep
+                searchTerm,
                 semester,
+                batchKey,
                 batchInfo.label,
-                stats
+                statsElement
+              )
+            );
+          }
+        }
+
+        // Execute all searches in parallel
+        const allResults = await Promise.all(searchPromises);
+        const flatResults = allResults.flat();
+
+        statsElement.textContent = `Found ${flatResults.length} results across all folders`;
+
+        return removeDuplicatesOptimized(flatResults);
+      }
+
+      // Recursive folder search that searches all nested folders
+      async function searchInFolderRecursive(
+        folderId,
+        path,
+        maxDepth,
+        searchTerm,
+        semester,
+        batchKey,
+        batchLabel,
+        statsElement,
+        currentDepth = 0
+      ) {
+        if (currentDepth >= maxDepth) return [];
+
+        // Check cache first
+        const cacheKey = `${folderId}_${currentDepth}`;
+        if (fileCache.has(cacheKey)) {
+          const cachedFiles = fileCache.get(cacheKey);
+          return await processFilesRecursively(
+            cachedFiles,
+            path,
+            maxDepth,
+            searchTerm,
+            semester,
+            batchKey,
+            batchLabel,
+            statsElement,
+            currentDepth
+          );
+        }
+
+        try {
+          // Update progress
+          if (statsElement && path) {
+            statsElement.textContent = `Searching in ${path}...`;
+          }
+
+          // Optimized API call
+          const response = await fetch(
+            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `API Error: ${response.status} - ${response.statusText}`
+            );
+          }
+
+          const data = await response.json();
+
+          // Cache the raw response
+          fileCache.set(cacheKey, data.files || []);
+
+          return await processFilesRecursively(
+            data.files || [],
+            path,
+            maxDepth,
+            searchTerm,
+            semester,
+            batchKey,
+            batchLabel,
+            statsElement,
+            currentDepth
+          );
+        } catch (error) {
+          console.error(`Error searching folder ${folderId}:`, error);
+          return [];
+        }
+      }
+
+      // Process files and recursively search subfolders
+      async function processFilesRecursively(
+        files,
+        path,
+        maxDepth,
+        searchTerm,
+        semester,
+        batchKey,
+        batchLabel,
+        statsElement,
+        currentDepth
+      ) {
+        const results = [];
+        const subfolderPromises = [];
+
+        files.forEach((file) => {
+          const filePath = path ? `${path}/${file.name}` : file.name;
+          const isFolder =
+            file.mimeType === "application/vnd.google-apps.folder";
+
+          // Check if file matches search criteria
+          const matchesSearch =
+            !searchTerm ||
+            file.name.toLowerCase().includes(searchTerm) ||
+            filePath.toLowerCase().includes(searchTerm);
+
+          if (matchesSearch) {
+            results.push({
+              ...file,
+              path: filePath,
+              depth: currentDepth,
+              isFolder: isFolder,
+              semester: semester,
+              batch: batchKey,
+              batchLabel: batchLabel,
+              parentPath: path,
+            });
+          }
+
+          // If it's a folder and we haven't reached max depth, search it recursively
+          if (isFolder && currentDepth < maxDepth - 1) {
+            subfolderPromises.push(
+              searchInFolderRecursive(
+                file.id,
+                filePath,
+                maxDepth,
+                searchTerm,
+                semester,
+                batchKey,
+                batchLabel,
+                statsElement,
+                currentDepth + 1
+              )
+            );
+          }
+        });
+
+        // Wait for all subfolder searches to complete
+        if (subfolderPromises.length > 0) {
+          const subfolderResults = await Promise.all(subfolderPromises);
+          results.push(...subfolderResults.flat());
+        }
+
+        return results;
+      }
+
+      // Optimized duplicate removal
+      function removeDuplicatesOptimized(files) {
+        const uniqueFiles = new Map();
+
+        files.forEach((file) => {
+          const key = `${file.id}_${file.path}`;
+          if (!uniqueFiles.has(key)) {
+            uniqueFiles.set(key, file);
+          }
+        });
+
+        return Array.from(uniqueFiles.values()).sort((a, b) => {
+          // Sort by relevance: exact matches first, then by depth, then alphabetically
+          if (a.depth !== b.depth) return a.depth - b.depth;
+          return a.name.localeCompare(b.name);
+        });
+      }
+
+      // Progressive search by levels (1, 2, 3, 4)
+      async function searchByLevels() {
+        const searchTerm = document
+          .getElementById("globalSearch")
+          .value.toLowerCase()
+          .trim();
+        const semesterFilter = document.getElementById("semesterFilter").value;
+        const batchFilter = document.getElementById("batchFilter").value;
+        const stats = document.getElementById("resultsStats");
+        const btn = document.getElementById("searchLevelBtn");
+
+        if (!searchTerm && !semesterFilter && !batchFilter) {
+          stats.textContent =
+            "Please enter a search term or select filters first.";
+          return;
+        }
+
+        if (searchTerm && searchTerm.length < 2) {
+          stats.textContent = "Please enter at least 2 characters to search.";
+          return;
+        }
+
+        // Disable button during search
+        btn.disabled = true;
+        btn.textContent = "Searching...";
+
+        try {
+          let allLevelResults = [];
+
+          // Search through levels 1-4 progressively
+          for (let level = 1; level <= 4; level++) {
+            stats.textContent = `Searching level ${level} folders...`;
+
+            const levelResults = await searchAtLevel(
+              level,
+              searchTerm,
+              semesterFilter,
+              batchFilter
+            );
+            allLevelResults = allLevelResults.concat(levelResults);
+
+            // Show results progressively
+            stats.textContent = `Found ${
+              allLevelResults.length
+            } results through level ${level}. ${
+              level < 4 ? "Searching deeper..." : "Search complete!"
+            }`;
+
+            // Remove duplicates and display current results
+            const uniqueResults = removeDuplicates(allLevelResults);
+            displayResults(uniqueResults);
+            updateStats(
+              uniqueResults.length,
+              allFiles.length,
+              ` (through level ${level})`
+            );
+
+            // Small delay to show progress
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+
+          stats.textContent = `Search complete! Found ${allLevelResults.length} results across all levels.`;
+        } catch (error) {
+          console.error("Error during level search:", error);
+          stats.textContent = "Error occurred during search. Please try again.";
+        } finally {
+          // Re-enable button
+          btn.disabled = false;
+          btn.textContent = "🔍 Search by Levels";
+        }
+      }
+
+      // Search at a specific depth level
+      async function searchAtLevel(
+        targetLevel,
+        searchTerm,
+        semesterFilter,
+        batchFilter
+      ) {
+        const levelResults = [];
+
+        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
+          // Apply semester filter
+          if (semesterFilter && semester !== semesterFilter) continue;
+
+          for (const [batchKey, batchInfo] of Object.entries(batches)) {
+            // Apply batch filter
+            if (batchFilter && batchKey !== batchFilter) continue;
+
+            try {
+              const files = await fetchFilesAtDepth(
+                batchInfo.folderId,
+                "",
+                targetLevel,
+                0,
+                semester,
+                batchKey,
+                batchInfo.label
               );
 
-              files.forEach((file) => {
-                file.semester = semester;
-                file.batch = batchKey;
-                file.batchLabel = batchInfo.label;
+              // Filter results based on search term
+              const matchingFiles = files.filter((file) => {
+                return (
+                  !searchTerm ||
+                  file.name.toLowerCase().includes(searchTerm) ||
+                  file.path.toLowerCase().includes(searchTerm) ||
+                  batchInfo.label.toLowerCase().includes(searchTerm)
+                );
               });
 
-              allFiles.push(...files);
-
-              // Update stats after each batch
-              stats.textContent = `Scanning ${semester} - ${batchInfo.label} (${processedBatches}/${totalBatches}) - Found ${allFiles.length} files so far...`;
-
-              // Give UI a chance to update
-              await new Promise(resolve => setTimeout(resolve, 10));
-
+              levelResults.push(...matchingFiles);
             } catch (error) {
               console.error(
-                `Error loading ${semester} - ${batchInfo.label}:`,
+                `Error searching ${semester} - ${batchInfo.label} at level ${targetLevel}:`,
                 error
               );
-              stats.textContent = `Error loading ${semester} - ${batchInfo.label}. Continuing... (${processedBatches}/${totalBatches})`;
             }
           }
         }
 
-        isLoading = false;
-        stats.textContent = `✅ Deep search ready! Found ${allFiles.length} resources across ${totalBatches} batches. Start typing to search.`;
+        return levelResults;
+      }
 
-        // Initially show empty state
-        displayResults([]);
+      // Fetch files at a specific depth level only
+      async function fetchFilesAtDepth(
+        folderId,
+        path = "",
+        targetDepth = 1,
+        currentDepth = 0,
+        semester = "",
+        batchKey = "",
+        batchLabel = ""
+      ) {
+        if (currentDepth > targetDepth) return [];
+
+        try {
+          const response = await fetch(
+            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000`
+          );
+
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+          }
+
+          const data = await response.json();
+          let results = [];
+
+          if (data.files) {
+            for (const file of data.files) {
+              const filePath = path ? `${path}/${file.name}` : file.name;
+
+              // If we're at the target depth, add this file to results
+              if (currentDepth === targetDepth) {
+                results.push({
+                  ...file,
+                  path: filePath,
+                  depth: currentDepth,
+                  isFolder:
+                    file.mimeType === "application/vnd.google-apps.folder",
+                  semester: semester,
+                  batch: batchKey,
+                  batchLabel: batchLabel,
+                  parentPath: path,
+                });
+              }
+
+              // If it's a folder and we haven't reached target depth, go deeper
+              if (
+                file.mimeType === "application/vnd.google-apps.folder" &&
+                currentDepth < targetDepth
+              ) {
+                const subFiles = await fetchFilesAtDepth(
+                  file.id,
+                  filePath,
+                  targetDepth,
+                  currentDepth + 1,
+                  semester,
+                  batchKey,
+                  batchLabel
+                );
+                results = results.concat(subFiles);
+              }
+            }
+          }
+
+          return results;
+        } catch (error) {
+          console.error(
+            `Error fetching files at depth ${currentDepth}:`,
+            error
+          );
+          return [];
+        }
+      }
+
+      // Remove duplicate files from search results
+      function removeDuplicates(files) {
+        const uniqueResults = [];
+        const processedPaths = new Set();
+
+        // Sort by depth (shallow first) to prioritize parent folders
+        files.sort((a, b) => a.depth - b.depth);
+
+        files.forEach((file) => {
+          const isParentAlreadyIncluded = Array.from(processedPaths).some(
+            (path) => file.path.startsWith(path + "/") && file.path !== path
+          );
+
+          if (!isParentAlreadyIncluded && !processedPaths.has(file.path)) {
+            uniqueResults.push(file);
+            processedPaths.add(file.path);
+          }
+        });
+
+        return uniqueResults;
       }
 
       // Recursively fetch all files from a folder with progress tracking
@@ -196,14 +575,18 @@
                 ...file,
                 path: filePath,
                 depth: currentDepth,
-                isFolder: file.mimeType === "application/vnd.google-apps.folder",
-                parentPath: path
+                isFolder:
+                  file.mimeType === "application/vnd.google-apps.folder",
+                parentPath: path,
               };
 
               allFiles.push(fileData);
 
               // Update progress for folders being processed
-              if (statsElement && file.mimeType === "application/vnd.google-apps.folder") {
+              if (
+                statsElement &&
+                file.mimeType === "application/vnd.google-apps.folder"
+              ) {
                 statsElement.textContent = `Scanning ${semester} - ${batchLabel} → ${filePath}...`;
               }
 
@@ -224,49 +607,6 @@
           }
 
           return allFiles;
-        } catch (error) {
-          console.error(`Error fetching files from folder ${folderId}:`, error);
-          return [];
-        }
-      }
-          const response = await fetch(
-            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000`
-          );
-
-          if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
-          }
-
-          const data = await response.json();
-          let filesInFolder = [];
-
-          if (data.files) {
-            for (const file of data.files) {
-              const filePath = path ? `${path}/${file.name}` : file.name;
-              const fileData = {
-                ...file,
-                path: filePath,
-                depth: currentDepth,
-                isFolder: file.mimeType === "application/vnd.google-apps.folder",
-                parentPath: path
-              };
-
-              filesInFolder.push(fileData);
-
-              // If it's a folder, recursively fetch its contents
-              if (file.mimeType === "application/vnd.google-apps.folder") {
-                const subFiles = await fetchAllFilesRecursively(
-                  file.id,
-                  filePath,
-                  maxDepth,
-                  currentDepth + 1
-                );
-                filesInFolder = filesInFolder.concat(subFiles);
-              }
-            }
-          }
-
-          return filesInFolder;
         } catch (error) {
           console.error(`Error fetching files from folder ${folderId}:`, error);
           return [];
@@ -313,58 +653,6 @@
           };
           return ALL_DRIVE_RESOURCES;
         }
-      }
-
-      // Load all files from all drives
-      async function loadAllResources() {
-        // First load the mapping if not already loaded
-        if (Object.keys(ALL_DRIVE_RESOURCES).length === 0) {
-          await loadDriveMapping();
-        }
-
-        const container = document.getElementById("all-resources");
-        const stats = document.getElementById("resultsStats");
-
-        stats.textContent = "Loading all resources...";
-        allFiles = [];
-
-        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
-          for (const [batchKey, batchInfo] of Object.entries(batches)) {
-            try {
-              // Use local API server instead of direct Google Drive API
-              const response = await fetch(
-                `http://localhost:3000/api/drive/files?folderId=${batchInfo.folderId}`
-              );
-
-              if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
-              }
-
-              const data = await response.json();
-
-              if (data.files) {
-                data.files.forEach((file) => {
-                  allFiles.push({
-                    ...file,
-                    semester: semester,
-                    batch: batchKey,
-                    batchLabel: batchInfo.label,
-                    isFolder:
-                      file.mimeType === "application/vnd.google-apps.folder",
-                  });
-                });
-              }
-            } catch (error) {
-              console.error(
-                `Error loading ${semester} - ${batchInfo.label}:`,
-                error
-              );
-            }
-          }
-        }
-
-        displayResults(allFiles);
-        updateStats(allFiles.length, allFiles.length);
       }
 
       // Display search results with tree structure (no root folder buttons)
@@ -418,8 +706,8 @@
 
             // Group files by their path to create tree structure
             const pathGroups = {};
-            batchFiles.forEach(file => {
-              const pathParts = file.path.split('/');
+            batchFiles.forEach((file) => {
+              const pathParts = file.path.split("/");
               const depth = pathParts.length - 1;
 
               if (!pathGroups[depth]) pathGroups[depth] = [];
@@ -427,29 +715,34 @@
             });
 
             // Display results with tree indentation
-            Object.keys(pathGroups).sort((a, b) => parseInt(a) - parseInt(b)).forEach(depth => {
-              const depthFiles = pathGroups[depth].sort((a, b) => a.path.localeCompare(b.path));
+            Object.keys(pathGroups)
+              .sort((a, b) => parseInt(a) - parseInt(b))
+              .forEach((depth) => {
+                const depthFiles = pathGroups[depth].sort((a, b) =>
+                  a.path.localeCompare(b.path)
+                );
 
-              depthFiles.forEach(file => {
-                const resultItem = document.createElement("div");
-                resultItem.className = "search-result-item";
-                resultItem.style.paddingLeft = `${file.depth * 20 + 10}px`;
+                depthFiles.forEach((file) => {
+                  const resultItem = document.createElement("div");
+                  resultItem.className = "search-result-item";
+                  resultItem.style.paddingLeft = `${file.depth * 20 + 10}px`;
 
-                const icon = file.isFolder ? "📁" : "📄";
-                const link = file.isFolder ?
-                  `https://drive.google.com/drive/folders/${file.id}` :
-                  (file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`);
+                  const icon = file.isFolder ? "📁" : "📄";
+                  const link = file.isFolder
+                    ? `https://drive.google.com/drive/folders/${file.id}`
+                    : file.webViewLink ||
+                      `https://drive.google.com/file/d/${file.id}/view`;
 
-                resultItem.innerHTML = `
+                  resultItem.innerHTML = `
                   <a href="${link}" target="_blank" class="result-link">
                     ${icon} ${file.name}
                   </a>
                   <span class="file-path">${file.path}</span>
                 `;
 
-                resultsList.appendChild(resultItem);
+                  resultsList.appendChild(resultItem);
+                });
               });
-            });
 
             batchDiv.appendChild(resultsList);
             semesterDiv.appendChild(batchDiv);
@@ -541,7 +834,8 @@
       function globalFilter() {
         const searchTerm = document
           .getElementById("globalSearch")
-          .value.toLowerCase().trim();
+          .value.toLowerCase()
+          .trim();
         const semesterFilter = document.getElementById("semesterFilter").value;
         const batchFilter = document.getElementById("batchFilter").value;
         const stats = document.getElementById("resultsStats");
@@ -600,9 +894,9 @@
         // Sort by depth (shallow first) to prioritize parent folders
         limitedResults.sort((a, b) => a.depth - b.depth);
 
-        limitedResults.forEach(file => {
-          const isParentAlreadyIncluded = Array.from(processedPaths).some(path =>
-            file.path.startsWith(path + '/') && file.path !== path
+        limitedResults.forEach((file) => {
+          const isParentAlreadyIncluded = Array.from(processedPaths).some(
+            (path) => file.path.startsWith(path + "/") && file.path !== path
           );
 
           if (!isParentAlreadyIncluded) {
@@ -627,10 +921,37 @@
         }
       }
 
-      // Initialize on page load
+      // Debounce function to prevent too many API calls
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Update the page initialization to be lightweight
       window.addEventListener("DOMContentLoaded", async () => {
-        await loadDriveMapping();
-        await loadAllFiles(); // Load all files for deep search
+        const stats = document.getElementById("resultsStats");
+        stats.textContent =
+          "Ready to search! Enter terms above to find resources.";
+
+        try {
+          await loadDriveMapping();
+          stats.textContent =
+            "✅ Ready! Enter search terms or select filters to find resources.";
+        } catch (error) {
+          console.error("Failed to load drive mapping:", error);
+          stats.textContent =
+            "⚠️ Ready with basic setup. Some features may be limited.";
+        }
+
+        // Show empty state initially
+        displayResults([]);
       });
     </script>
 
@@ -674,6 +995,27 @@
       }
 
       #loadNextBtn:disabled {
+        background-color: #ccc;
+        border-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      #searchLevelBtn {
+        padding: 12px 16px;
+        background-color: #4caf50;
+        color: white;
+        border: 1px solid #4caf50;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+
+      #searchLevelBtn:hover {
+        background-color: #45a049;
+      }
+
+      #searchLevelBtn:disabled {
         background-color: #ccc;
         border-color: #ccc;
         cursor: not-allowed;
