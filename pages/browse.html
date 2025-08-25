@@ -54,16 +54,9 @@
           <input
             type="text"
             id="globalSearch"
-            placeholder="Search files, folders, teachers, courses..."
+            placeholder="Search files, folders, nested content..."
             oninput="globalFilter()"
           />
-          <button
-            id="deepSearchBtn"
-            onclick="toggleDeepSearch()"
-            title="Enable deep search to look inside nested folders"
-          >
-            📁 Deep Search: <span id="deepSearchStatus">OFF</span>
-          </button>
         </div>
 
         <div class="filter-row">
@@ -105,18 +98,84 @@
       // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
       const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
       let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
-      let allFiles = []; // Store all loaded files for filtering
-      let deepSearchEnabled = false;
-      let allDeepFiles = []; // Store deeply nested files when deep search is enabled
+      let allFiles = []; // Store all loaded files for searching
+      let isLoading = false;
 
-      // Recursive function to fetch all files from a folder and its subfolders
+      // Load all files recursively for deep search with progress tracking
+      async function loadAllFiles() {
+        if (isLoading) return;
+
+        isLoading = true;
+        const stats = document.getElementById("resultsStats");
+        allFiles = [];
+
+        let totalBatches = 0;
+        let processedBatches = 0;
+
+        // Count total batches first
+        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
+          totalBatches += Object.keys(batches).length;
+        }
+
+        stats.textContent = `Starting deep search across ${totalBatches} batches...`;
+
+        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
+          for (const [batchKey, batchInfo] of Object.entries(batches)) {
+            processedBatches++;
+            stats.textContent = `Scanning ${semester} - ${batchInfo.label} (${processedBatches}/${totalBatches}) - Found ${allFiles.length} files so far...`;
+
+            try {
+              const files = await fetchAllFilesRecursively(
+                batchInfo.folderId,
+                "",
+                4, // Reduced max depth for faster loading
+                semester,
+                batchInfo.label,
+                stats
+              );
+
+              files.forEach((file) => {
+                file.semester = semester;
+                file.batch = batchKey;
+                file.batchLabel = batchInfo.label;
+              });
+
+              allFiles.push(...files);
+
+              // Update stats after each batch
+              stats.textContent = `Scanning ${semester} - ${batchInfo.label} (${processedBatches}/${totalBatches}) - Found ${allFiles.length} files so far...`;
+
+              // Give UI a chance to update
+              await new Promise(resolve => setTimeout(resolve, 10));
+
+            } catch (error) {
+              console.error(
+                `Error loading ${semester} - ${batchInfo.label}:`,
+                error
+              );
+              stats.textContent = `Error loading ${semester} - ${batchInfo.label}. Continuing... (${processedBatches}/${totalBatches})`;
+            }
+          }
+        }
+
+        isLoading = false;
+        stats.textContent = `✅ Deep search ready! Found ${allFiles.length} resources across ${totalBatches} batches. Start typing to search.`;
+
+        // Initially show empty state
+        displayResults([]);
+      }
+
+      // Recursively fetch all files from a folder with progress tracking
       async function fetchAllFilesRecursively(
         folderId,
         path = "",
-        maxDepth = 5,
+        maxDepth = 4,
+        semester = "",
+        batchLabel = "",
+        statsElement = null,
         currentDepth = 0
       ) {
-        if (currentDepth >= maxDepth) return []; // Prevent infinite recursion
+        if (currentDepth >= maxDepth) return [];
 
         try {
           const response = await fetch(
@@ -137,11 +196,16 @@
                 ...file,
                 path: filePath,
                 depth: currentDepth,
-                isFolder:
-                  file.mimeType === "application/vnd.google-apps.folder",
+                isFolder: file.mimeType === "application/vnd.google-apps.folder",
+                parentPath: path
               };
 
               allFiles.push(fileData);
+
+              // Update progress for folders being processed
+              if (statsElement && file.mimeType === "application/vnd.google-apps.folder") {
+                statsElement.textContent = `Scanning ${semester} - ${batchLabel} → ${filePath}...`;
+              }
 
               // If it's a folder, recursively fetch its contents
               if (file.mimeType === "application/vnd.google-apps.folder") {
@@ -149,6 +213,9 @@
                   file.id,
                   filePath,
                   maxDepth,
+                  semester,
+                  batchLabel,
+                  statsElement,
                   currentDepth + 1
                 );
                 allFiles = allFiles.concat(subFiles);
@@ -162,61 +229,47 @@
           return [];
         }
       }
+          const response = await fetch(
+            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000`
+          );
 
-      // Toggle deep search mode
-      async function toggleDeepSearch() {
-        const btn = document.getElementById("deepSearchBtn");
-        const status = document.getElementById("deepSearchStatus");
-        const stats = document.getElementById("resultsStats");
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+          }
 
-        deepSearchEnabled = !deepSearchEnabled;
+          const data = await response.json();
+          let filesInFolder = [];
 
-        if (deepSearchEnabled) {
-          status.textContent = "ON";
-          btn.style.backgroundColor = "#4CAF50";
-          btn.style.color = "white";
-          stats.textContent = "Loading deep search... This may take a while.";
+          if (data.files) {
+            for (const file of data.files) {
+              const filePath = path ? `${path}/${file.name}` : file.name;
+              const fileData = {
+                ...file,
+                path: filePath,
+                depth: currentDepth,
+                isFolder: file.mimeType === "application/vnd.google-apps.folder",
+                parentPath: path
+              };
 
-          // Load all files recursively
-          allDeepFiles = [];
-          for (const [semester, batches] of Object.entries(
-            ALL_DRIVE_RESOURCES
-          )) {
-            for (const [batchKey, batchInfo] of Object.entries(batches)) {
-              stats.textContent = `Deep scanning ${semester} - ${batchInfo.label}...`;
-              try {
-                const deepFiles = await fetchAllFilesRecursively(
-                  batchInfo.folderId
+              filesInFolder.push(fileData);
+
+              // If it's a folder, recursively fetch its contents
+              if (file.mimeType === "application/vnd.google-apps.folder") {
+                const subFiles = await fetchAllFilesRecursively(
+                  file.id,
+                  filePath,
+                  maxDepth,
+                  currentDepth + 1
                 );
-                deepFiles.forEach((file) => {
-                  allDeepFiles.push({
-                    ...file,
-                    semester: semester,
-                    batch: batchKey,
-                    batchLabel: batchInfo.label,
-                  });
-                });
-              } catch (error) {
-                console.error(
-                  `Error deep scanning ${semester} - ${batchInfo.label}:`,
-                  error
-                );
+                filesInFolder = filesInFolder.concat(subFiles);
               }
             }
           }
 
-          displayResults(allDeepFiles);
-          updateStats(allDeepFiles.length, allDeepFiles.length);
-          stats.textContent = `Deep search enabled - ${allDeepFiles.length} files found in nested folders`;
-        } else {
-          status.textContent = "OFF";
-          btn.style.backgroundColor = "";
-          btn.style.color = "";
-
-          // Return to regular view
-          displayResults(allFiles);
-          updateStats(allFiles.length, allFiles.length);
-          stats.textContent = `Showing ${allFiles.length} top-level files`;
+          return filesInFolder;
+        } catch (error) {
+          console.error(`Error fetching files from folder ${folderId}:`, error);
+          return [];
         }
       }
 
@@ -314,18 +367,18 @@
         updateStats(allFiles.length, allFiles.length);
       }
 
-      // Display search results
+      // Display search results with tree structure (no root folder buttons)
       function displayResults(files) {
         const container = document.getElementById("all-resources");
         container.innerHTML = "";
 
         if (files.length === 0) {
           container.innerHTML =
-            '<div class="no-results">No files found matching your criteria.</div>';
+            '<div class="no-results">No files found. Use search to find specific files or folders.</div>';
           return;
         }
 
-        // Group by semester
+        // Group by semester and batch
         const grouped = {};
         files.forEach((file) => {
           if (!grouped[file.semester]) grouped[file.semester] = {};
@@ -334,48 +387,71 @@
           grouped[file.semester][file.batch].push(file);
         });
 
-        Object.entries(grouped).forEach(([semester, batches]) => {
+        // Sort semesters (highest first: 8th, 7th, 6th, etc.)
+        const sortedSemesters = Object.entries(grouped).sort(([a], [b]) => {
+          const numA = parseInt(a.replace(/\D/g, "")) || 0;
+          const numB = parseInt(b.replace(/\D/g, "")) || 0;
+          return numB - numA;
+        });
+
+        sortedSemesters.forEach(([semester, batches]) => {
           const semesterDiv = document.createElement("div");
           semesterDiv.className = "semester-group";
           semesterDiv.innerHTML = `<h2>${semester.toUpperCase()} Semester</h2>`;
 
-          Object.entries(batches).forEach(([batch, files]) => {
+          // Sort batches (most recent first: 30th, 29th, 28th, etc.)
+          const sortedBatches = Object.entries(batches).sort(([a], [b]) => {
+            const numA = parseInt(a.replace(/\D/g, "")) || 0;
+            const numB = parseInt(b.replace(/\D/g, "")) || 0;
+            return numB - numA;
+          });
+
+          sortedBatches.forEach(([batch, batchFiles]) => {
             const batchDiv = document.createElement("div");
             batchDiv.className = "batch-group";
-            batchDiv.innerHTML = `<h3>${files[0].batchLabel}</h3>`;
 
-            const filesList = document.createElement("ul");
-            filesList.className = "files-list";
+            // Simple batch header without root folder button
+            batchDiv.innerHTML = `<h3>${batchFiles[0].batchLabel}</h3>`;
 
-            files.forEach((file) => {
-              const li = document.createElement("li");
-              li.className = `file-item ${file.isFolder ? "folder" : "file"}`;
+            const resultsList = document.createElement("div");
+            resultsList.className = "search-results";
 
-              const icon = file.isFolder ? "📁" : "📄";
-              const link =
-                file.webViewLink ||
-                `https://drive.google.com/file/d/${file.id}/view`;
+            // Group files by their path to create tree structure
+            const pathGroups = {};
+            batchFiles.forEach(file => {
+              const pathParts = file.path.split('/');
+              const depth = pathParts.length - 1;
 
-              // Show file path in deep search mode
-              const displayName =
-                deepSearchEnabled && file.path ? file.path : file.name;
-              const depthIndicator =
-                deepSearchEnabled && file.depth > 0
-                  ? `<span class="depth-indicator">📂 ${file.depth} levels deep</span>`
-                  : "";
-
-              li.innerHTML = `
-                <a href="${link}" target="_blank" class="file-link">
-                  ${icon} ${displayName}
-                </a>
-                ${depthIndicator}
-                <span class="file-meta">${file.semester} - ${file.batchLabel}</span>
-              `;
-
-              filesList.appendChild(li);
+              if (!pathGroups[depth]) pathGroups[depth] = [];
+              pathGroups[depth].push(file);
             });
 
-            batchDiv.appendChild(filesList);
+            // Display results with tree indentation
+            Object.keys(pathGroups).sort((a, b) => parseInt(a) - parseInt(b)).forEach(depth => {
+              const depthFiles = pathGroups[depth].sort((a, b) => a.path.localeCompare(b.path));
+
+              depthFiles.forEach(file => {
+                const resultItem = document.createElement("div");
+                resultItem.className = "search-result-item";
+                resultItem.style.paddingLeft = `${file.depth * 20 + 10}px`;
+
+                const icon = file.isFolder ? "📁" : "📄";
+                const link = file.isFolder ?
+                  `https://drive.google.com/drive/folders/${file.id}` :
+                  (file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`);
+
+                resultItem.innerHTML = `
+                  <a href="${link}" target="_blank" class="result-link">
+                    ${icon} ${file.name}
+                  </a>
+                  <span class="file-path">${file.path}</span>
+                `;
+
+                resultsList.appendChild(resultItem);
+              });
+            });
+
+            batchDiv.appendChild(resultsList);
             semesterDiv.appendChild(batchDiv);
           });
 
@@ -383,26 +459,119 @@
         });
       }
 
-      // Global filter function
+      // Toggle folder expansion for browse page
+      async function toggleFolderExpansion(folderId, button) {
+        const subfolderList = document.getElementById(`subfolder-${folderId}`);
+
+        if (subfolderList.style.display === "none") {
+          // Expand folder
+          button.innerHTML = "▲";
+          button.title = "Collapse folder contents";
+          subfolderList.style.display = "block";
+
+          // Load folder contents if not already loaded
+          if (subfolderList.children.length === 0) {
+            subfolderList.innerHTML = '<li class="loading">Loading...</li>';
+
+            try {
+              const response = await fetch(
+                `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
+              );
+
+              if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+              }
+
+              const data = await response.json();
+              subfolderList.innerHTML = "";
+
+              if (data.files && data.files.length > 0) {
+                // Sort files alphabetically
+                data.files.sort((a, b) => a.name.localeCompare(b.name));
+
+                data.files.forEach((file) => {
+                  const li = document.createElement("li");
+                  li.className = "subfolder-item";
+
+                  if (file.mimeType === "application/vnd.google-apps.folder") {
+                    // Nested folder with its own dropdown
+                    li.innerHTML = `
+                      <div class="folder-item">
+                        <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="folder-link">
+                          📁 ${file.name}
+                        </a>
+                        <div class="folder-actions">
+                          <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
+                            ▼
+                          </button>
+                        </div>
+                      </div>
+                      <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
+                    `;
+                  } else {
+                    li.innerHTML = `
+                      <a href="${
+                        file.webViewLink ||
+                        `https://drive.google.com/file/d/${file.id}/view`
+                      }" target="_blank">
+                        📄 ${file.name}
+                      </a>
+                    `;
+                  }
+
+                  subfolderList.appendChild(li);
+                });
+              } else {
+                subfolderList.innerHTML =
+                  '<li class="empty">No files found</li>';
+              }
+            } catch (error) {
+              subfolderList.innerHTML = `<li class="error">Error loading: ${error.message}</li>`;
+            }
+          }
+        } else {
+          // Collapse folder
+          button.innerHTML = "▼";
+          button.title = "Expand folder contents";
+          subfolderList.style.display = "none";
+        }
+      }
+
+      // Global filter function for deep search with improved responsiveness
       function globalFilter() {
         const searchTerm = document
           .getElementById("globalSearch")
-          .value.toLowerCase();
+          .value.toLowerCase().trim();
         const semesterFilter = document.getElementById("semesterFilter").value;
         const batchFilter = document.getElementById("batchFilter").value;
+        const stats = document.getElementById("resultsStats");
 
-        // Use appropriate file array based on search mode
-        const sourceFiles = deepSearchEnabled ? allDeepFiles : allFiles;
+        // Show loading state during search if many files
+        if (allFiles.length > 1000 && searchTerm) {
+          stats.textContent = "Searching through files...";
+        }
 
-        let filtered = sourceFiles.filter((file) => {
-          // Enhanced text search - includes file path for deep search
+        if (!searchTerm && !semesterFilter && !batchFilter) {
+          // Show empty state when no search terms
+          displayResults([]);
+          updateStats(0, allFiles.length);
+          return;
+        }
+
+        // If search term is too short, provide feedback
+        if (searchTerm && searchTerm.length < 2) {
+          displayResults([]);
+          stats.textContent = "Type at least 2 characters to search...";
+          return;
+        }
+
+        let filtered = allFiles.filter((file) => {
+          // Enhanced text search - includes file path and name
           const matchesSearch =
             !searchTerm ||
             file.name.toLowerCase().includes(searchTerm) ||
-            file.batchLabel.toLowerCase().includes(searchTerm) ||
-            (deepSearchEnabled &&
-              file.path &&
-              file.path.toLowerCase().includes(searchTerm));
+            file.path.toLowerCase().includes(searchTerm) ||
+            file.batchLabel.toLowerCase().includes(searchTerm);
 
           // Semester filter
           const matchesSemester =
@@ -414,19 +583,54 @@
           return matchesSearch && matchesSemester && matchesBatch;
         });
 
-        displayResults(filtered);
-        updateStats(filtered.length, sourceFiles.length);
+        // Limit results to prevent overwhelming UI
+        const maxResults = 200;
+        let limitedResults = filtered;
+        let resultMessage = "";
+
+        if (filtered.length > maxResults) {
+          limitedResults = filtered.slice(0, maxResults);
+          resultMessage = ` (showing first ${maxResults} of ${filtered.length} matches)`;
+        }
+
+        // Remove duplicates when both folder and its contents match
+        const uniqueResults = [];
+        const processedPaths = new Set();
+
+        // Sort by depth (shallow first) to prioritize parent folders
+        limitedResults.sort((a, b) => a.depth - b.depth);
+
+        limitedResults.forEach(file => {
+          const isParentAlreadyIncluded = Array.from(processedPaths).some(path =>
+            file.path.startsWith(path + '/') && file.path !== path
+          );
+
+          if (!isParentAlreadyIncluded) {
+            uniqueResults.push(file);
+            processedPaths.add(file.path);
+          }
+        });
+
+        displayResults(uniqueResults);
+        updateStats(uniqueResults.length, allFiles.length, resultMessage);
       }
 
       // Update results statistics
-      function updateStats(shown, total) {
+      function updateStats(shown, total, extraMessage = "") {
         const stats = document.getElementById("resultsStats");
-        stats.textContent = `Showing ${shown} of ${total} resources`;
+        if (shown === 0 && total === 0) {
+          stats.textContent = "No resources loaded yet.";
+        } else if (shown === 0) {
+          stats.textContent = `No matches found in ${total} total resources.`;
+        } else {
+          stats.textContent = `Showing ${shown} of ${total} resources${extraMessage}`;
+        }
       }
 
       // Initialize on page load
-      window.addEventListener("DOMContentLoaded", () => {
-        loadAllResources();
+      window.addEventListener("DOMContentLoaded", async () => {
+        await loadDriveMapping();
+        await loadAllFiles(); // Load all files for deep search
       });
     </script>
 
@@ -453,10 +657,11 @@
         border-radius: 6px;
       }
 
-      #deepSearchBtn {
+      #loadNextBtn {
         padding: 12px 16px;
-        background-color: #f5f5f5;
-        border: 1px solid #ddd;
+        background-color: #2196f3;
+        color: white;
+        border: 1px solid #2196f3;
         border-radius: 6px;
         cursor: pointer;
         font-size: 0.9rem;
@@ -464,8 +669,14 @@
         transition: all 0.3s ease;
       }
 
-      #deepSearchBtn:hover {
-        background-color: #e0e0e0;
+      #loadNextBtn:hover {
+        background-color: #1976d2;
+      }
+
+      #loadNextBtn:disabled {
+        background-color: #ccc;
+        border-color: #ccc;
+        cursor: not-allowed;
       }
 
       .depth-indicator {
@@ -578,6 +789,173 @@
           align-items: flex-start;
           gap: 4px;
         }
+      }
+
+      /* Tree structure styles for browse page */
+      .batch-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .batch-header h3 {
+        margin: 0;
+      }
+
+      .root-folder-btn {
+        background: none;
+        color: #666;
+        border: 1px solid #ddd;
+        padding: 6px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+      }
+
+      .root-folder-btn:hover {
+        background: #f5f5f5;
+        color: #2196f3;
+        border-color: #2196f3;
+      }
+
+      .drive-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      .drive-list-item {
+        padding: 8px 0 8px 20px;
+        border-bottom: 1px solid #eee;
+        font-size: 1rem;
+      }
+
+      .folder-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .folder-link {
+        flex-grow: 1;
+        text-decoration: none;
+        color: #333;
+      }
+
+      .folder-link:hover {
+        color: #2196f3;
+      }
+
+      .folder-actions {
+        display: flex;
+        gap: 4px;
+      }
+
+      .expand-btn {
+        background: none;
+        border: 1px solid #ddd;
+        padding: 4px 8px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+
+      .expand-btn:hover {
+        background-color: #f0f0f0;
+      }
+
+      .subfolder-list {
+        list-style: none;
+        padding-left: 20px;
+        margin: 8px 0;
+        border-left: 2px solid #eee;
+      }
+
+      .subfolder-item {
+        padding: 4px 0;
+        font-size: 0.9rem;
+      }
+
+      .subfolder-item .folder-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 2px 0;
+      }
+
+      .subfolder-item .folder-actions {
+        display: flex;
+        gap: 2px;
+      }
+
+      .subfolder-item .expand-btn {
+        padding: 2px 6px;
+        font-size: 10px;
+      }
+
+      .subfolder-item a {
+        text-decoration: none;
+        color: #666;
+      }
+
+      .subfolder-item a:hover {
+        color: #2196f3;
+      }
+
+      /* Nested subfolders with increased indentation */
+      .subfolder-list .subfolder-list {
+        padding-left: 15px;
+        border-left: 1px solid #ddd;
+      }
+
+      .loading,
+      .error,
+      .empty {
+        color: #999;
+        font-style: italic;
+        padding: 8px 0;
+      }
+
+      .error {
+        color: #e74c3c;
+      }
+
+      /* Search results styling */
+      .search-results {
+        margin-top: 16px;
+      }
+
+      .search-result-item {
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .result-link {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .result-link:hover {
+        color: #2196f3;
+      }
+
+      .file-path {
+        font-size: 0.85rem;
+        color: #666;
+        font-style: italic;
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+        font-style: italic;
       }
     </style>
   </body>
