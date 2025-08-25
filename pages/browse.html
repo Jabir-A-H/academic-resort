@@ -223,7 +223,7 @@
       // Load mapping from JSON file
       async function loadDriveMapping() {
         try {
-          const response = await fetch("../data/drive-mapping.json");
+          const response = await fetch("../assets/drive-mapping.json");
           if (!response.ok)
             throw new Error(`Failed to load mapping: ${response.status}`);
           const mapping = await response.json();
