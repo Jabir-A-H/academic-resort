@@ -42,7 +42,7 @@
           <input
             type="text"
             id="globalSearch"
-            placeholder="Smart search: handles typos, spaces, acronyms, partial matches..."
+            placeholder="Search something..."
             oninput="debounce(optimizedSearch, 500)()"
           />
         </div>
@@ -803,7 +803,7 @@
         }
       }
 
-      // Display search results with tree structure (no root folder buttons)
+      // Display search results with hierarchical tree structure
       function displayResults(files) {
         const container = document.getElementById("all-resources");
         container.innerHTML = "";
@@ -814,13 +814,15 @@
           return;
         }
 
+        // Build hierarchical tree structure
+        const treeStructure = buildTreeStructure(files);
+
         // Group by semester and batch
         const grouped = {};
-        files.forEach((file) => {
-          if (!grouped[file.semester]) grouped[file.semester] = {};
-          if (!grouped[file.semester][file.batch])
-            grouped[file.semester][file.batch] = [];
-          grouped[file.semester][file.batch].push(file);
+        Object.entries(treeStructure).forEach(([key, tree]) => {
+          const [semester, batch] = key.split("_");
+          if (!grouped[semester]) grouped[semester] = {};
+          grouped[semester][batch] = tree;
         });
 
         // Sort semesters (highest first: 8th, 7th, 6th, etc.)
@@ -842,61 +844,168 @@
             return numB - numA;
           });
 
-          sortedBatches.forEach(([batch, batchFiles]) => {
+          sortedBatches.forEach(([batch, tree]) => {
             const batchDiv = document.createElement("div");
             batchDiv.className = "batch-group";
 
-            // Simple batch header without root folder button
-            batchDiv.innerHTML = `<h3>${batchFiles[0].batchLabel}</h3>`;
+            // Get batch label from any file in the tree
+            const batchLabel = getBatchLabelFromTree(tree);
+            batchDiv.innerHTML = `<h3>${batchLabel}</h3>`;
 
             const resultsList = document.createElement("div");
-            resultsList.className = "search-results";
+            resultsList.className = "tree-results";
 
-            // Group files by their path to create tree structure
-            const pathGroups = {};
-            batchFiles.forEach((file) => {
-              const pathParts = file.path.split("/");
-              const depth = pathParts.length - 1;
-
-              if (!pathGroups[depth]) pathGroups[depth] = [];
-              pathGroups[depth].push(file);
-            });
-
-            // Display results with tree indentation
-            Object.keys(pathGroups)
-              .sort((a, b) => parseInt(a) - parseInt(b))
-              .forEach((depth) => {
-                const depthFiles = pathGroups[depth].sort((a, b) =>
-                  a.path.localeCompare(b.path)
-                );
-
-                depthFiles.forEach((file) => {
-                  const resultItem = document.createElement("div");
-                  resultItem.className = "search-result-item";
-                  resultItem.style.paddingLeft = `${file.depth * 20 + 10}px`;
-
-                  const icon = file.isFolder ? "📁" : "📄";
-                  const link = file.isFolder
-                    ? `https://drive.google.com/drive/folders/${file.id}`
-                    : file.webViewLink ||
-                      `https://drive.google.com/file/d/${file.id}/view`;
-
-                  resultItem.innerHTML = `
-                  <a href="${link}" target="_blank" class="result-link">
-                    ${icon} ${file.name}
-                  </a>
-                  <span class="file-path">${file.path}</span>
-                `;
-
-                  resultsList.appendChild(resultItem);
-                });
-              });
+            // Render the tree structure
+            renderTreeNode(tree, resultsList, 0);
 
             batchDiv.appendChild(resultsList);
             semesterDiv.appendChild(batchDiv);
           });
 
           container.appendChild(semesterDiv);
+        });
+      }
+
+      // Build hierarchical tree from flat file list
+      function buildTreeStructure(files) {
+        const trees = {};
+        const folderLookup = new Map(); // Store folder file objects by path
+
+        // First pass: build lookup table of all folders
+        files.forEach((file) => {
+          if (file.isFolder) {
+            folderLookup.set(file.path, file);
+          }
+        });
+
+        files.forEach((file) => {
+          const treeKey = `${file.semester}_${file.batch}`;
+          if (!trees[treeKey]) {
+            trees[treeKey] = {
+              name: "root",
+              children: {},
+              files: [],
+              isFolder: true,
+            };
+          }
+
+          const pathParts = file.path.split("/");
+          let currentNode = trees[treeKey];
+          let currentPath = "";
+
+          // Build path to the file, creating parent folders as needed
+          for (let i = 0; i < pathParts.length - 1; i++) {
+            const folderName = pathParts[i];
+            currentPath = currentPath
+              ? `${currentPath}/${folderName}`
+              : folderName;
+
+            if (!currentNode.children[folderName]) {
+              // Look up the actual folder file object
+              const folderFile = folderLookup.get(currentPath);
+
+              currentNode.children[folderName] = {
+                name: folderName,
+                children: {},
+                files: [],
+                isFolder: true,
+                hasMatchingContent: false,
+                folderFile: folderFile, // Store the actual folder file for linking
+              };
+            }
+            currentNode.children[folderName].hasMatchingContent = true;
+            currentNode = currentNode.children[folderName];
+          }
+
+          // Add the file to the final folder
+          currentNode.files.push(file);
+        });
+
+        return trees;
+      }
+
+      // Get batch label from tree structure
+      function getBatchLabelFromTree(tree) {
+        // Find first file in tree to get batch label
+        function findFirstFile(node) {
+          if (node.files && node.files.length > 0) {
+            return node.files[0].batchLabel;
+          }
+          for (const child of Object.values(node.children)) {
+            const result = findFirstFile(child);
+            if (result) return result;
+          }
+          return null;
+        }
+        return findFirstFile(tree) || "Unknown Batch";
+      }
+
+      // Find folder file object to get its ID for linking
+      function findFolderInFiles(folderName, folderNode) {
+        // Return the stored folder file if available
+        return folderNode.folderFile || null;
+      }
+
+      // Render tree node recursively
+      function renderTreeNode(node, container, depth) {
+        // Render folders first (sorted alphabetically)
+        const sortedFolders = Object.entries(node.children).sort(([a], [b]) =>
+          a.localeCompare(b)
+        );
+
+        sortedFolders.forEach(([folderName, folderNode]) => {
+          if (folderNode.hasMatchingContent) {
+            const folderDiv = document.createElement("div");
+            folderDiv.className = "tree-file"; // Use same class as files
+            folderDiv.style.paddingLeft = `${depth * 20}px`;
+
+            // Create a clickable folder link (we'll need to find the folder ID)
+            const folderFile = findFolderInFiles(folderName, folderNode);
+            const folderLink = folderFile
+              ? `https://drive.google.com/drive/folders/${folderFile.id}`
+              : "#";
+
+            folderDiv.innerHTML = `
+              <div class="file-item">
+                <a href="${folderLink}" target="_blank" class="result-link">
+                  <span class="file-icon">📁</span>
+                  <span class="file-name">${folderName}</span>
+                </a>
+              </div>
+            `;
+            container.appendChild(folderDiv);
+
+            // Recursively render children
+            renderTreeNode(folderNode, container, depth + 1);
+          }
+        });
+
+        // Render files (sorted alphabetically)
+        const sortedFiles = node.files.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        sortedFiles.forEach((file) => {
+          const fileDiv = document.createElement("div");
+          fileDiv.className = "tree-file";
+          fileDiv.style.paddingLeft = `${depth * 20}px`;
+
+          const icon = file.isFolder ? "📁" : "📄";
+          const link = file.isFolder
+            ? `https://drive.google.com/drive/folders/${file.id}`
+            : file.webViewLink ||
+              `https://drive.google.com/file/d/${file.id}/view`;
+
+          fileDiv.innerHTML = `
+            <div class="file-item">
+              <a href="${link}" target="_blank" class="result-link">
+                <span class="file-icon">${icon}</span>
+                <span class="file-name">${file.name}</span>
+              </a>
+            </div>
+          `;
+
+          container.appendChild(fileDiv);
         });
       }
 
@@ -1446,6 +1555,62 @@
         padding: 40px 20px;
         color: #666;
         font-style: italic;
+      }
+
+      /* Tree structure styles */
+      .tree-results {
+        margin-top: 16px;
+      }
+
+      .tree-file {
+        margin: 2px 0;
+      }
+
+      .file-item {
+        display: flex;
+        align-items: center;
+        padding: 6px 8px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+      }
+
+      .file-item:hover {
+        background: #f1f3f4;
+      }
+
+      .file-icon {
+        margin-right: 8px;
+        font-size: 16px;
+      }
+
+      .file-name {
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .result-link {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        width: 100%;
+      }
+
+      .result-link:hover .file-name {
+        color: #2196f3;
+        text-decoration: underline;
+      }
+
+      /* Tree indentation lines */
+      .tree-folder:not(:first-child)::before,
+      .tree-file:not(:first-child)::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 1px;
+        background: #dee2e6;
+        height: 100%;
       }
     </style>
   </body>
