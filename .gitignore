@@ -1,13 +1,1 @@
-/.env
-/data
 /AcademicResort
-/assets/app.js
-/assets/browse.js
-/assets/settings.js
-/assets/shared-drive.js
-
-# Environment files
-.env
-
-# Temporary files
-*.tmp
