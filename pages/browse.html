@@ -206,7 +206,7 @@
       }
 
       // Create global rate limiter instance (HYPER-AGGRESSIVE for maximum speed)
-      const apiLimiter = new APIRateLimiter(100, 5); // Max 100 concurrent, 5ms between starts
+      const apiLimiter = new APIRateLimiter(150, 3); // Max 150 concurrent, 3ms between starts (FASTER!)
 
       // Get cache key for a folder
       function getCacheKey(folderId, currentDepth) {
@@ -636,8 +636,8 @@
           }
         }
 
-        // Search folders in parallel batches - 30 folders simultaneously for MAXIMUM speed
-        const PARALLEL_BATCH_SIZE = 30; // Process 30 folders simultaneously (hyper-aggressive)
+        // Search folders in parallel batches - 50 folders simultaneously for MAXIMUM speed
+        const PARALLEL_BATCH_SIZE = 50; // Process 50 folders simultaneously (ultra-aggressive!)
         const MAX_SEARCH_DEPTH = 4; // Depth of 4 levels - optimal balance of coverage vs performance
 
         // Clear results container at start
@@ -705,8 +705,8 @@
               statsElement.textContent = `� Speed-searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
             }
 
-            // Early termination if we have many results
-            if (currentResults.length > 300) {
+            // Early termination if we have many results (increased threshold for more comprehensive results)
+            if (currentResults.length > 500) {
               statsElement.innerHTML = `✅ Found ${currentResults.length} results <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
               return removeDuplicatesOptimized(results);
             }
@@ -714,8 +714,8 @@
             // Also stop early if search term is very specific and we found good matches
             if (
               searchTerm &&
-              searchTerm.length > 8 &&
-              currentResults.length > 50
+              searchTerm.length > 6 &&
+              currentResults.length > 100
             ) {
               statsElement.innerHTML = `✅ Found ${currentResults.length} results <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
               return removeDuplicatesOptimized(results);
