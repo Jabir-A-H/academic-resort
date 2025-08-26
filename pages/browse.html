@@ -174,8 +174,8 @@
         }
       }
 
-      // Create global rate limiter instance (optimized for speed)
-      const apiLimiter = new APIRateLimiter(10, 3); // Max 6 concurrent, 3ms between starts
+      // Create global rate limiter instance (MAXIMUM SPEED - pushing API limits)
+      const apiLimiter = new APIRateLimiter(30, 2); // Max 30 concurrent, 2ms between starts
 
       // Get cache key for a folder
       function getCacheKey(folderId, currentDepth) {
@@ -527,25 +527,15 @@
         statsElement
       ) {
         const results = [];
-        let totalFolders = 0;
-        let completedFolders = 0;
 
-        // Count total folders first for progress tracking
+        // Smart folder organization: Group by semester, then distribute evenly
+        const semesterBatches = {};
         for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
           if (semesterFilter && semester !== semesterFilter) continue;
+          semesterBatches[semester] = [];
           for (const [batchKey, batchInfo] of Object.entries(batches)) {
             if (batchFilter && batchKey !== batchFilter) continue;
-            totalFolders++;
-          }
-        }
-
-        // Collect all folders to search
-        const foldersToSearch = [];
-        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
-          if (semesterFilter && semester !== semesterFilter) continue;
-          for (const [batchKey, batchInfo] of Object.entries(batches)) {
-            if (batchFilter && batchKey !== batchFilter) continue;
-            foldersToSearch.push({
+            semesterBatches[semester].push({
               semester,
               batchKey,
               batchInfo,
@@ -553,58 +543,95 @@
           }
         }
 
-        // Search folders in parallel batches to speed up the process
-        const PARALLEL_BATCH_SIZE = 4; // Process 4 folders simultaneously
+        // Create round-robin batches: 1st from each semester, then 2nd from each, etc.
+        const smartBatches = [];
+        const maxBatchesPerSemester = Math.max(
+          ...Object.values(semesterBatches).map((batches) => batches.length)
+        );
+
+        for (
+          let batchIndex = 0;
+          batchIndex < maxBatchesPerSemester;
+          batchIndex++
+        ) {
+          const roundRobinBatch = [];
+          for (const semester of Object.keys(semesterBatches)) {
+            if (semesterBatches[semester][batchIndex]) {
+              roundRobinBatch.push(semesterBatches[semester][batchIndex]);
+            }
+          }
+          if (roundRobinBatch.length > 0) {
+            smartBatches.push(roundRobinBatch);
+          }
+        }
+
+        // Search folders in parallel batches - 8 folders simultaneously from different semesters
+        const PARALLEL_BATCH_SIZE = 8; // Process 8 folders simultaneously
 
         // Clear results container at start
         const container = document.getElementById("all-resources");
         container.innerHTML =
           '<div class="live-results" style="color: #a0aec0; font-size: 0.9em; text-align: center; padding: 20px;">Searching...</div>';
 
-        for (let i = 0; i < foldersToSearch.length; i += PARALLEL_BATCH_SIZE) {
-          const batch = foldersToSearch.slice(i, i + PARALLEL_BATCH_SIZE);
+        let totalFolders = 0;
+        let completedFolders = 0;
 
-          // Process this batch of folders in parallel
-          const batchPromises = batch.map(
-            async ({ semester, batchKey, batchInfo }) => {
-              try {
-                const folderResults = await searchInFolderRecursive(
-                  batchInfo.folderId,
-                  "",
-                  4, // Search up to 4 levels deep
-                  searchTerm,
-                  semester,
-                  batchKey,
-                  batchInfo.label,
-                  statsElement
-                );
-                return folderResults;
-              } catch (error) {
-                console.warn(`Failed to search ${batchInfo.label}:`, error);
-                return [];
+        // Count total folders
+        smartBatches.forEach((batch) => (totalFolders += batch.length));
+
+        // Process each round-robin batch
+        for (const roundRobinBatch of smartBatches) {
+          // Split into parallel batches of 8
+          for (
+            let i = 0;
+            i < roundRobinBatch.length;
+            i += PARALLEL_BATCH_SIZE
+          ) {
+            const batch = roundRobinBatch.slice(i, i + PARALLEL_BATCH_SIZE);
+
+            // Process this batch of folders in parallel
+            const batchPromises = batch.map(
+              async ({ semester, batchKey, batchInfo }) => {
+                try {
+                  // Search with unlimited depth for comprehensive coverage
+                  const folderResults = await searchInFolderRecursive(
+                    batchInfo.folderId,
+                    "",
+                    -1, // -1 = unlimited depth
+                    searchTerm,
+                    semester,
+                    batchKey,
+                    batchInfo.label,
+                    statsElement
+                  );
+                  return folderResults;
+                } catch (error) {
+                  console.warn(`Failed to search ${batchInfo.label}:`, error);
+                  return [];
+                }
               }
+            );
+
+            // Wait for this batch to complete
+            const batchResults = await Promise.all(batchPromises);
+
+            // Add results and update progress
+            for (const folderResults of batchResults) {
+              results.push(...folderResults);
             }
-          );
 
-          // Wait for this batch to complete
-          const batchResults = await Promise.all(batchPromises);
+            completedFolders += batch.length;
+            const limiterStats = apiLimiter.getStats();
 
-          // Add results and update progress
-          for (const folderResults of batchResults) {
-            results.push(...folderResults);
-          }
-
-          completedFolders += batch.length;
-          const limiterStats = apiLimiter.getStats();
-
-          // Update results display in real-time after each batch
-          const currentResults = removeDuplicatesOptimized(results);
-          if (currentResults.length > 0) {
-            displayResults(currentResults);
-            // Update stats with results count on the right
-            statsElement.innerHTML = `🔍 Searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
-          } else {
-            statsElement.textContent = `🔍 Searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
+            // Update results display in real-time after each batch
+            const currentResults = removeDuplicatesOptimized(results);
+            if (currentResults.length > 0) {
+              displayResults(currentResults);
+              // Update stats with results count on the right
+              statsElement.innerHTML = `🔍 Searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+            } else {
+              statsElement.textContent = `🔍 Searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
+            }
           }
         }
 
@@ -620,18 +647,52 @@
         return flatResults;
       }
 
-      // Advanced search matching with fuzzy search, typo tolerance, and flexible spacing
+      // Advanced search matching like Google - prioritizes exact phrases and complete words
       function smartMatch(searchTerm, fileName, filePath) {
         const search = searchTerm.toLowerCase().trim();
         const name = fileName.toLowerCase();
         const path = filePath.toLowerCase();
 
-        // 1. Exact match (highest priority)
+        // If search is empty, don't match anything
+        if (!search) return false;
+
+        // 1. EXACT PHRASE MATCH (highest priority) - like Google's quoted search
         if (name.includes(search) || path.includes(search)) {
           return true;
         }
 
-        // 2. Space-insensitive matching (remove all spaces)
+        // 2. COMPLETE WORD BOUNDARIES - avoid partial word matches
+        // Split search into individual words
+        const searchWords = search
+          .split(/\s+/)
+          .filter((word) => word.length > 0);
+
+        // For single word searches, use word boundaries to avoid partial matches
+        if (searchWords.length === 1) {
+          const word = searchWords[0];
+          // Create regex with word boundaries (\b) to match complete words only
+          const wordBoundaryRegex = new RegExp(
+            `\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+            "i"
+          );
+          return wordBoundaryRegex.test(name) || wordBoundaryRegex.test(path);
+        }
+
+        // 3. ALL WORDS MUST BE PRESENT (like Google's AND logic)
+        // Each word must be found as a complete word, not partial
+        const allWordsPresent = searchWords.every((word) => {
+          const wordBoundaryRegex = new RegExp(
+            `\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+            "i"
+          );
+          return wordBoundaryRegex.test(name) || wordBoundaryRegex.test(path);
+        });
+
+        if (allWordsPresent) {
+          return true;
+        }
+
+        // 4. FLEXIBLE SPACING - remove spaces and check (for compound words)
         const searchNoSpaces = search.replace(/\s+/g, "");
         const nameNoSpaces = name.replace(/\s+/g, "");
         const pathNoSpaces = path.replace(/\s+/g, "");
@@ -643,21 +704,14 @@
           return true;
         }
 
-        // 3. Flexible word order matching
-        const searchWords = search.split(/\s+/);
-        if (searchWords.length > 1) {
-          const allWordsMatch = searchWords.every(
-            (word) => name.includes(word) || path.includes(word)
-          );
-          if (allWordsMatch) {
-            return true;
-          }
-        }
-
-        // 4. Acronym matching (first letters of words)
-        if (search.length >= 2) {
-          const nameWords = name.split(/[\s\-_\.]+/);
-          const pathWords = path.split(/[\s\-_\.\/]+/);
+        // 5. ACRONYM MATCHING (only for 3+ character searches)
+        if (search.length >= 3 && !search.includes(" ")) {
+          const nameWords = name
+            .split(/[\s\-_\.]+/)
+            .filter((w) => w.length > 0);
+          const pathWords = path
+            .split(/[\s\-_\.\/]+/)
+            .filter((w) => w.length > 0);
 
           const nameAcronym = nameWords.map((word) => word.charAt(0)).join("");
           const pathAcronym = pathWords.map((word) => word.charAt(0)).join("");
@@ -667,69 +721,19 @@
           }
         }
 
-        // 5. Fuzzy matching for typos (Levenshtein distance)
-        if (search.length >= 3) {
-          // Split into words and check each word for fuzzy match
-          const searchWords = search.split(/\s+/);
-          const nameWords = name.split(/[\s\-_\.]+/);
-          const pathWords = path.split(/[\s\-_\.\/]+/);
-
-          for (const searchWord of searchWords) {
-            if (searchWord.length >= 3) {
-              // Check if any word in name/path is similar to search word
-              const similarInName = nameWords.some(
-                (word) =>
-                  word.length >= 3 &&
-                  levenshteinDistance(searchWord, word) <=
-                    Math.floor(searchWord.length * 0.3)
-              );
-              const similarInPath = pathWords.some(
-                (word) =>
-                  word.length >= 3 &&
-                  levenshteinDistance(searchWord, word) <=
-                    Math.floor(searchWord.length * 0.3)
-              );
-
-              if (similarInName || similarInPath) {
-                return true;
-              }
-            }
-          }
-        }
-
-        // 6. Partial word matching (starts with)
-        const searchWords2 = search.split(/\s+/);
-        for (const searchWord of searchWords2) {
-          if (searchWord.length >= 2) {
-            const nameWords = name.split(/[\s\-_\.]+/);
-            const pathWords = path.split(/[\s\-_\.\/]+/);
-
-            const startsWithInName = nameWords.some((word) =>
-              word.startsWith(searchWord)
-            );
-            const startsWithInPath = pathWords.some((word) =>
-              word.startsWith(searchWord)
-            );
-
-            if (startsWithInName || startsWithInPath) {
-              return true;
-            }
-          }
-        }
-
-        // 7. Number and special character flexible matching
-        const searchNormalized = normalizeText(search);
-        const nameNormalized = normalizeText(name);
-        const pathNormalized = normalizeText(path);
-
-        if (
-          nameNormalized.includes(searchNormalized) ||
-          pathNormalized.includes(searchNormalized)
-        ) {
-          return true;
-        }
-
         return false;
+        const similarInName = nameWords.some(
+          (word) =>
+            word.length >= 3 &&
+            levenshteinDistance(searchWord, word) <=
+              Math.floor(searchWord.length * 0.3)
+        );
+        const similarInPath = pathWords.some(
+          (word) =>
+            word.length >= 3 &&
+            levenshteinDistance(searchWord, word) <=
+              Math.floor(searchWord.length * 0.3)
+        );
       }
 
       // Calculate Levenshtein distance for fuzzy matching
@@ -782,7 +786,8 @@
         statsElement,
         currentDepth = 0
       ) {
-        if (currentDepth >= maxDepth) return [];
+        // Check depth limit (-1 means unlimited depth)
+        if (maxDepth >= 0 && currentDepth >= maxDepth) return [];
 
         // Check persistent cache first (24-hour localStorage)
         let cachedFiles = loadFromPersistentCache(folderId, currentDepth);
@@ -896,8 +901,8 @@
             });
           }
 
-          // If it's a folder and we haven't reached max depth, search it recursively
-          if (isFolder && currentDepth < maxDepth - 1) {
+          // If it's a folder, search it recursively (unlimited depth if maxDepth = -1)
+          if (isFolder && (maxDepth < 0 || currentDepth < maxDepth - 1)) {
             subfolderPromises.push(
               searchInFolderRecursive(
                 file.id,
@@ -1803,7 +1808,6 @@
 
       .semester-group {
         margin-bottom: 32px;
-        border-left: 4px solid #2196f3;
         padding-left: 16px;
       }
 
