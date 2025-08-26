@@ -620,7 +620,7 @@
 
         // Search folders in parallel batches - 30 folders simultaneously for MAXIMUM speed
         const PARALLEL_BATCH_SIZE = 30; // Process 30 folders simultaneously (hyper-aggressive)
-        const MAX_SEARCH_DEPTH = 5; // Depth of 5 levels for comprehensive nested file discovery
+        const MAX_SEARCH_DEPTH = 4; // Depth of 4 levels - optimal balance of coverage vs performance
 
         // Clear results container at start
         const container = document.getElementById("all-resources");
@@ -707,11 +707,12 @@
 
         const flatResults = removeDuplicatesOptimized(results);
 
-        // SECONDARY SEARCH: Resolve folder IDs for all folders in search results
-        if (flatResults.length > 0) {
-          statsElement.innerHTML = `🔗 Resolving folder links... <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
-          await resolveFolderLinks(flatResults, statsElement);
-        }
+        // NOTE: Secondary search no longer needed!
+        // Folder IDs are now captured during initial search for better performance
+        // REMOVED: await resolveFolderLinks(flatResults, statsElement);
+
+        // Save captured folder IDs to persistent cache
+        saveResolvedFolderCache();
 
         // Final update - show completion in stats line
         statsElement.innerHTML = `✅ Search complete <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
@@ -721,130 +722,6 @@
         console.log("🚀 Search completed! Rate limiter stats:", finalStats);
 
         return flatResults;
-      }
-
-      // Secondary search to resolve folder IDs for proper linking
-      async function resolveFolderLinks(searchResults, statsElement) {
-        // Load existing resolved folder cache
-        loadResolvedFolderCache();
-
-        const folderCache = window.resolvedFolderCache || new Map(); // Cache for resolved folder IDs
-        const foldersToResolve = new Set(); // Unique folders that need resolution
-
-        // Extract all unique folder paths from search results
-        searchResults.forEach((file) => {
-          if (file.path) {
-            const pathParts = file.path.split("/");
-            let currentPath = "";
-            pathParts.forEach((part, index) => {
-              if (index < pathParts.length - 1) {
-                // Don't include the file itself
-                currentPath = currentPath ? `${currentPath}/${part}` : part;
-                const folderKey = `${file.semester}_${file.batch}_${currentPath}`;
-                foldersToResolve.add(folderKey);
-              }
-            });
-          }
-        });
-
-        if (foldersToResolve.size === 0) return;
-
-        statsElement.innerHTML = `🔗 Resolving ${foldersToResolve.size} folder links... <span style="float: right; color: #68d391; font-size: 0.9em;">${searchResults.length} results</span>`;
-
-        // Batch resolve folder IDs
-        const resolvePromises = [];
-        let processed = 0;
-
-        for (const folderKey of foldersToResolve) {
-          const [semester, batch, folderPath] = folderKey.split("_", 3);
-          const batchInfo = ALL_DRIVE_RESOURCES[semester]?.[batch];
-
-          if (batchInfo) {
-            resolvePromises.push(
-              searchForSpecificFolder(
-                batchInfo.folderId,
-                folderPath,
-                semester,
-                batch
-              )
-                .then((folderData) => {
-                  if (folderData) {
-                    folderCache.set(folderKey, folderData);
-                  }
-                  processed++;
-                  if (processed % 5 === 0) {
-                    // Update every 5 folders
-                    statsElement.innerHTML = `🔗 Resolved ${processed}/${foldersToResolve.size} folders... <span style="float: right; color: #68d391; font-size: 0.9em;">${searchResults.length} results</span>`;
-                  }
-                })
-                .catch((err) => {
-                  console.warn(`Failed to resolve folder: ${folderPath}`, err);
-                  processed++;
-                })
-            );
-          }
-        }
-
-        await Promise.all(resolvePromises);
-
-        // Store resolved folders in global cache for tree building
-        window.resolvedFolderCache = folderCache;
-
-        // Also save to persistent cache for future searches
-        try {
-          const cacheData = {
-            data: Object.fromEntries(folderCache),
-            timestamp: Date.now(),
-            version: CACHE_VERSION,
-          };
-          localStorage.setItem(
-            "resolvedFolderCache_v1",
-            JSON.stringify(cacheData)
-          );
-        } catch (error) {
-          console.warn("Failed to save resolved folder cache:", error);
-        }
-
-        statsElement.innerHTML = `✅ Resolved ${folderCache.size} folder links <span style="float: right; color: #68d391; font-size: 0.9em;">${searchResults.length} results</span>`;
-      }
-
-      // Search for a specific folder by path to get its ID
-      async function searchForSpecificFolder(
-        rootFolderId,
-        targetPath,
-        semester,
-        batch
-      ) {
-        try {
-          const pathParts = targetPath.split("/");
-          let currentFolderId = rootFolderId;
-
-          for (const folderName of pathParts) {
-            const url = `https://www.googleapis.com/drive/v3/files?q='${currentFolderId}'+in+parents+and+trashed=false+and+mimeType='application/vnd.google-apps.folder'+and+name='${encodeURIComponent(
-              folderName
-            )}'&key=${DRIVE_API_KEY}&fields=files(id,name)&pageSize=10`;
-
-            const data = await apiLimiter.makeRequest(url);
-
-            if (data.files && data.files.length > 0) {
-              currentFolderId = data.files[0].id;
-            } else {
-              // Folder not found at this level
-              return null;
-            }
-          }
-
-          return {
-            id: currentFolderId,
-            name: pathParts[pathParts.length - 1],
-            path: targetPath,
-            semester: semester,
-            batch: batch,
-          };
-        } catch (error) {
-          console.warn(`Error resolving folder ${targetPath}:`, error);
-          return null;
-        }
       }
 
       // Load resolved folder cache from localStorage
@@ -873,6 +750,33 @@
 
         if (!window.resolvedFolderCache) {
           window.resolvedFolderCache = new Map();
+        }
+      }
+
+      // Save resolved folder cache to localStorage for persistence
+      function saveResolvedFolderCache() {
+        if (
+          !window.resolvedFolderCache ||
+          window.resolvedFolderCache.size === 0
+        ) {
+          return; // Nothing to save
+        }
+
+        try {
+          const cacheData = {
+            data: Object.fromEntries(window.resolvedFolderCache),
+            timestamp: Date.now(),
+            version: CACHE_VERSION,
+          };
+          localStorage.setItem(
+            "resolvedFolderCache_v1",
+            JSON.stringify(cacheData)
+          );
+          console.log(
+            `💾 Saved ${window.resolvedFolderCache.size} folder links to cache`
+          );
+        } catch (error) {
+          console.warn("Failed to save resolved folder cache:", error);
         }
       }
 
@@ -1128,6 +1032,15 @@
               batchLabel: batchLabel,
               parentPath: path,
             });
+          }
+
+          // Store folder IDs during initial search (eliminates need for secondary search!)
+          if (isFolder) {
+            // Store folder ID in the resolved cache using the same key pattern
+            const exactKey = `${semester}_${batchKey}_${filePath}`;
+            if (window.resolvedFolderCache) {
+              window.resolvedFolderCache.set(exactKey, file.id);
+            }
           }
 
           // If it's a folder, search it recursively (unlimited depth if maxDepth = -1)
@@ -1396,7 +1309,7 @@
       async function fetchAllFilesRecursively(
         folderId,
         path = "",
-        maxDepth = 5, // Increased to 5 levels for comprehensive nested discovery
+        maxDepth = 4, // Optimal depth of 4 levels - good coverage without excessive nesting
         semester = "",
         batchLabel = "",
         statsElement = null,
