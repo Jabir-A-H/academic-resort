@@ -48,7 +48,7 @@
         </div>
 
         <div class="filter-row">
-          <select id="semesterFilter" onchange="optimizedSearch()">
+          <select id="semesterFilter" onchange="handleFilterChange()">
             <option value="">All Semesters</option>
             <option value="1st">1st Semester</option>
             <option value="2nd">2nd Semester</option>
@@ -60,7 +60,7 @@
             <option value="8th">8th Semester</option>
           </select>
 
-          <select id="batchFilter" onchange="optimizedSearch()">
+          <select id="batchFilter" onchange="handleFilterChange()">
             <option value="">All Batches</option>
             <option value="30">30th Batch</option>
             <option value="29">29th Batch</option>
@@ -518,6 +518,24 @@
 
       // === END CACHE SYSTEM ===
 
+      // Smart filter change handler - only search if there's text in search bar
+      function handleFilterChange() {
+        const searchTerm = document
+          .getElementById("globalSearch")
+          .value.toLowerCase()
+          .trim();
+
+        // Only trigger search if there's already text in the search bar
+        if (searchTerm && searchTerm.length >= 2) {
+          optimizedSearch();
+        } else {
+          // Clear results if no search term
+          const stats = document.getElementById("resultsStats");
+          displayResults([]);
+          stats.textContent = "Enter a search term to find resources.";
+        }
+      }
+
       // Optimized search - only load data when user searches (like Google Drive)
       async function optimizedSearch() {
         const searchTerm = document
@@ -528,14 +546,14 @@
         const batchFilter = document.getElementById("batchFilter").value;
         const stats = document.getElementById("resultsStats");
 
-        if (!searchTerm && !semesterFilter && !batchFilter) {
+        // Always require a search term for manual search
+        if (!searchTerm) {
           displayResults([]);
-          stats.textContent =
-            "Enter a search term or select filters to find resources.";
+          stats.textContent = "Enter a search term to find resources.";
           return;
         }
 
-        if (searchTerm && searchTerm.length < 2) {
+        if (searchTerm.length < 2) {
           stats.textContent = "Type at least 2 characters to search...";
           return;
         }
