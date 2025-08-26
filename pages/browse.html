@@ -286,6 +286,18 @@
         }
       }
 
+      // Clear cache and reload the page (for UI link)
+      function clearCacheAndReload() {
+        if (
+          confirm(
+            "Clear all cached data and reload fresh content? This might take a moment to rebuild."
+          )
+        ) {
+          clearAllCache();
+          location.reload();
+        }
+      }
+
       // Make cache management functions available globally for debugging
       window.cacheManagement = {
         stats: getCacheStats,
@@ -547,7 +559,7 @@
         if (cachedFiles) {
           // Update status to show cache hit
           if (statsElement && path) {
-            statsElement.textContent = `📋 Using cached data for ${path}...`;
+            statsElement.textContent = `✅ Searching in ${path}...`;
           }
 
           // Also update in-memory cache
@@ -587,7 +599,7 @@
         try {
           // Update progress
           if (statsElement && path) {
-            statsElement.textContent = `🌐 Loading fresh data for ${path}...`;
+            statsElement.textContent = `🔍 Searching in ${path}...`;
           }
 
           // Optimized API call
@@ -1434,7 +1446,7 @@
         const cacheStats = getCacheStats();
 
         if (cacheStats.entries > 0) {
-          stats.textContent = `📋 Ready! Found ${cacheStats.entries} cached folders (${cacheStats.sizeKB}KB). Enter search terms to find resources.`;
+          stats.innerHTML = `✅ Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
         } else {
           stats.textContent =
             "Ready to search! Enter terms above to find resources.";
@@ -1444,7 +1456,7 @@
           await loadDriveMapping();
 
           if (cacheStats.entries > 0) {
-            stats.textContent = `✅ Ready! Using cached data from ${cacheStats.lastUpdated}. ${cacheStats.entries} folders cached (${cacheStats.sizeKB}KB).`;
+            stats.innerHTML = `✅ Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
           } else {
             stats.textContent =
               "✅ Ready! Enter search terms or select filters to find resources.";
@@ -1458,7 +1470,7 @@
         // Show empty state initially
         displayResults([]);
 
-        // Log cache info to console for debugging
+        // Log cache info to console for debugging (easter egg for developers!)
         console.log("📋 Cache Status:", cacheStats);
       });
     </script>
