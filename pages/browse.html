@@ -97,6 +97,86 @@
       const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
       const CACHE_VERSION = "v1"; // Increment this to force cache refresh on updates
 
+      // === RATE LIMITING SYSTEM ===
+
+      class APIRateLimiter {
+        constructor(maxConcurrent = 3, delayBetween = 100) {
+          this.maxConcurrent = maxConcurrent;
+          this.delayBetween = delayBetween;
+          this.activeRequests = 0;
+          this.requestQueue = [];
+          this.isProcessing = false;
+        }
+
+        async makeRequest(url) {
+          return new Promise((resolve, reject) => {
+            this.requestQueue.push({ url, resolve, reject });
+            this.processQueue();
+          });
+        }
+
+        async processQueue() {
+          if (this.isProcessing || this.requestQueue.length === 0) return;
+
+          this.isProcessing = true;
+
+          while (
+            this.requestQueue.length > 0 &&
+            this.activeRequests < this.maxConcurrent
+          ) {
+            const { url, resolve, reject } = this.requestQueue.shift();
+            this.activeRequests++;
+
+            this.executeRequest(url, resolve, reject);
+
+            // Small delay between starting requests
+            if (this.requestQueue.length > 0) {
+              await new Promise((resolve) =>
+                setTimeout(resolve, this.delayBetween)
+              );
+            }
+          }
+
+          this.isProcessing = false;
+        }
+
+        async executeRequest(url, resolve, reject) {
+          try {
+            const response = await fetch(url);
+            this.activeRequests--;
+
+            if (!response.ok) {
+              throw new Error(
+                `API Error: ${response.status} - ${response.statusText}`
+              );
+            }
+
+            const data = await response.json();
+            resolve(data);
+
+            // Continue processing queue
+            setTimeout(() => this.processQueue(), this.delayBetween);
+          } catch (error) {
+            this.activeRequests--;
+            reject(error);
+
+            // Continue processing queue even on error
+            setTimeout(() => this.processQueue(), this.delayBetween);
+          }
+        }
+
+        getStats() {
+          return {
+            activeRequests: this.activeRequests,
+            queueLength: this.requestQueue.length,
+            maxConcurrent: this.maxConcurrent,
+          };
+        }
+      }
+
+      // Create global rate limiter instance (optimized for speed)
+      const apiLimiter = new APIRateLimiter(10, 3); // Max 6 concurrent, 3ms between starts
+
       // Get cache key for a folder
       function getCacheKey(folderId, currentDepth) {
         return `driveCache_${CACHE_VERSION}_${folderId}_${currentDepth}`;
@@ -286,15 +366,107 @@
         }
       }
 
-      // Clear cache and reload the page (for UI link)
+      // Clear cache and start immediate rebuild (for UI link)
       function clearCacheAndReload() {
         if (
           confirm(
-            "Clear all cached data and reload fresh content? This might take a moment to rebuild."
+            "Clear all cached data and rebuild? Since you're already on the search page, rebuilding will be faster!"
           )
         ) {
           clearAllCache();
-          location.reload();
+
+          // Update status to show rebuilding
+          const stats = document.getElementById("resultsStats");
+          stats.textContent =
+            "🔄 Cache cleared! Rebuilding cache with priority speed...";
+
+          // Start immediate foreground rebuilding (faster since user is engaged)
+          if (
+            window.backgroundCachePreloader &&
+            window.backgroundCachePreloader.instance()
+          ) {
+            const preloader = window.backgroundCachePreloader.instance();
+            preloader.stopPreloading(); // Stop background preloader
+
+            // Start faster rebuild for immediate use
+            setTimeout(() => {
+              startImmediateRebuild(stats);
+            }, 500);
+          } else {
+            // Fallback to page reload if background preloader not available
+            location.reload();
+          }
+        }
+      }
+
+      // Fast cache rebuild when user is actively on browse page
+      async function startImmediateRebuild(statusElement) {
+        statusElement.textContent = "🚀 Fast rebuilding cache...";
+
+        try {
+          // Use foreground rate limiter for faster rebuilding
+          await loadDriveMapping();
+
+          const driveMapping = ALL_DRIVE_RESOURCES;
+          const folderList = Object.entries(driveMapping).flatMap(
+            ([semester, batches]) =>
+              Object.entries(batches).map(([batchKey, batchInfo]) => ({
+                folderId: batchInfo.folderId,
+                label: batchInfo.label,
+                semester,
+                batchKey,
+              }))
+          );
+
+          let completed = 0;
+
+          for (const folder of folderList) {
+            completed++;
+            statusElement.textContent = `🔄 Rebuilding cache: ${completed}/${
+              folderList.length
+            } folders (${Math.round((completed / folderList.length) * 100)}%)`;
+
+            try {
+              await rebuildFolderCache(folder.folderId, 0, 4);
+            } catch (error) {
+              console.warn(`Failed to rebuild ${folder.label}:`, error);
+            }
+          }
+
+          // Get fresh cache stats
+          const cacheStats = getCacheStats();
+          statusElement.innerHTML = `✅ Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
+
+          console.log("✅ Fast cache rebuild completed!");
+        } catch (error) {
+          statusElement.textContent =
+            "❌ Rebuild failed. Please refresh the page.";
+          console.error("Cache rebuild error:", error);
+        }
+      }
+
+      // Fast folder cache rebuild (uses foreground rate limiter)
+      async function rebuildFolderCache(folderId, currentDepth, maxDepth) {
+        if (currentDepth >= maxDepth) return;
+
+        const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
+
+        try {
+          const data = await apiLimiter.makeRequest(url); // Use foreground limiter for speed
+
+          // Save to cache
+          saveToPersistentCache(folderId, currentDepth, data.files || []);
+
+          // Rebuild subfolders
+          const folders = (data.files || []).filter(
+            (file) => file.mimeType === "application/vnd.google-apps.folder"
+          );
+
+          for (const folder of folders) {
+            await rebuildFolderCache(folder.id, currentDepth + 1, maxDepth);
+          }
+        } catch (error) {
+          console.warn(`Rebuild failed for folder ${folderId}:`, error);
         }
       }
 
@@ -347,7 +519,7 @@
         }
       }
 
-      // Smart search that searches all nested folders recursively
+      // Smart search that searches all nested folders recursively (with rate limiting)
       async function smartSearch(
         searchTerm,
         semesterFilter,
@@ -355,38 +527,97 @@
         statsElement
       ) {
         const results = [];
-        const searchPromises = [];
+        let totalFolders = 0;
+        let completedFolders = 0;
 
-        // Search all folders recursively (up to depth 4 for performance)
+        // Count total folders first for progress tracking
         for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
           if (semesterFilter && semester !== semesterFilter) continue;
-
           for (const [batchKey, batchInfo] of Object.entries(batches)) {
             if (batchFilter && batchKey !== batchFilter) continue;
-
-            // Search recursively through all folders (depth 4)
-            searchPromises.push(
-              searchInFolderRecursive(
-                batchInfo.folderId,
-                "",
-                4, // Search up to 4 levels deep
-                searchTerm,
-                semester,
-                batchKey,
-                batchInfo.label,
-                statsElement
-              )
-            );
+            totalFolders++;
           }
         }
 
-        // Execute all searches in parallel
-        const allResults = await Promise.all(searchPromises);
-        const flatResults = allResults.flat();
+        // Collect all folders to search
+        const foldersToSearch = [];
+        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
+          if (semesterFilter && semester !== semesterFilter) continue;
+          for (const [batchKey, batchInfo] of Object.entries(batches)) {
+            if (batchFilter && batchKey !== batchFilter) continue;
+            foldersToSearch.push({
+              semester,
+              batchKey,
+              batchInfo,
+            });
+          }
+        }
 
-        statsElement.textContent = `Found ${flatResults.length} results across all folders`;
+        // Search folders in parallel batches to speed up the process
+        const PARALLEL_BATCH_SIZE = 4; // Process 4 folders simultaneously
 
-        return removeDuplicatesOptimized(flatResults);
+        // Clear results container at start
+        const container = document.getElementById("all-resources");
+        container.innerHTML =
+          '<div class="live-results" style="color: #a0aec0; font-size: 0.9em; text-align: center; padding: 20px;">Searching...</div>';
+
+        for (let i = 0; i < foldersToSearch.length; i += PARALLEL_BATCH_SIZE) {
+          const batch = foldersToSearch.slice(i, i + PARALLEL_BATCH_SIZE);
+
+          // Process this batch of folders in parallel
+          const batchPromises = batch.map(
+            async ({ semester, batchKey, batchInfo }) => {
+              try {
+                const folderResults = await searchInFolderRecursive(
+                  batchInfo.folderId,
+                  "",
+                  4, // Search up to 4 levels deep
+                  searchTerm,
+                  semester,
+                  batchKey,
+                  batchInfo.label,
+                  statsElement
+                );
+                return folderResults;
+              } catch (error) {
+                console.warn(`Failed to search ${batchInfo.label}:`, error);
+                return [];
+              }
+            }
+          );
+
+          // Wait for this batch to complete
+          const batchResults = await Promise.all(batchPromises);
+
+          // Add results and update progress
+          for (const folderResults of batchResults) {
+            results.push(...folderResults);
+          }
+
+          completedFolders += batch.length;
+          const limiterStats = apiLimiter.getStats();
+
+          // Update results display in real-time after each batch
+          const currentResults = removeDuplicatesOptimized(results);
+          if (currentResults.length > 0) {
+            displayResults(currentResults);
+            // Update stats with results count on the right
+            statsElement.innerHTML = `🔍 Searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+          } else {
+            statsElement.textContent = `🔍 Searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
+          }
+        }
+
+        const flatResults = removeDuplicatesOptimized(results);
+
+        // Final update - show completion in stats line
+        statsElement.innerHTML = `Search complete <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
+
+        // Log rate limiter performance (easter egg for developers)
+        const finalStats = apiLimiter.getStats();
+        console.log("🚀 Search completed! Rate limiter stats:", finalStats);
+
+        return flatResults;
       }
 
       // Advanced search matching with fuzzy search, typo tolerance, and flexible spacing
@@ -602,18 +833,9 @@
             statsElement.textContent = `🔍 Searching in ${path}...`;
           }
 
-          // Optimized API call
-          const response = await fetch(
-            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`
-          );
-
-          if (!response.ok) {
-            throw new Error(
-              `API Error: ${response.status} - ${response.statusText}`
-            );
-          }
-
-          const data = await response.json();
+          // Rate-limited API call to prevent resource exhaustion
+          const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
+          const data = await apiLimiter.makeRequest(url);
 
           // Cache the raw response in both memory and persistent storage
           const files = data.files || [];
@@ -1445,21 +1667,30 @@
         // Get cache statistics
         const cacheStats = getCacheStats();
 
+        // Check background preloader status
+        // Background preloader disabled - was causing incomplete cache states
+        // const backgroundStats = window.backgroundCachePreloader?.stats();
+
         if (cacheStats.entries > 0) {
           stats.innerHTML = `✅ Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
         } else {
           stats.textContent =
-            "Ready to search! Enter terms above to find resources.";
+            "Ready to search! Enter terms above. First search will build cache and may take a moment.";
         }
 
         try {
           await loadDriveMapping();
 
-          if (cacheStats.entries > 0) {
-            stats.innerHTML = `✅ Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
+          // Re-check cache stats after loading mapping
+          const updatedCacheStats = getCacheStats();
+          // Background preloader disabled - was causing incomplete cache states
+          // const backgroundStats = window.backgroundCachePreloader?.stats();
+
+          if (updatedCacheStats.entries > 0) {
+            stats.innerHTML = `✅ Ready! ${updatedCacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
           } else {
             stats.textContent =
-              "✅ Ready! Enter search terms or select filters to find resources.";
+              "✅ Ready! Enter search terms or select filters to find resources. First search will build cache.";
           }
         } catch (error) {
           console.error("Failed to load drive mapping:", error);
