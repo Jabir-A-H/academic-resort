@@ -612,7 +612,7 @@
 
         // Search folders in parallel batches - 30 folders simultaneously for MAXIMUM speed
         const PARALLEL_BATCH_SIZE = 30; // Process 30 folders simultaneously (hyper-aggressive)
-        const MAX_SEARCH_DEPTH = 4; // Depth of 4 levels for comprehensive nested file discovery
+        const MAX_SEARCH_DEPTH = 5; // Depth of 5 levels for comprehensive nested file discovery
 
         // Clear results container at start
         const container = document.getElementById("all-resources");
@@ -699,6 +699,12 @@
 
         const flatResults = removeDuplicatesOptimized(results);
 
+        // SECONDARY SEARCH: Resolve folder IDs for all folders in search results
+        if (flatResults.length > 0) {
+          statsElement.innerHTML = `🔗 Resolving folder links... <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
+          await resolveFolderLinks(flatResults, statsElement);
+        }
+
         // Final update - show completion in stats line
         statsElement.innerHTML = `✅ Search complete <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
 
@@ -707,6 +713,159 @@
         console.log("🚀 Search completed! Rate limiter stats:", finalStats);
 
         return flatResults;
+      }
+
+      // Secondary search to resolve folder IDs for proper linking
+      async function resolveFolderLinks(searchResults, statsElement) {
+        // Load existing resolved folder cache
+        loadResolvedFolderCache();
+
+        const folderCache = window.resolvedFolderCache || new Map(); // Cache for resolved folder IDs
+        const foldersToResolve = new Set(); // Unique folders that need resolution
+
+        // Extract all unique folder paths from search results
+        searchResults.forEach((file) => {
+          if (file.path) {
+            const pathParts = file.path.split("/");
+            let currentPath = "";
+            pathParts.forEach((part, index) => {
+              if (index < pathParts.length - 1) {
+                // Don't include the file itself
+                currentPath = currentPath ? `${currentPath}/${part}` : part;
+                const folderKey = `${file.semester}_${file.batch}_${currentPath}`;
+                foldersToResolve.add(folderKey);
+              }
+            });
+          }
+        });
+
+        if (foldersToResolve.size === 0) return;
+
+        statsElement.innerHTML = `🔗 Resolving ${foldersToResolve.size} folder links... <span style="float: right; color: #68d391; font-size: 0.9em;">${searchResults.length} results</span>`;
+
+        // Batch resolve folder IDs
+        const resolvePromises = [];
+        let processed = 0;
+
+        for (const folderKey of foldersToResolve) {
+          const [semester, batch, folderPath] = folderKey.split("_", 3);
+          const batchInfo = ALL_DRIVE_RESOURCES[semester]?.[batch];
+
+          if (batchInfo) {
+            resolvePromises.push(
+              searchForSpecificFolder(
+                batchInfo.folderId,
+                folderPath,
+                semester,
+                batch
+              )
+                .then((folderData) => {
+                  if (folderData) {
+                    folderCache.set(folderKey, folderData);
+                  }
+                  processed++;
+                  if (processed % 5 === 0) {
+                    // Update every 5 folders
+                    statsElement.innerHTML = `🔗 Resolved ${processed}/${foldersToResolve.size} folders... <span style="float: right; color: #68d391; font-size: 0.9em;">${searchResults.length} results</span>`;
+                  }
+                })
+                .catch((err) => {
+                  console.warn(`Failed to resolve folder: ${folderPath}`, err);
+                  processed++;
+                })
+            );
+          }
+        }
+
+        await Promise.all(resolvePromises);
+
+        // Store resolved folders in global cache for tree building
+        window.resolvedFolderCache = folderCache;
+
+        // Also save to persistent cache for future searches
+        try {
+          const cacheData = {
+            data: Object.fromEntries(folderCache),
+            timestamp: Date.now(),
+            version: CACHE_VERSION,
+          };
+          localStorage.setItem(
+            "resolvedFolderCache_v1",
+            JSON.stringify(cacheData)
+          );
+        } catch (error) {
+          console.warn("Failed to save resolved folder cache:", error);
+        }
+
+        statsElement.innerHTML = `✅ Resolved ${folderCache.size} folder links <span style="float: right; color: #68d391; font-size: 0.9em;">${searchResults.length} results</span>`;
+      }
+
+      // Search for a specific folder by path to get its ID
+      async function searchForSpecificFolder(
+        rootFolderId,
+        targetPath,
+        semester,
+        batch
+      ) {
+        try {
+          const pathParts = targetPath.split("/");
+          let currentFolderId = rootFolderId;
+
+          for (const folderName of pathParts) {
+            const url = `https://www.googleapis.com/drive/v3/files?q='${currentFolderId}'+in+parents+and+trashed=false+and+mimeType='application/vnd.google-apps.folder'+and+name='${encodeURIComponent(
+              folderName
+            )}'&key=${DRIVE_API_KEY}&fields=files(id,name)&pageSize=10`;
+
+            const data = await apiLimiter.makeRequest(url);
+
+            if (data.files && data.files.length > 0) {
+              currentFolderId = data.files[0].id;
+            } else {
+              // Folder not found at this level
+              return null;
+            }
+          }
+
+          return {
+            id: currentFolderId,
+            name: pathParts[pathParts.length - 1],
+            path: targetPath,
+            semester: semester,
+            batch: batch,
+          };
+        } catch (error) {
+          console.warn(`Error resolving folder ${targetPath}:`, error);
+          return null;
+        }
+      }
+
+      // Load resolved folder cache from localStorage
+      function loadResolvedFolderCache() {
+        try {
+          const cached = localStorage.getItem("resolvedFolderCache_v1");
+          if (cached) {
+            const cacheData = JSON.parse(cached);
+            const age = Date.now() - cacheData.timestamp;
+
+            // Cache valid for 24 hours
+            if (age <= CACHE_DURATION && cacheData.version === CACHE_VERSION) {
+              window.resolvedFolderCache = new Map(
+                Object.entries(cacheData.data)
+              );
+              console.log(
+                `📁 Loaded ${window.resolvedFolderCache.size} resolved folder links from cache`
+              );
+            } else {
+              localStorage.removeItem("resolvedFolderCache_v1");
+            }
+          }
+        } catch (error) {
+          console.warn("Failed to load resolved folder cache:", error);
+        }
+
+        if (!window.resolvedFolderCache) {
+          window.resolvedFolderCache = new Map();
+        }
       }
 
       // Advanced search matching like Google - prioritizes exact phrases and complete words
@@ -1229,7 +1388,7 @@
       async function fetchAllFilesRecursively(
         folderId,
         path = "",
-        maxDepth = 4, // Back to 4 levels for comprehensive nested discovery
+        maxDepth = 5, // Increased to 5 levels for comprehensive nested discovery
         semester = "",
         batchLabel = "",
         statsElement = null,
@@ -1535,8 +1694,24 @@
         return findFirstFile(tree) || "Unknown Batch";
       }
 
-      // Find folder file object to get its ID for linking
+      // Enhanced folder file finding with resolved folder cache
       function findFolderInFiles(folderName, folderNode) {
+        // First check the resolved folder cache
+        if (window.resolvedFolderCache) {
+          // Try to find this folder in the resolved cache
+          for (const [
+            cacheKey,
+            folderData,
+          ] of window.resolvedFolderCache.entries()) {
+            if (
+              folderData.name === folderName ||
+              folderData.path.endsWith(folderName)
+            ) {
+              return folderData;
+            }
+          }
+        }
+
         // Return the stored folder file if available
         if (folderNode.folderFile && folderNode.folderFile.id) {
           return folderNode.folderFile;
@@ -1589,65 +1764,114 @@
           }
         }
 
+        // Fallback 5: Try to extract parent folder from any file's webViewLink in this node
+        const fileWithLink = folderNode.files.find(
+          (file) => file.webViewLink && file.webViewLink.includes("/folders/")
+        );
+        if (fileWithLink) {
+          const parentId = fileWithLink.webViewLink.match(
+            /\/folders\/([a-zA-Z0-9_-]+)/
+          );
+          if (parentId) {
+            return { id: parentId[1], name: folderName, isParentFolder: true };
+          }
+        }
+
+        // Fallback 6: Recursively check children for any file with a parent folder link
+        for (const childNode of Object.values(folderNode.children)) {
+          const childFileWithLink = childNode.files.find(
+            (file) => file.webViewLink && file.webViewLink.includes("/folders/")
+          );
+          if (childFileWithLink) {
+            const parentId = childFileWithLink.webViewLink.match(
+              /\/folders\/([a-zA-Z0-9_-]+)/
+            );
+            if (parentId) {
+              return {
+                id: parentId[1],
+                name: folderName,
+                isParentFolder: true,
+              };
+            }
+          }
+        }
+
         return null;
       }
 
-      // Render tree node recursively
+      // Render tree node recursively - Enhanced to show ALL folders with links
       function renderTreeNode(node, container, depth) {
-        // Render folders first (sorted alphabetically)
+        // Render folders first (sorted alphabetically) - Show ALL folders, not just matching ones
         const sortedFolders = Object.entries(node.children).sort(([a], [b]) =>
           a.localeCompare(b)
         );
 
         sortedFolders.forEach(([folderName, folderNode]) => {
-          if (folderNode.hasMatchingContent) {
-            const folderDiv = document.createElement("div");
-            folderDiv.className = "tree-file"; // Use same class as files
-            folderDiv.style.paddingLeft = `${depth * 20}px`;
+          // Show ALL folders in the tree, but style differently if they don't have matching content
+          const folderDiv = document.createElement("div");
+          folderDiv.className = "tree-file";
+          folderDiv.style.paddingLeft = `${depth * 20}px`;
 
-            // Create a clickable folder link
-            const folderFile = findFolderInFiles(folderName, folderNode);
-            let folderLink = "#";
-            let clickHandler = "";
-
-            if (folderFile && folderFile.id) {
-              folderLink = `https://drive.google.com/drive/folders/${folderFile.id}`;
-            } else {
-              // If no folder ID found, try to find a parent folder or related file
-              const relatedFile = folderNode.files.find((file) => file.id);
-              if (relatedFile && relatedFile.webViewLink) {
-                // Use the parent folder of this file as a fallback
-                const parentId = relatedFile.webViewLink.match(
-                  /\/folders\/([a-zA-Z0-9_-]+)/
-                );
-                if (parentId) {
-                  folderLink = `https://drive.google.com/drive/folders/${parentId[1]}`;
-                } else {
-                  // If it's a file, try to navigate to its containing folder
-                  folderLink = relatedFile.webViewLink;
-                  clickHandler =
-                    "onclick=\"alert('Opening related file since folder link is not available.'); return true;\"";
-                }
-              } else {
-                // If no files or links found, show informative message
-                clickHandler =
-                  "onclick=\"alert('This folder contains matching files but direct folder access is not available. Try searching for specific files within this folder.'); return false;\"";
-              }
-            }
-
-            folderDiv.innerHTML = `
-              <div class="file-item">
-                <a href="${folderLink}" target="_blank" class="result-link" ${clickHandler}>
-                  <span class="file-icon">📁</span>
-                  <span class="file-name">${folderName}</span>
-                </a>
-              </div>
-            `;
-            container.appendChild(folderDiv);
-
-            // Recursively render children
-            renderTreeNode(folderNode, container, depth + 1);
+          // Add visual indicator for non-matching parent folders
+          const isParentFolder = !folderNode.hasMatchingContent;
+          if (isParentFolder) {
+            folderDiv.style.opacity = "0.7"; // Slightly faded for parent folders
           }
+
+          // Create a clickable folder link with enhanced fallbacks
+          const folderFile = findFolderInFiles(folderName, folderNode);
+          let folderLink = "#";
+          let clickHandler = "";
+          let linkTitle = "";
+
+          if (folderFile && folderFile.id) {
+            folderLink = `https://drive.google.com/drive/folders/${folderFile.id}`;
+            linkTitle = isParentFolder
+              ? `Open parent folder: ${folderName}`
+              : `Open folder: ${folderName}`;
+          } else {
+            // Enhanced fallback: Try to find any file in this folder tree and extract parent
+            const anyFileInTree = findAnyFileInNode(folderNode);
+            if (anyFileInTree && anyFileInTree.webViewLink) {
+              // Try to get the parent folder from file links
+              if (anyFileInTree.webViewLink.includes("/file/d/")) {
+                // For files, we can often find the parent folder
+                folderLink = anyFileInTree.webViewLink
+                  .replace("/file/d/", "/drive/folders/")
+                  .split("/")[4];
+                folderLink = `https://drive.google.com/drive/folders/${folderLink}`;
+                linkTitle = `Open related folder for: ${folderName}`;
+              } else {
+                folderLink = anyFileInTree.webViewLink;
+                clickHandler = `onclick="alert('Opening related file from ${folderName} folder'); return true;"`;
+                linkTitle = `Open related content from: ${folderName}`;
+              }
+            } else {
+              clickHandler = `onclick="alert('This folder (${folderName}) doesn\\'t have directly accessible content, but may contain files in subfolders.'); return false;"`;
+              linkTitle = `Folder: ${folderName} (content in subfolders)`;
+            }
+          }
+
+          // Add visual styling for parent vs matching folders
+          const folderClass = isParentFolder
+            ? "parent-folder"
+            : "matching-folder";
+          const folderIcon = isParentFolder ? "📂" : "📁"; // Different icons
+
+          folderDiv.innerHTML = `
+            <div class="file-item ${folderClass}">
+              <a href="${folderLink}" target="_blank" class="result-link" ${clickHandler} title="${linkTitle}">
+                <span class="file-icon">${folderIcon}</span>
+                <span class="file-name">${folderName}${
+            isParentFolder ? " (parent)" : ""
+          }</span>
+              </a>
+            </div>
+          `;
+          container.appendChild(folderDiv);
+
+          // Recursively render children
+          renderTreeNode(folderNode, container, depth + 1);
         });
 
         // Render files (sorted alphabetically)
@@ -1668,7 +1892,7 @@
 
           fileDiv.innerHTML = `
             <div class="file-item">
-              <a href="${link}" target="_blank" class="result-link">
+              <a href="${link}" target="_blank" class="result-link" title="Open: ${file.name}">
                 <span class="file-icon">${icon}</span>
                 <span class="file-name">${file.name}</span>
               </a>
@@ -1677,6 +1901,22 @@
 
           container.appendChild(fileDiv);
         });
+      }
+
+      // Helper function to find any file in a node tree (for parent folder linking)
+      function findAnyFileInNode(node) {
+        // Check files in current node
+        if (node.files && node.files.length > 0) {
+          return node.files.find((file) => file.id) || node.files[0];
+        }
+
+        // Recursively check children
+        for (const childNode of Object.values(node.children)) {
+          const fileInChild = findAnyFileInNode(childNode);
+          if (fileInChild) return fileInChild;
+        }
+
+        return null;
       }
 
       // Toggle folder expansion for browse page
@@ -1864,6 +2104,9 @@
       // Update the page initialization to be lightweight
       window.addEventListener("DOMContentLoaded", async () => {
         const stats = document.getElementById("resultsStats");
+
+        // Load resolved folder cache
+        loadResolvedFolderCache();
 
         // Run cache cleanup on startup
         cleanExpiredCache();
