@@ -119,6 +119,7 @@ function setupSidebarToggle() {
   }
 
   const toggleEl = appHeader.querySelector('.menu-toggle');
+  const searchInput = appHeader.querySelector('.sidebar-search-input');
   
   // Function to toggle sidebar
   const toggleSidebar = () => {
@@ -194,6 +195,25 @@ function setupSidebarToggle() {
       link.classList.add('active');
     }
   });
+  
+  // Setup search functionality
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const navItems = appHeader.querySelectorAll('.nav-item');
+      
+      navItems.forEach(item => {
+        const label = item.querySelector('.label');
+        const text = label ? label.textContent.toLowerCase() : '';
+        
+        if (query === '' || text.includes(query)) {
+          item.classList.remove('search-hidden');
+        } else {
+          item.classList.add('search-hidden');
+        }
+      });
+    });
+  }
 
   // ESC to close and keyboard navigation
   document.addEventListener('keydown', (e) => {
@@ -210,6 +230,13 @@ function setupSidebarToggle() {
           mobileToggle.innerHTML = '☰';
           mobileToggle.focus();
         }
+        // Clear search when closing
+        if (searchInput) {
+          searchInput.value = '';
+          appHeader.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('search-hidden');
+          });
+        }
       }
     }
     
@@ -219,23 +246,29 @@ function setupSidebarToggle() {
       toggleSidebar();
     }
     
+    // Focus search with / key when sidebar is open
+    if (e.key === '/' && document.body.classList.contains('sidebar-expanded') && searchInput) {
+      e.preventDefault();
+      searchInput.focus();
+    }
+    
     // Arrow key navigation within sidebar
     if (document.body.classList.contains('sidebar-expanded') && appHeader.contains(document.activeElement)) {
-      const navItems = Array.from(appHeader.querySelectorAll('.nav-item'));
-      const currentIndex = navItems.indexOf(document.activeElement);
+      const visibleNavItems = Array.from(appHeader.querySelectorAll('.nav-item:not(.search-hidden)'));
+      const currentIndex = visibleNavItems.indexOf(document.activeElement);
       
-      if (e.key === 'ArrowDown' && currentIndex < navItems.length - 1) {
+      if (e.key === 'ArrowDown' && currentIndex < visibleNavItems.length - 1) {
         e.preventDefault();
-        navItems[currentIndex + 1].focus();
+        visibleNavItems[currentIndex + 1].focus();
       } else if (e.key === 'ArrowUp' && currentIndex > 0) {
         e.preventDefault();
-        navItems[currentIndex - 1].focus();
+        visibleNavItems[currentIndex - 1].focus();
       } else if (e.key === 'Home') {
         e.preventDefault();
-        navItems[0].focus();
+        visibleNavItems[0].focus();
       } else if (e.key === 'End') {
         e.preventDefault();
-        navItems[navItems.length - 1].focus();
+        visibleNavItems[visibleNavItems.length - 1].focus();
       }
     }
   });
