@@ -386,10 +386,18 @@
           // Clear metadata
           localStorage.removeItem(metaKey);
 
-          // Clear in-memory cache
+          // Clear folder link cache from localStorage
+          localStorage.removeItem("resolvedFolderCache_v1");
+
+          // Clear in-memory caches
           fileCache.clear();
 
-          console.log("🗑️ All cache data cleared");
+          // Clear resolved folder cache from memory
+          if (window.resolvedFolderCache) {
+            window.resolvedFolderCache.clear();
+          }
+
+          console.log("🗑️ All cache data cleared (including folder links)");
           return true;
         } catch (error) {
           console.error("Failed to clear cache:", error);
@@ -1582,8 +1590,8 @@
             const resultsList = document.createElement("div");
             resultsList.className = "tree-results";
 
-            // Render the tree structure
-            renderTreeNode(tree, resultsList, 0);
+            // Render the tree structure with path context
+            renderTreeNode(tree, resultsList, 0, "", semester, batch);
 
             batchContent.appendChild(resultsList);
             batchDiv.appendChild(batchHeader);
@@ -1694,20 +1702,35 @@
         return findFirstFile(tree) || "Unknown Batch";
       }
 
-      // Enhanced folder file finding with resolved folder cache
-      function findFolderInFiles(folderName, folderNode) {
-        // First check the resolved folder cache
-        if (window.resolvedFolderCache) {
-          // Try to find this folder in the resolved cache
+      // Enhanced folder file finding with precise path-based matching
+      function findFolderInFiles(
+        folderName,
+        folderNode,
+        fullPath = "",
+        semester = "",
+        batch = ""
+      ) {
+        // First check the resolved folder cache with precise path matching
+        if (window.resolvedFolderCache && fullPath && semester && batch) {
+          const exactKey = `${semester}_${batch}_${fullPath}`;
+          if (window.resolvedFolderCache.has(exactKey)) {
+            return window.resolvedFolderCache.get(exactKey);
+          }
+
+          // Also try just the folder name within the same semester/batch context
           for (const [
             cacheKey,
             folderData,
           ] of window.resolvedFolderCache.entries()) {
             if (
-              folderData.name === folderName ||
-              folderData.path.endsWith(folderName)
+              cacheKey.startsWith(`${semester}_${batch}_`) &&
+              (cacheKey.endsWith(`/${folderName}`) ||
+                cacheKey.endsWith(`_${folderName}`))
             ) {
-              return folderData;
+              // Additional check: make sure the path context matches
+              if (fullPath === folderData.path) {
+                return folderData;
+              }
             }
           }
         }
@@ -1800,7 +1823,14 @@
       }
 
       // Render tree node recursively - Enhanced to show ALL folders with links
-      function renderTreeNode(node, container, depth) {
+      function renderTreeNode(
+        node,
+        container,
+        depth,
+        currentPath = "",
+        semester = "",
+        batch = ""
+      ) {
         // Render folders first (sorted alphabetically) - Show ALL folders, not just matching ones
         const sortedFolders = Object.entries(node.children).sort(([a], [b]) =>
           a.localeCompare(b)
@@ -1812,20 +1842,31 @@
           folderDiv.className = "tree-file";
           folderDiv.style.paddingLeft = `${depth * 20}px`;
 
+          // Build the full path for this folder
+          const folderPath = currentPath
+            ? `${currentPath}/${folderName}`
+            : folderName;
+
           // Add visual indicator for non-matching parent folders
           const isParentFolder = !folderNode.hasMatchingContent;
           if (isParentFolder) {
             folderDiv.style.opacity = "0.7"; // Slightly faded for parent folders
           }
 
-          // Create a clickable folder link with enhanced fallbacks
-          const folderFile = findFolderInFiles(folderName, folderNode);
+          // Create a clickable folder link with enhanced fallbacks using precise path context
+          const folderId = findFolderInFiles(
+            folderName,
+            resolvedFolderCache,
+            folderPath,
+            semester,
+            batch
+          );
           let folderLink = "#";
           let clickHandler = "";
           let linkTitle = "";
 
-          if (folderFile && folderFile.id) {
-            folderLink = `https://drive.google.com/drive/folders/${folderFile.id}`;
+          if (folderId) {
+            folderLink = `https://drive.google.com/drive/folders/${folderId}`;
             linkTitle = isParentFolder
               ? `Open parent folder: ${folderName}`
               : `Open folder: ${folderName}`;
@@ -1870,8 +1911,15 @@
           `;
           container.appendChild(folderDiv);
 
-          // Recursively render children
-          renderTreeNode(folderNode, container, depth + 1);
+          // Recursively render children with updated path context
+          renderTreeNode(
+            folderNode,
+            container,
+            depth + 1,
+            folderPath,
+            semester,
+            batch
+          );
         });
 
         // Render files (sorted alphabetically)
