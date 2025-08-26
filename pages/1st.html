@@ -153,6 +153,205 @@
       // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
       const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
 
+      // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
+
+      // Cache configuration
+      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const CACHE_VERSION = "v1"; // Increment this to force cache refresh on updates
+
+      // Get cache key for a folder
+      function getCacheKey(folderId, depth = 0) {
+        return `driveCache_1st_${CACHE_VERSION}_${folderId}_${depth}`;
+      }
+
+      // Get global cache metadata key
+      function getGlobalCacheKey() {
+        return `driveCacheMetadata_1st_${CACHE_VERSION}`;
+      }
+
+      // Save data to persistent cache with timestamp
+      function saveToPersistentCache(folderId, data, depth = 0) {
+        try {
+          const cacheKey = getCacheKey(folderId, depth);
+          const cacheData = {
+            data: data,
+            timestamp: Date.now(),
+            version: CACHE_VERSION,
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+          // Update metadata
+          updateCacheMetadata(cacheKey);
+        } catch (error) {
+          console.warn("Failed to save to persistent cache:", error);
+        }
+      }
+
+      // Load data from persistent cache
+      function loadFromPersistentCache(folderId, depth = 0) {
+        try {
+          const cacheKey = getCacheKey(folderId, depth);
+          const cached = localStorage.getItem(cacheKey);
+
+          if (!cached) return null;
+
+          const cacheData = JSON.parse(cached);
+          const age = Date.now() - cacheData.timestamp;
+
+          // Check if cache is expired or version mismatch
+          if (age > CACHE_DURATION || cacheData.version !== CACHE_VERSION) {
+            localStorage.removeItem(cacheKey);
+            removeCacheFromMetadata(cacheKey);
+            return null;
+          }
+
+          return cacheData.data;
+        } catch (error) {
+          console.warn("Failed to load from persistent cache:", error);
+          return null;
+        }
+      }
+
+      // Update cache metadata for cleanup
+      function updateCacheMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          if (!metadata.keys.includes(cacheKey)) {
+            metadata.keys.push(cacheKey);
+          }
+          metadata.lastUpdated = Date.now();
+
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to update cache metadata:", error);
+        }
+      }
+
+      // Remove cache key from metadata
+      function removeCacheFromMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+          metadata.keys = metadata.keys.filter((key) => key !== cacheKey);
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to remove from cache metadata:", error);
+        }
+      }
+
+      // Clean expired cache entries
+      function cleanExpiredCache() {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          // Only run cleanup once per hour
+          if (Date.now() - metadata.lastCleanup < 60 * 60 * 1000) return;
+
+          const validKeys = [];
+
+          metadata.keys.forEach((cacheKey) => {
+            try {
+              const cached = localStorage.getItem(cacheKey);
+              if (cached) {
+                const cacheData = JSON.parse(cached);
+                const age = Date.now() - cacheData.timestamp;
+
+                if (
+                  age <= CACHE_DURATION &&
+                  cacheData.version === CACHE_VERSION
+                ) {
+                  validKeys.push(cacheKey);
+                } else {
+                  localStorage.removeItem(cacheKey);
+                }
+              }
+            } catch (error) {
+              // Remove invalid cache entries
+              localStorage.removeItem(cacheKey);
+            }
+          });
+
+          metadata.keys = validKeys;
+          metadata.lastCleanup = Date.now();
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Cache cleanup failed:", error);
+        }
+      }
+
+      // Get cache statistics
+      function getCacheStats() {
+        try {
+          const metaKey = getGlobalCacheKey();
+          const metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          let totalSize = 0;
+          let validEntries = 0;
+
+          metadata.keys.forEach((cacheKey) => {
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+              totalSize += cached.length;
+              validEntries++;
+            }
+          });
+
+          return {
+            entries: validEntries,
+            sizeKB: Math.round(totalSize / 1024),
+            lastUpdated: metadata.lastUpdated
+              ? new Date(metadata.lastUpdated).toLocaleString()
+              : "Never",
+          };
+        } catch (error) {
+          return { entries: 0, sizeKB: 0, lastUpdated: "Error" };
+        }
+      }
+
+      // Clear all cache data (useful for debugging or forcing refresh)
+      function clearAllCache() {
+        try {
+          const metaKey = getGlobalCacheKey();
+          const metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          // Remove all cache entries
+          metadata.keys.forEach((cacheKey) => {
+            localStorage.removeItem(cacheKey);
+          });
+
+          // Clear metadata
+          localStorage.removeItem(metaKey);
+
+          console.log("🗑️ All 1st semester cache data cleared");
+          return true;
+        } catch (error) {
+          console.error("Failed to clear cache:", error);
+          return false;
+        }
+      }
+
+      // Make cache management functions available globally for debugging
+      window.firstSemesterCache = {
+        stats: getCacheStats,
+        clear: clearAllCache,
+        cleanup: cleanExpiredCache,
+      };
+
+      // === END CACHE SYSTEM ===
+
       // Load mapping from JSON file
       async function loadBatchMapping() {
         try {
@@ -203,7 +402,18 @@
 
         spinner.style.display = "block";
 
+        // Check persistent cache first (24-hour localStorage)
+        let cachedFiles = loadFromPersistentCache(folderId, 0);
+
+        if (cachedFiles) {
+          console.log(`📋 Using cached data for batch ${batchNum}`);
+          renderBatchFiles(cachedFiles, list, batchNum);
+          spinner.style.display = "none";
+          return;
+        }
+
         try {
+          console.log(`🌐 Loading fresh data for batch ${batchNum}`);
           const response = await fetch(
             `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
           );
@@ -214,41 +424,10 @@
 
           const data = await response.json();
 
-          list.innerHTML = "";
+          // Save to persistent cache
+          saveToPersistentCache(folderId, data.files || []);
 
-          if (data.files) {
-            // Sort files alphabetically by name
-            data.files.sort((a, b) => a.name.localeCompare(b.name));
-
-            data.files.forEach((file) => {
-              const li = document.createElement("li");
-              li.className = "drive-list-item";
-
-              if (file.mimeType === "application/vnd.google-apps.folder") {
-                // Folder with expand action only
-                li.innerHTML = `
-                  <div class="folder-item">
-                    <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="folder-link">
-                      📁 ${file.name}
-                    </a>
-                    <div class="folder-actions">
-                      <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
-                        ▼
-                      </button>
-                    </div>
-                  </div>
-                  <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
-                `;
-              } else {
-                li.innerHTML = `<a href="${
-                  file.webViewLink ||
-                  `https://drive.google.com/file/d/${file.id}/view`
-                }" target="_blank">📄 ${file.name}</a>`;
-              }
-
-              list.appendChild(li);
-            });
-          }
+          renderBatchFiles(data.files, list, batchNum);
         } catch (error) {
           list.innerHTML = `<li style="color: red;">Error loading files: ${error.message}</li>`;
         }
@@ -256,7 +435,46 @@
         spinner.style.display = "none";
       }
 
-      // Toggle folder expansion
+      // Helper function to render batch files
+      function renderBatchFiles(files, list, batchNum) {
+        list.innerHTML = "";
+
+        if (files) {
+          // Sort files alphabetically by name
+          files.sort((a, b) => a.name.localeCompare(b.name));
+
+          files.forEach((file) => {
+            const li = document.createElement("li");
+            li.className = "drive-list-item";
+
+            if (file.mimeType === "application/vnd.google-apps.folder") {
+              // Folder with expand action only
+              li.innerHTML = `
+                <div class="folder-item">
+                  <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="folder-link">
+                    📁 ${file.name}
+                  </a>
+                  <div class="folder-actions">
+                    <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
+                      ▼
+                    </button>
+                  </div>
+                </div>
+                <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
+              `;
+            } else {
+              li.innerHTML = `<a href="${
+                file.webViewLink ||
+                `https://drive.google.com/file/d/${file.id}/view`
+              }" target="_blank">📄 ${file.name}</a>`;
+            }
+
+            list.appendChild(li);
+          });
+        }
+      }
+
+      // Toggle folder expansion with caching
       async function toggleFolderExpansion(folderId, button) {
         const subfolderList = document.getElementById(`subfolder-${folderId}`);
 
@@ -270,7 +488,16 @@
           if (subfolderList.children.length === 0) {
             subfolderList.innerHTML = '<li class="loading">Loading...</li>';
 
+            // Check persistent cache first
+            const cachedFiles = loadFromPersistentCache(folderId);
+            if (cachedFiles) {
+              console.log(`📋 Using cached data for folder ${folderId}`);
+              renderSubfolderFiles(cachedFiles, subfolderList);
+              return;
+            }
+
             try {
+              console.log(`🌐 Loading fresh data for folder ${folderId}`);
               const response = await fetch(
                 `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
               );
@@ -280,48 +507,11 @@
               }
 
               const data = await response.json();
-              subfolderList.innerHTML = "";
 
-              if (data.files && data.files.length > 0) {
-                // Sort files alphabetically by name
-                data.files.sort((a, b) => a.name.localeCompare(b.name));
+              // Save to persistent cache
+              saveToPersistentCache(folderId, data.files || []);
 
-                data.files.forEach((file) => {
-                  const li = document.createElement("li");
-                  li.className = "subfolder-item";
-
-                  if (file.mimeType === "application/vnd.google-apps.folder") {
-                    // Nested folder with its own dropdown
-                    li.innerHTML = `
-                      <div class="folder-item">
-                        <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="folder-link">
-                          📁 ${file.name}
-                        </a>
-                        <div class="folder-actions">
-                          <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
-                            ▼
-                          </button>
-                        </div>
-                      </div>
-                      <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
-                    `;
-                  } else {
-                    li.innerHTML = `
-                      <a href="${
-                        file.webViewLink ||
-                        `https://drive.google.com/file/d/${file.id}/view`
-                      }" target="_blank">
-                        📄 ${file.name}
-                      </a>
-                    `;
-                  }
-
-                  subfolderList.appendChild(li);
-                });
-              } else {
-                subfolderList.innerHTML =
-                  '<li class="empty">No files found</li>';
-              }
+              renderSubfolderFiles(data.files, subfolderList);
             } catch (error) {
               subfolderList.innerHTML = `<li class="error">Error loading: ${error.message}</li>`;
             }
@@ -334,6 +524,51 @@
         }
       }
 
+      // Helper function to render subfolder files
+      function renderSubfolderFiles(files, subfolderList) {
+        subfolderList.innerHTML = "";
+
+        if (files && files.length > 0) {
+          // Sort files alphabetically by name
+          files.sort((a, b) => a.name.localeCompare(b.name));
+
+          files.forEach((file) => {
+            const li = document.createElement("li");
+            li.className = "subfolder-item";
+
+            if (file.mimeType === "application/vnd.google-apps.folder") {
+              // Nested folder with its own dropdown
+              li.innerHTML = `
+                <div class="folder-item">
+                  <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="folder-link">
+                    📁 ${file.name}
+                  </a>
+                  <div class="folder-actions">
+                    <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
+                      ▼
+                    </button>
+                  </div>
+                </div>
+                <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
+              `;
+            } else {
+              li.innerHTML = `
+                <a href="${
+                  file.webViewLink ||
+                  `https://drive.google.com/file/d/${file.id}/view`
+                }" target="_blank">
+                  📄 ${file.name}
+                </a>
+              `;
+            }
+
+            subfolderList.appendChild(li);
+          });
+        } else {
+          subfolderList.innerHTML = '<li class="empty">No files found</li>';
+        }
+      }
+
       // Initialize
       window.addEventListener("DOMContentLoaded", async () => {
         // Add spinners
@@ -341,6 +576,15 @@
           spinner.innerHTML =
             '<div style="width:20px;height:20px;border:2px solid #ccc;border-top:2px solid #2196f3;border-radius:50%;animation:spin 1s linear infinite;margin:auto;"></div>';
         });
+
+        // Clean expired cache on page load
+        cleanExpiredCache();
+
+        // Display cache status
+        const stats = getCacheStats();
+        if (stats.totalEntries > 0) {
+          console.log(`📊 Cache Status:`, stats);
+        }
 
         // Load mapping first, then load all batches
         await loadBatchMapping();

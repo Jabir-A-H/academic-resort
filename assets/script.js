@@ -107,20 +107,45 @@ function setupSidebarToggle() {
     document.body.appendChild(overlay);
   }
 
+  // Create mobile hamburger button
+  let mobileToggle = document.querySelector('.mobile-menu-toggle');
+  if (!mobileToggle) {
+    mobileToggle = document.createElement('button');
+    mobileToggle.className = 'mobile-menu-toggle';
+    mobileToggle.innerHTML = '☰';
+    mobileToggle.setAttribute('aria-label', 'Toggle navigation menu');
+    mobileToggle.setAttribute('aria-expanded', 'false');
+    document.body.appendChild(mobileToggle);
+  }
+
   const toggleEl = appHeader.querySelector('.menu-toggle');
+  
+  // Function to toggle sidebar
+  const toggleSidebar = () => {
+    const expanded = document.body.classList.toggle('sidebar-expanded');
+    if (toggleEl) toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    if (mobileToggle) mobileToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    
+    // Update visual symbols
+    if (toggleEl) toggleEl.textContent = expanded ? '←' : '☰';
+    if (mobileToggle) mobileToggle.innerHTML = expanded ? '✕' : '☰';
+  };
+
+  // Add click listeners to both toggle buttons
   if (toggleEl) {
-    toggleEl.addEventListener('click', () => {
-      const expanded = document.body.classList.toggle('sidebar-expanded');
-      toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-  // Update visual symbol
-  toggleEl.textContent = expanded ? '←' : '☰';
-    }, { passive: true });
+    toggleEl.addEventListener('click', toggleSidebar, { passive: true });
+  }
+  if (mobileToggle) {
+    mobileToggle.addEventListener('click', toggleSidebar, { passive: true });
   }
 
   // Clicking overlay closes sidebar (mostly mobile)
   overlay.addEventListener('click', () => {
     document.body.classList.remove('sidebar-expanded');
     if (toggleEl) toggleEl.setAttribute('aria-expanded', 'false');
+    if (mobileToggle) mobileToggle.setAttribute('aria-expanded', 'false');
+    if (toggleEl) toggleEl.textContent = '☰';
+    if (mobileToggle) mobileToggle.innerHTML = '☰';
   });
 
   // Close sidebar when clicking a nav link (mobile UX)
@@ -128,7 +153,9 @@ function setupSidebarToggle() {
     link.addEventListener('click', () => {
       document.body.classList.remove('sidebar-expanded');
       if (toggleEl) toggleEl.setAttribute('aria-expanded', 'false');
+      if (mobileToggle) mobileToggle.setAttribute('aria-expanded', 'false');
       if (toggleEl) toggleEl.textContent = '☰';
+      if (mobileToggle) mobileToggle.innerHTML = '☰';
     }, { passive: true });
   });
 
@@ -139,6 +166,10 @@ function setupSidebarToggle() {
       if (toggleEl) {
         toggleEl.setAttribute('aria-expanded', 'false');
         toggleEl.textContent = '☰';
+      }
+      if (mobileToggle) {
+        mobileToggle.setAttribute('aria-expanded', 'false');
+        mobileToggle.innerHTML = '☰';
       }
     }
   });
