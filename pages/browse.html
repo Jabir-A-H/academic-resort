@@ -91,6 +91,210 @@
       let fileCache = new Map(); // Cache for API responses
       let loadedFolders = new Set(); // Track which folders we've already loaded
 
+      // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
+
+      // Cache configuration
+      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const CACHE_VERSION = "v1"; // Increment this to force cache refresh on updates
+
+      // Get cache key for a folder
+      function getCacheKey(folderId, currentDepth) {
+        return `driveCache_${CACHE_VERSION}_${folderId}_${currentDepth}`;
+      }
+
+      // Get global cache metadata key
+      function getGlobalCacheKey() {
+        return `driveCacheMetadata_${CACHE_VERSION}`;
+      }
+
+      // Save data to persistent cache with timestamp
+      function saveToPersistentCache(folderId, currentDepth, data) {
+        try {
+          const cacheKey = getCacheKey(folderId, currentDepth);
+          const cacheData = {
+            data: data,
+            timestamp: Date.now(),
+            version: CACHE_VERSION,
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+          // Update metadata
+          updateCacheMetadata(cacheKey);
+        } catch (error) {
+          console.warn("Failed to save to persistent cache:", error);
+        }
+      }
+
+      // Load data from persistent cache
+      function loadFromPersistentCache(folderId, currentDepth) {
+        try {
+          const cacheKey = getCacheKey(folderId, currentDepth);
+          const cached = localStorage.getItem(cacheKey);
+
+          if (!cached) return null;
+
+          const cacheData = JSON.parse(cached);
+          const age = Date.now() - cacheData.timestamp;
+
+          // Check if cache is expired or version mismatch
+          if (age > CACHE_DURATION || cacheData.version !== CACHE_VERSION) {
+            localStorage.removeItem(cacheKey);
+            removeCacheFromMetadata(cacheKey);
+            return null;
+          }
+
+          return cacheData.data;
+        } catch (error) {
+          console.warn("Failed to load from persistent cache:", error);
+          return null;
+        }
+      }
+
+      // Update cache metadata for cleanup
+      function updateCacheMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          if (!metadata.keys.includes(cacheKey)) {
+            metadata.keys.push(cacheKey);
+          }
+          metadata.lastUpdated = Date.now();
+
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to update cache metadata:", error);
+        }
+      }
+
+      // Remove cache key from metadata
+      function removeCacheFromMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+          metadata.keys = metadata.keys.filter((key) => key !== cacheKey);
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to remove from cache metadata:", error);
+        }
+      }
+
+      // Clean expired cache entries
+      function cleanExpiredCache() {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          // Only run cleanup once per hour
+          if (Date.now() - metadata.lastCleanup < 60 * 60 * 1000) return;
+
+          const validKeys = [];
+
+          metadata.keys.forEach((cacheKey) => {
+            try {
+              const cached = localStorage.getItem(cacheKey);
+              if (cached) {
+                const cacheData = JSON.parse(cached);
+                const age = Date.now() - cacheData.timestamp;
+
+                if (
+                  age <= CACHE_DURATION &&
+                  cacheData.version === CACHE_VERSION
+                ) {
+                  validKeys.push(cacheKey);
+                } else {
+                  localStorage.removeItem(cacheKey);
+                }
+              }
+            } catch (error) {
+              // Remove invalid cache entries
+              localStorage.removeItem(cacheKey);
+            }
+          });
+
+          metadata.keys = validKeys;
+          metadata.lastCleanup = Date.now();
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Cache cleanup failed:", error);
+        }
+      }
+
+      // Get cache statistics
+      function getCacheStats() {
+        try {
+          const metaKey = getGlobalCacheKey();
+          const metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          let totalSize = 0;
+          let validEntries = 0;
+
+          metadata.keys.forEach((cacheKey) => {
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+              totalSize += cached.length;
+              validEntries++;
+            }
+          });
+
+          return {
+            entries: validEntries,
+            sizeKB: Math.round(totalSize / 1024),
+            lastUpdated: metadata.lastUpdated
+              ? new Date(metadata.lastUpdated).toLocaleString()
+              : "Never",
+          };
+        } catch (error) {
+          return { entries: 0, sizeKB: 0, lastUpdated: "Error" };
+        }
+      }
+
+      // === CACHE MANAGEMENT FUNCTIONS ===
+
+      // Clear all cache data (useful for debugging or forcing refresh)
+      function clearAllCache() {
+        try {
+          const metaKey = getGlobalCacheKey();
+          const metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          // Remove all cache entries
+          metadata.keys.forEach((cacheKey) => {
+            localStorage.removeItem(cacheKey);
+          });
+
+          // Clear metadata
+          localStorage.removeItem(metaKey);
+
+          // Clear in-memory cache
+          fileCache.clear();
+
+          console.log("🗑️ All cache data cleared");
+          return true;
+        } catch (error) {
+          console.error("Failed to clear cache:", error);
+          return false;
+        }
+      }
+
+      // Make cache management functions available globally for debugging
+      window.cacheManagement = {
+        stats: getCacheStats,
+        clear: clearAllCache,
+        cleanup: cleanExpiredCache,
+      };
+
+      // === END CACHE SYSTEM ===
+
       // Optimized search - only load data when user searches (like Google Drive)
       async function optimizedSearch() {
         const searchTerm = document
@@ -337,12 +541,38 @@
       ) {
         if (currentDepth >= maxDepth) return [];
 
-        // Check cache first
-        const cacheKey = `${folderId}_${currentDepth}`;
-        if (fileCache.has(cacheKey)) {
-          const cachedFiles = fileCache.get(cacheKey);
+        // Check persistent cache first (24-hour localStorage)
+        let cachedFiles = loadFromPersistentCache(folderId, currentDepth);
+
+        if (cachedFiles) {
+          // Update status to show cache hit
+          if (statsElement && path) {
+            statsElement.textContent = `📋 Using cached data for ${path}...`;
+          }
+
+          // Also update in-memory cache
+          const cacheKey = `${folderId}_${currentDepth}`;
+          fileCache.set(cacheKey, cachedFiles);
+
           return await processFilesRecursively(
             cachedFiles,
+            path,
+            maxDepth,
+            searchTerm,
+            semester,
+            batchKey,
+            batchLabel,
+            statsElement,
+            currentDepth
+          );
+        }
+
+        // Check in-memory cache second
+        const cacheKey = `${folderId}_${currentDepth}`;
+        if (fileCache.has(cacheKey)) {
+          const memCachedFiles = fileCache.get(cacheKey);
+          return await processFilesRecursively(
+            memCachedFiles,
             path,
             maxDepth,
             searchTerm,
@@ -357,7 +587,7 @@
         try {
           // Update progress
           if (statsElement && path) {
-            statsElement.textContent = `Searching in ${path}...`;
+            statsElement.textContent = `🌐 Loading fresh data for ${path}...`;
           }
 
           // Optimized API call
@@ -373,11 +603,13 @@
 
           const data = await response.json();
 
-          // Cache the raw response
-          fileCache.set(cacheKey, data.files || []);
+          // Cache the raw response in both memory and persistent storage
+          const files = data.files || [];
+          fileCache.set(cacheKey, files);
+          saveToPersistentCache(folderId, currentDepth, files);
 
           return await processFilesRecursively(
-            data.files || [],
+            files,
             path,
             maxDepth,
             searchTerm,
@@ -1194,13 +1426,29 @@
       // Update the page initialization to be lightweight
       window.addEventListener("DOMContentLoaded", async () => {
         const stats = document.getElementById("resultsStats");
-        stats.textContent =
-          "Ready to search! Enter terms above to find resources.";
+
+        // Run cache cleanup on startup
+        cleanExpiredCache();
+
+        // Get cache statistics
+        const cacheStats = getCacheStats();
+
+        if (cacheStats.entries > 0) {
+          stats.textContent = `📋 Ready! Found ${cacheStats.entries} cached folders (${cacheStats.sizeKB}KB). Enter search terms to find resources.`;
+        } else {
+          stats.textContent =
+            "Ready to search! Enter terms above to find resources.";
+        }
 
         try {
           await loadDriveMapping();
-          stats.textContent =
-            "✅ Ready! Enter search terms or select filters to find resources.";
+
+          if (cacheStats.entries > 0) {
+            stats.textContent = `✅ Ready! Using cached data from ${cacheStats.lastUpdated}. ${cacheStats.entries} folders cached (${cacheStats.sizeKB}KB).`;
+          } else {
+            stats.textContent =
+              "✅ Ready! Enter search terms or select filters to find resources.";
+          }
         } catch (error) {
           console.error("Failed to load drive mapping:", error);
           stats.textContent =
@@ -1209,6 +1457,9 @@
 
         // Show empty state initially
         displayResults([]);
+
+        // Log cache info to console for debugging
+        console.log("📋 Cache Status:", cacheStats);
       });
     </script>
 
