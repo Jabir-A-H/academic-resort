@@ -532,7 +532,7 @@
           return;
         }
 
-        stats.textContent = "⚡ Speed searching...";
+        stats.textContent = "🔍 Searching...";
 
         // Add timeout for maximum 45 seconds (better than 12 minutes!)
         const searchPromise = smartSearch(
@@ -552,11 +552,11 @@
         try {
           const results = await Promise.race([searchPromise, timeoutPromise]);
           displayResults(results);
-          updateStats(results.length, "∞", ` (speed search results)`);
-          stats.innerHTML = `⚡ Found ${results.length} results in under 45 seconds!`;
+          updateStats(results.length, "∞", ` (search results)`);
+          stats.innerHTML = `✅ Found ${results.length} results`;
         } catch (error) {
           if (error.message.includes("timeout")) {
-            stats.textContent = `⚠️ Search timed out after 45s - try more specific terms`;
+            stats.textContent = `⚠️ Search timed out - try more specific terms`;
           } else {
             console.error("Search error:", error);
             stats.textContent = "❌ Search failed. Please try again.";
@@ -617,7 +617,7 @@
         // Clear results container at start
         const container = document.getElementById("all-resources");
         container.innerHTML =
-          '<div class="live-results" style="color: #a0aec0; font-size: 0.9em; text-align: center; padding: 20px;">🚀 Fast searching...</div>';
+          '<div class="live-results" style="color: #a0aec0; font-size: 0.9em; text-align: center; padding: 20px;">Searching...</div>';
 
         let totalFolders = 0;
         let completedFolders = 0;
@@ -679,9 +679,9 @@
               statsElement.textContent = `� Speed-searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
             }
 
-            // Early termination if we have many results (for speed)
+            // Early termination if we have many results
             if (currentResults.length > 300) {
-              statsElement.innerHTML = `⚡ Found 300+ results quickly! Stopping search for speed. <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+              statsElement.innerHTML = `✅ Found ${currentResults.length} results <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
               return removeDuplicatesOptimized(results);
             }
 
@@ -691,7 +691,7 @@
               searchTerm.length > 8 &&
               currentResults.length > 50
             ) {
-              statsElement.innerHTML = `⚡ Found ${currentResults.length} specific results quickly! <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+              statsElement.innerHTML = `✅ Found ${currentResults.length} results <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
               return removeDuplicatesOptimized(results);
             }
           }
@@ -700,14 +700,11 @@
         const flatResults = removeDuplicatesOptimized(results);
 
         // Final update - show completion in stats line
-        statsElement.innerHTML = `⚡ Speed search complete! <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
+        statsElement.innerHTML = `✅ Search complete <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
 
         // Log rate limiter performance (easter egg for developers)
         const finalStats = apiLimiter.getStats();
-        console.log(
-          "🚀 Speed search completed! Rate limiter stats:",
-          finalStats
-        );
+        console.log("🚀 Search completed! Rate limiter stats:", finalStats);
 
         return flatResults;
       }
