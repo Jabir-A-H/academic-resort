@@ -119,6 +119,7 @@ function setupSidebarToggle() {
   }
 
   const toggleEl = appHeader.querySelector('.menu-toggle');
+  const searchInput = appHeader.querySelector('.sidebar-search-input');
   
   // Function to toggle sidebar
   const toggleSidebar = () => {
@@ -126,10 +127,33 @@ function setupSidebarToggle() {
     if (toggleEl) toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
     if (mobileToggle) mobileToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
     
-    // Update visual symbols
+    // Update visual symbols with smooth transitions
     if (toggleEl) toggleEl.textContent = expanded ? '←' : '☰';
     if (mobileToggle) mobileToggle.innerHTML = expanded ? '✕' : '☰';
+    
+    // Focus management for accessibility
+    if (expanded) {
+      // Focus first nav item when opened
+      const firstNavItem = appHeader.querySelector('.nav-item');
+      if (firstNavItem) {
+        setTimeout(() => firstNavItem.focus(), 100);
+      }
+    } else {
+      // Return focus to toggle button when closed
+      if (mobileToggle) mobileToggle.focus();
+    }
+    
+    // Store user preference
+    localStorage.setItem('sidebar-expanded', expanded);
   };
+  
+  // Restore user preference
+  const savedState = localStorage.getItem('sidebar-expanded');
+  if (savedState === 'true' && window.innerWidth >= 769) {
+    document.body.classList.add('sidebar-expanded');
+    if (toggleEl) toggleEl.setAttribute('aria-expanded', 'true');
+    if (toggleEl) toggleEl.textContent = '←';
+  }
 
   // Add click listeners to both toggle buttons
   if (toggleEl) {
@@ -151,25 +175,100 @@ function setupSidebarToggle() {
   // Close sidebar when clicking a nav link (mobile UX)
   appHeader.querySelectorAll('.nav-item').forEach(link => {
     link.addEventListener('click', () => {
-      document.body.classList.remove('sidebar-expanded');
-      if (toggleEl) toggleEl.setAttribute('aria-expanded', 'false');
-      if (mobileToggle) mobileToggle.setAttribute('aria-expanded', 'false');
-      if (toggleEl) toggleEl.textContent = '☰';
-      if (mobileToggle) mobileToggle.innerHTML = '☰';
+      // Only close on mobile
+      if (window.innerWidth <= 768) {
+        document.body.classList.remove('sidebar-expanded');
+        if (toggleEl) toggleEl.setAttribute('aria-expanded', 'false');
+        if (mobileToggle) mobileToggle.setAttribute('aria-expanded', 'false');
+        if (toggleEl) toggleEl.textContent = '☰';
+        if (mobileToggle) mobileToggle.innerHTML = '☰';
+      }
     }, { passive: true });
   });
+  
+  // Highlight current page
+  const currentPath = location.pathname;
+  appHeader.querySelectorAll('.nav-item').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href && (currentPath.endsWith(href) || (href.includes('/') && currentPath.includes(href.split('/').pop())))) {
+      link.setAttribute('aria-current', 'page');
+      link.classList.add('active');
+    }
+  });
+  
+  // Setup search functionality
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const navItems = appHeader.querySelectorAll('.nav-item');
+      
+      navItems.forEach(item => {
+        const label = item.querySelector('.label');
+        const text = label ? label.textContent.toLowerCase() : '';
+        
+        if (query === '' || text.includes(query)) {
+          item.classList.remove('search-hidden');
+        } else {
+          item.classList.add('search-hidden');
+        }
+      });
+    });
+  }
 
-  // ESC to close
+  // ESC to close and keyboard navigation
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      document.body.classList.remove('sidebar-expanded');
-      if (toggleEl) {
-        toggleEl.setAttribute('aria-expanded', 'false');
-        toggleEl.textContent = '☰';
+      const isExpanded = document.body.classList.contains('sidebar-expanded');
+      if (isExpanded) {
+        document.body.classList.remove('sidebar-expanded');
+        if (toggleEl) {
+          toggleEl.setAttribute('aria-expanded', 'false');
+          toggleEl.textContent = '☰';
+        }
+        if (mobileToggle) {
+          mobileToggle.setAttribute('aria-expanded', 'false');
+          mobileToggle.innerHTML = '☰';
+          mobileToggle.focus();
+        }
+        // Clear search when closing
+        if (searchInput) {
+          searchInput.value = '';
+          appHeader.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('search-hidden');
+          });
+        }
       }
-      if (mobileToggle) {
-        mobileToggle.setAttribute('aria-expanded', 'false');
-        mobileToggle.innerHTML = '☰';
+    }
+    
+    // Keyboard shortcut to toggle sidebar (Ctrl/Cmd + B)
+    if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+      e.preventDefault();
+      toggleSidebar();
+    }
+    
+    // Focus search with / key when sidebar is open
+    if (e.key === '/' && document.body.classList.contains('sidebar-expanded') && searchInput) {
+      e.preventDefault();
+      searchInput.focus();
+    }
+    
+    // Arrow key navigation within sidebar
+    if (document.body.classList.contains('sidebar-expanded') && appHeader.contains(document.activeElement)) {
+      const visibleNavItems = Array.from(appHeader.querySelectorAll('.nav-item:not(.search-hidden)'));
+      const currentIndex = visibleNavItems.indexOf(document.activeElement);
+      
+      if (e.key === 'ArrowDown' && currentIndex < visibleNavItems.length - 1) {
+        e.preventDefault();
+        visibleNavItems[currentIndex + 1].focus();
+      } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+        e.preventDefault();
+        visibleNavItems[currentIndex - 1].focus();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        visibleNavItems[0].focus();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        visibleNavItems[visibleNavItems.length - 1].focus();
       }
     }
   });
