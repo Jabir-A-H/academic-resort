@@ -7,24 +7,527 @@
     <link rel="stylesheet" href="../assets/styles.css" />
     <script src="../assets/script.js" defer></script>
     <style>
-      /* Tabs */
-      .tabs { display:flex; gap:8px; margin:12px 0 18px 0; }
-      .tab { padding:8px 12px; border-radius:6px; background:var(--muted-bg,#f2f2f2); cursor:pointer; color:var(--text); border:1px solid transparent }
-      .tab.active { background:var(--accent,#0b63ce); color:#fff; border-color:rgba(0,0,0,0.05) }
+      /* Enhanced Teacher Page Styles */
+      .teachers-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: var(--space-2xl);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--space-xl);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
 
-      /* Accordion */
-      .accordion .item { border:1px solid rgba(0,0,0,0.06); border-radius:6px; margin:8px 0; overflow:hidden }
-      .accordion .hdr { padding:10px 12px; background:var(--muted-bg,#fafafa); cursor:pointer; font-weight:600 }
-  .accordion .body { padding:8px 12px; max-height:0; overflow:hidden; transition:max-height .22s ease }
-  /* only expand the direct .body child of an opened .item to avoid cascading open */
-  .accordion .item.open > .body { max-height:2000px; }
+      .teachers-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.08)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.06)"/></svg>');
+        animation: float 20s linear infinite;
+      }
 
-      /* course view */
-      .course-entry { margin:6px 0; }
-      .byline { font-size:90%; color:var(--muted); margin-left:6px }
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+      }
 
-      /* small helpers */
-      .small { font-size:0.92rem }
+      .teachers-header h2 {
+        margin: 0;
+        font-size: var(--font-size-3xl);
+        font-weight: var(--font-weight-bold);
+        position: relative;
+        z-index: 1;
+      }
+
+      .teachers-header p {
+        margin: var(--space-sm) 0 0 0;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Search and Filter Section */
+      .controls-section {
+        background: var(--card);
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        margin-bottom: var(--space-xl);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border);
+      }
+
+      .search-container {
+        position: relative;
+        margin-bottom: var(--space-lg);
+      }
+
+      .search-input {
+        width: 100%;
+        padding: var(--space-md) var(--space-2xl) var(--space-md) var(--space-2xl);
+        border: 2px solid var(--border);
+        border-radius: var(--radius-lg);
+        font-size: var(--font-size-base);
+        transition: var(--transition-normal);
+        background: var(--gray-50);
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: var(--space-md);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+        pointer-events: none;
+      }
+
+      .clear-search {
+        position: absolute;
+        right: var(--space-md);
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--gray-400);
+        cursor: pointer;
+        padding: var(--space-xs);
+        border-radius: var(--radius-sm);
+        transition: var(--transition-fast);
+      }
+
+      .clear-search:hover {
+        color: var(--gray-600);
+        background: var(--gray-100);
+      }
+
+      /* Filter Pills */
+      .filters-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-lg);
+      }
+
+      .filter-pill {
+        padding: var(--space-xs) var(--space-md);
+        background: var(--gray-100);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+        transition: var(--transition-fast);
+        user-select: none;
+      }
+
+      .filter-pill:hover {
+        background: var(--gray-200);
+      }
+
+      .filter-pill.active {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+      }
+
+      /* Enhanced Tabs */
+      .tabs { 
+        display: flex; 
+        gap: var(--space-xs); 
+        margin: var(--space-lg) 0 var(--space-xl) 0;
+        background: var(--gray-100);
+        padding: var(--space-xs);
+        border-radius: var(--radius-lg);
+      }
+
+      .tab { 
+        flex: 1;
+        padding: var(--space-md) var(--space-lg); 
+        border-radius: var(--radius-md); 
+        background: transparent; 
+        cursor: pointer; 
+        color: var(--gray-600); 
+        border: none;
+        font-weight: var(--font-weight-medium);
+        transition: var(--transition-normal);
+        text-align: center;
+        position: relative;
+      }
+
+      .tab:hover {
+        background: rgba(255, 255, 255, 0.7);
+        color: var(--gray-800);
+      }
+
+      .tab.active { 
+        background: white; 
+        color: var(--primary-blue); 
+        box-shadow: var(--shadow-sm);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 2px;
+        background: var(--primary-blue);
+        border-radius: 1px;
+      }
+
+      /* Utility Controls */
+      .utility-controls {
+        display: flex;
+        gap: var(--space-sm);
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-lg);
+        flex-wrap: wrap;
+      }
+
+      .results-info {
+        color: var(--gray-600);
+        font-size: var(--font-size-sm);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: var(--space-sm);
+      }
+
+      .action-btn {
+        padding: var(--space-sm) var(--space-md);
+        background: var(--gray-100);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        color: var(--gray-700);
+        cursor: pointer;
+        font-size: var(--font-size-sm);
+        transition: var(--transition-fast);
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+      }
+
+      .action-btn:hover {
+        background: var(--gray-200);
+      }
+
+      .action-btn.primary {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+      }
+
+      .action-btn.primary:hover {
+        background: var(--blue-600);
+      }
+
+      /* Enhanced Accordion */
+      .accordion .item { 
+        border: 1px solid var(--border); 
+        border-radius: var(--radius-lg); 
+        margin: var(--space-md) 0; 
+        overflow: hidden;
+        transition: var(--transition-normal);
+        background: var(--card);
+      }
+
+      .accordion .item:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--gray-300);
+      }
+
+      .accordion .item.open {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-blue);
+      }
+
+      .accordion .hdr { 
+        padding: var(--space-lg) var(--space-xl); 
+        background: var(--gray-50); 
+        cursor: pointer; 
+        font-weight: var(--font-weight-semibold);
+        transition: var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid transparent;
+      }
+
+      .accordion .item.open .hdr {
+        background: var(--blue-50);
+        border-bottom-color: var(--border);
+      }
+
+      .accordion .hdr:hover {
+        background: var(--gray-100);
+      }
+
+      .accordion .item.open .hdr:hover {
+        background: var(--blue-100);
+      }
+
+      .accordion-icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-sm);
+        background: var(--gray-200);
+        color: var(--gray-600);
+        transition: var(--transition-normal);
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .accordion .item.open .accordion-icon {
+        background: var(--primary-blue);
+        color: white;
+        transform: rotate(45deg);
+      }
+
+      .accordion .body { 
+        padding: 0 var(--space-xl) var(--space-xl) var(--space-xl); 
+        max-height: 0; 
+        overflow: hidden; 
+        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+      }
+
+      .accordion .item.open > .body { 
+        max-height: 2000px; 
+        padding-top: var(--space-lg);
+      }
+
+      /* Course Cards */
+      .course-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        margin: var(--space-md) 0;
+        transition: var(--transition-normal);
+        overflow: hidden;
+      }
+
+      .course-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--gray-300);
+      }
+
+      .course-header {
+        padding: var(--space-lg);
+        background: var(--gradient-subtle);
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .course-title {
+        font-weight: var(--font-weight-semibold);
+        color: var(--gray-800);
+        margin: 0;
+      }
+
+      .course-code {
+        background: var(--primary-blue);
+        color: white;
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--radius-sm);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-bold);
+      }
+
+      .teacher-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .teacher-item {
+        padding: var(--space-md) var(--space-lg);
+        border-bottom: 1px solid var(--gray-100);
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        transition: var(--transition-fast);
+      }
+
+      .teacher-item:hover {
+        background: var(--gray-50);
+      }
+
+      .teacher-item:last-child {
+        border-bottom: none;
+      }
+
+      .teacher-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-full);
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-sm);
+      }
+
+      .teacher-name {
+        font-weight: var(--font-weight-medium);
+        color: var(--gray-800);
+      }
+
+      /* Statistics Cards */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+      }
+
+      .stat-card {
+        background: var(--card);
+        padding: var(--space-lg);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        text-align: center;
+        transition: var(--transition-normal);
+      }
+
+      .stat-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+      }
+
+      .stat-number {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--primary-blue);
+      }
+
+      .stat-label {
+        color: var(--gray-600);
+        font-size: var(--font-size-sm);
+        margin-top: var(--space-xs);
+      }
+
+      /* Search Results */
+      .search-results {
+        background: var(--yellow-500);
+        color: white;
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--space-lg);
+        font-size: var(--font-size-sm);
+        display: none;
+      }
+
+      .search-results.show {
+        display: block;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .teachers-header {
+          padding: var(--space-lg);
+          text-align: left;
+        }
+
+        .teachers-header h2 {
+          font-size: var(--font-size-2xl);
+        }
+
+        .controls-section {
+          padding: var(--space-lg);
+        }
+
+        .utility-controls {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .action-buttons {
+          justify-content: center;
+        }
+
+        .tabs {
+          flex-direction: column;
+        }
+
+        .tab {
+          text-align: left;
+        }
+
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: var(--space-md);
+        }
+
+        .accordion .hdr {
+          padding: var(--space-md);
+        }
+
+        .accordion .body {
+          padding: 0 var(--space-md) var(--space-md) var(--space-md);
+        }
+
+        .accordion .item.open > .body {
+          padding-top: var(--space-md);
+        }
+      }
+
+      /* Loading States */
+      .loading {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      .skeleton {
+        background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+      }
+
+      @keyframes skeleton-loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+
+      /* Hidden elements */
+      .hidden {
+        display: none !important;
+      }
+
+      /* No results state */
+      .no-results {
+        text-align: center;
+        padding: var(--space-2xl);
+        color: var(--gray-500);
+      }
+
+      .no-results-icon {
+        font-size: 48px;
+        margin-bottom: var(--space-lg);
+        opacity: 0.5;
+      }
     </style>
   </head>
   <body>
@@ -37,24 +540,86 @@
 
     <main class="container">
       <section class="card">
-  <h2>Teachers' Profiles</h2>
+        <!-- Enhanced Header -->
+        <div class="teachers-header">
+          <h2>Teachers' Profiles</h2>
+          <p>Comprehensive directory of faculty members across all batches and semesters</p>
+        </div>
 
-
-
-        <div style="margin-top: 12px">
-          <!-- Tabs: Batch view and Course view -->
-          <div class="tabs" role="tablist" aria-label="Teacher views">
-            <div class="tab active" data-view="batch">By batch</div>
-            <div class="tab" data-view="course">By course</div>
+        <!-- Search and Filter Controls -->
+        <div class="controls-section">
+          <div class="search-container">
+            <div class="search-icon">🔍</div>
+            <input 
+              type="text" 
+              class="search-input" 
+              placeholder="Search teachers, courses, or course codes..."
+              id="searchInput"
+              autocomplete="off"
+            >
+            <button class="clear-search hidden" id="clearSearch">✕</button>
           </div>
 
-          <div id="view-batch" class="view">
-            <!-- Batch accordion will be rendered here -->
+          <div class="filters-container" id="filtersContainer">
+            <div class="filter-pill active" data-filter="all">All Batches</div>
+            <div class="filter-pill" data-filter="24">24th Batch</div>
+            <div class="filter-pill" data-filter="25">25th Batch</div>
+            <div class="filter-pill" data-filter="26">26th Batch</div>
+            <div class="filter-pill" data-filter="27">27th Batch</div>
+            <div class="filter-pill" data-filter="28">28th Batch</div>
           </div>
 
-          <div id="view-course" class="view" style="display:none">
-            <!-- Course-by-course view will be rendered here -->
+          <div class="search-results" id="searchResults"></div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-number" id="totalTeachers">-</div>
+            <div class="stat-label">Total Teachers</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalCourses">-</div>
+            <div class="stat-label">Total Courses</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalBatches">-</div>
+            <div class="stat-label">Active Batches</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalSemesters">-</div>
+            <div class="stat-label">Semesters Covered</div>
+          </div>
+        </div>
+
+        <!-- Enhanced Tabs -->
+        <div class="tabs" role="tablist" aria-label="Teacher views">
+          <div class="tab active" data-view="batch">📚 By Batch</div>
+          <div class="tab" data-view="course">🎓 By Course</div>
+        </div>
+
+        <!-- Utility Controls -->
+        <div class="utility-controls">
+          <div class="results-info" id="resultsInfo">
+            Showing all results
+          </div>
+          <div class="action-buttons">
+            <button class="action-btn" id="expandAllBtn">
+              <span>📂</span> Expand All
+            </button>
+            <button class="action-btn" id="collapseAllBtn">
+              <span>📁</span> Collapse All
+            </button>
+          </div>
+        </div>
+
+        <div id="view-batch" class="view">
+          <!-- Batch accordion will be rendered here -->
+        </div>
+
+        <div id="view-course" class="view" style="display:none">
+          <!-- Course-by-course view will be rendered here -->
+        </div>
 
           <!-- Hidden source: original structured HTML is preserved here and used to build the interactive views -->
           <div id="raw-archive" style="display:none">
@@ -686,8 +1251,228 @@
   <div data-include="../assets/includes/footer.html"></div>
 
     <script>
+      // Global state
+      let allBatches = [];
+      let currentFilter = 'all';
+      let searchTerm = '';
+
       // Utility - collapse/expand helpers
       function toggleItem(el){ el.classList.toggle('open'); }
+
+      // Enhanced UI interactions
+      function initializeEnhancedUI() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const searchResults = document.getElementById('searchResults');
+
+        searchInput.addEventListener('input', (e) => {
+          searchTerm = e.target.value.toLowerCase();
+          if (searchTerm) {
+            clearSearch.classList.remove('hidden');
+          } else {
+            clearSearch.classList.add('hidden');
+          }
+          filterAndRenderResults();
+        });
+
+        clearSearch.addEventListener('click', () => {
+          searchInput.value = '';
+          searchTerm = '';
+          clearSearch.classList.add('hidden');
+          filterAndRenderResults();
+          searchInput.focus();
+        });
+
+        // Filter pills
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            currentFilter = pill.dataset.filter;
+            filterAndRenderResults();
+          });
+        });
+
+        // Utility buttons
+        document.getElementById('expandAllBtn').addEventListener('click', () => {
+          document.querySelectorAll('.accordion .item').forEach(item => {
+            item.classList.add('open');
+          });
+        });
+
+        document.getElementById('collapseAllBtn').addEventListener('click', () => {
+          document.querySelectorAll('.accordion .item').forEach(item => {
+            item.classList.remove('open');
+          });
+        });
+      }
+
+      // Enhanced filter and search
+      function filterAndRenderResults() {
+        let filteredBatches = allBatches;
+
+        // Apply batch filter
+        if (currentFilter !== 'all') {
+          filteredBatches = allBatches.filter(batch => 
+            batch.title.includes(currentFilter + 'th Batch')
+          );
+        }
+
+        // Apply search filter
+        if (searchTerm) {
+          filteredBatches = filteredBatches.map(batch => {
+            const filteredSemesters = batch.semesters.map(semester => {
+              const filteredCourses = semester.courses.filter(course => {
+                const courseMatch = course.title.toLowerCase().includes(searchTerm) ||
+                                  course.rawTitle.toLowerCase().includes(searchTerm) ||
+                                  (course.code && course.code.includes(searchTerm.replace(/\D/g, '')));
+                
+                const teacherMatch = course.tutors.some(tutor => 
+                  tutor.toLowerCase().includes(searchTerm)
+                );
+
+                return courseMatch || teacherMatch;
+              });
+
+              return filteredCourses.length > 0 ? {
+                ...semester,
+                courses: filteredCourses
+              } : null;
+            }).filter(Boolean);
+
+            return filteredSemesters.length > 0 ? {
+              ...batch,
+              semesters: filteredSemesters
+            } : null;
+          }).filter(Boolean);
+
+          // Show search results info
+          const totalResults = filteredBatches.reduce((acc, batch) => 
+            acc + batch.semesters.reduce((semAcc, sem) => semAcc + sem.courses.length, 0), 0
+          );
+          
+          const searchResults = document.getElementById('searchResults');
+          if (totalResults > 0) {
+            searchResults.textContent = `Found ${totalResults} course${totalResults === 1 ? '' : 's'} matching "${searchTerm}"`;
+            searchResults.classList.add('show');
+          } else {
+            searchResults.textContent = `No results found for "${searchTerm}"`;
+            searchResults.classList.add('show');
+          }
+        } else {
+          document.getElementById('searchResults').classList.remove('show');
+        }
+
+        // Update results info
+        const resultsInfo = document.getElementById('resultsInfo');
+        const totalCourses = filteredBatches.reduce((acc, batch) => 
+          acc + batch.semesters.reduce((semAcc, sem) => semAcc + sem.courses.length, 0), 0
+        );
+        
+        if (searchTerm || currentFilter !== 'all') {
+          resultsInfo.textContent = `Showing ${totalCourses} filtered result${totalCourses === 1 ? '' : 's'}`;
+        } else {
+          resultsInfo.textContent = 'Showing all results';
+        }
+
+        // Re-render views
+        const batchView = document.getElementById('view-batch');
+        const courseView = document.getElementById('view-course');
+        
+        try {
+          renderBatchView(filteredBatches, batchView);
+        } catch(err) {
+          console.error('renderBatchView failed', err);
+        }
+
+        try {
+          renderCourseView(filteredBatches, courseView);
+        } catch(err) {
+          console.error('renderCourseView failed', err);
+        }
+      }
+
+      // Calculate and display statistics
+      function updateStatistics(batches) {
+        const allTeachers = new Set();
+        let totalCourses = 0;
+        const allSemesters = new Set();
+
+        batches.forEach(batch => {
+          batch.semesters.forEach(semester => {
+            allSemesters.add(semester.title);
+            totalCourses += semester.courses.length;
+            semester.courses.forEach(course => {
+              course.tutors.forEach(tutor => {
+                allTeachers.add(tutor);
+              });
+            });
+          });
+        });
+
+        document.getElementById('totalTeachers').textContent = allTeachers.size;
+        document.getElementById('totalCourses').textContent = totalCourses;
+        document.getElementById('totalBatches').textContent = batches.length;
+        document.getElementById('totalSemesters').textContent = allSemesters.size;
+      }
+
+      // Enhanced course header rendering
+      function createCourseHeader(course) {
+        const header = document.createElement('div');
+        header.className = 'course-header';
+        
+        const titleContainer = document.createElement('div');
+        titleContainer.style.display = 'flex';
+        titleContainer.style.alignItems = 'center';
+        titleContainer.style.gap = 'var(--space-md)';
+        
+        if (course.code) {
+          const codeSpan = document.createElement('span');
+          codeSpan.className = 'course-code';
+          codeSpan.textContent = course.code;
+          titleContainer.appendChild(codeSpan);
+        }
+        
+        const title = document.createElement('h3');
+        title.className = 'course-title';
+        title.textContent = course.rawTitle || course.title.replace(/^\d+:\s*/, '');
+        titleContainer.appendChild(title);
+        
+        const icon = document.createElement('div');
+        icon.className = 'accordion-icon';
+        icon.textContent = '+';
+        
+        header.appendChild(titleContainer);
+        header.appendChild(icon);
+        
+        return header;
+      }
+
+      // Enhanced teacher list rendering
+      function createTeacherList(tutors) {
+        const ul = document.createElement('ul');
+        ul.className = 'teacher-list';
+        
+        tutors.forEach(tutor => {
+          const li = document.createElement('li');
+          li.className = 'teacher-item';
+          
+          const avatar = document.createElement('div');
+          avatar.className = 'teacher-avatar';
+          avatar.textContent = tutor.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase();
+          
+          const name = document.createElement('span');
+          name.className = 'teacher-name';
+          name.textContent = tutor;
+          
+          li.appendChild(avatar);
+          li.appendChild(name);
+          ul.appendChild(li);
+        });
+        
+        return ul;
+      }
 
       // Parse the hidden raw archive DOM into structured JS object
       function parseArchive(root){
@@ -708,121 +1493,165 @@
             currentBatch.semesters.push(currentSemester);
             return;
           }
-              if(n.tagName==='H5' && currentSemester){
-                // next element is expected to be UL with li entries
-                const original = n.textContent.trim();
-                // extract a 4-digit course code if present
-                const codeMatch = original.match(/(\d{4})/);
-                const code = codeMatch ? codeMatch[1] : null;
-                // remove the code (and surrounding parentheses if any) to get the clean name
-                const name = original.replace(/\s*\(?\d{4}\)?\s*/,'').trim();
-                // display as "CODE: Name" when code exists, otherwise keep original
-                const displayTitle = code ? (code + ': ' + (name || original)) : original;
-                let next = n.nextElementSibling;
-                const tutors = [];
-                if(next && next.tagName==='UL'){
-                  Array.from(next.querySelectorAll('li')).forEach(li=> tutors.push(li.textContent.trim()));
-                }
-                // store code and rawTitle for downstream rendering logic
-                currentSemester.courses.push({title: displayTitle, rawTitle: name || original, code, tutors});
-                return;
-              }
+          if(n.tagName==='H5' && currentSemester){
+            const original = n.textContent.trim();
+            const codeMatch = original.match(/(\d{4})/);
+            const code = codeMatch ? codeMatch[1] : null;
+            const name = original.replace(/\s*\(?\d{4}\)?\s*/,'').trim();
+            const displayTitle = code ? (code + ': ' + (name || original)) : original;
+            let next = n.nextElementSibling;
+            const tutors = [];
+            if(next && next.tagName==='UL'){
+              Array.from(next.querySelectorAll('li')).forEach(li=> tutors.push(li.textContent.trim()));
+            }
+            currentSemester.courses.push({title: displayTitle, rawTitle: name || original, code, tutors});
+            return;
+          }
         });
         return batches;
       }
 
-      // Render batch view: batches -> semesters -> courses
+      // Enhanced batch view renderer
       function renderBatchView(batches, container){
         container.innerHTML = '';
-        const acc = document.createElement('div'); acc.className='accordion';
+        
+        if (batches.length === 0) {
+          const noResults = document.createElement('div');
+          noResults.className = 'no-results';
+          noResults.innerHTML = `
+            <div class="no-results-icon">📚</div>
+            <h3>No results found</h3>
+            <p>Try adjusting your search terms or filters</p>
+          `;
+          container.appendChild(noResults);
+          return;
+        }
+        
+        const acc = document.createElement('div'); 
+        acc.className='accordion';
+        
         batches.forEach(batch=>{
-          const batchItem = document.createElement('div'); batchItem.className='item';
-          const hdr = document.createElement('div'); hdr.className='hdr'; hdr.textContent = batch.title;
-          const body = document.createElement('div'); body.className='body';
+          const batchItem = document.createElement('div'); 
+          batchItem.className='item';
+          const hdr = document.createElement('div'); 
+          hdr.className='hdr'; 
+          
+          const title = document.createElement('span');
+          title.textContent = batch.title;
+          
+          const icon = document.createElement('div');
+          icon.className = 'accordion-icon';
+          icon.textContent = '+';
+          
+          hdr.appendChild(title);
+          hdr.appendChild(icon);
+          
+          const body = document.createElement('div'); 
+          body.className='body';
 
-          // semesters
           batch.semesters.forEach(sem=>{
-            const semWrap = document.createElement('div'); semWrap.className='item'; semWrap.style.marginBottom='8px';
-            const semHdr = document.createElement('div'); semHdr.className='hdr'; semHdr.textContent = sem.title;
-            const semBody = document.createElement('div'); semBody.className='body';
+            const semWrap = document.createElement('div'); 
+            semWrap.className='item'; 
+            semWrap.style.marginBottom='var(--space-md)';
+            
+            const semHdr = document.createElement('div'); 
+            semHdr.className='hdr'; 
+            
+            const semTitle = document.createElement('span');
+            semTitle.textContent = sem.title;
+            
+            const semIcon = document.createElement('div');
+            semIcon.className = 'accordion-icon';
+            semIcon.textContent = '+';
+            
+            semHdr.appendChild(semTitle);
+            semHdr.appendChild(semIcon);
+            
+            const semBody = document.createElement('div'); 
+            semBody.className='body';
 
-            // courses under this semester - each course is its own accordion item (nested)
             sem.courses.forEach(course=>{
-              const courseItem = document.createElement('div'); courseItem.className='item';
-              const courseHdr = document.createElement('div'); courseHdr.className='hdr'; courseHdr.textContent = course.title;
-              const courseBody = document.createElement('div'); courseBody.className='body';
+              const courseItem = document.createElement('div'); 
+              courseItem.className='course-card';
+              
+              const courseHdr = createCourseHeader(course);
+              const courseBody = document.createElement('div'); 
+              courseBody.className='body';
+              courseBody.style.maxHeight = '0';
+              courseBody.style.overflow = 'hidden';
+              courseBody.style.transition = 'max-height 0.3s ease';
 
-              // tutors list inside courseBody
-              const ul = document.createElement('ul');
-              course.tutors.forEach(tutor=>{ const li = document.createElement('li'); li.textContent = tutor; ul.appendChild(li); });
-              courseBody.appendChild(ul);
+              const teacherList = createTeacherList(course.tutors);
+              courseBody.appendChild(teacherList);
 
-              courseHdr.style.cursor='pointer';
-              courseHdr.addEventListener('click', ()=> courseItem.classList.toggle('open'));
+              courseHdr.addEventListener('click', ()=> {
+                const isOpen = courseItem.classList.contains('open');
+                if (isOpen) {
+                  courseItem.classList.remove('open');
+                  courseBody.style.maxHeight = '0';
+                } else {
+                  courseItem.classList.add('open');
+                  courseBody.style.maxHeight = courseBody.scrollHeight + 'px';
+                }
+              });
 
               courseItem.appendChild(courseHdr);
               courseItem.appendChild(courseBody);
               semBody.appendChild(courseItem);
             });
 
-            semHdr.style.cursor='pointer'; semHdr.addEventListener('click', ()=> semWrap.classList.toggle('open'));
-            semWrap.appendChild(semHdr); semWrap.appendChild(semBody);
+            semHdr.addEventListener('click', ()=> semWrap.classList.toggle('open'));
+            semWrap.appendChild(semHdr); 
+            semWrap.appendChild(semBody);
             body.appendChild(semWrap);
           });
 
           hdr.addEventListener('click', ()=> batchItem.classList.toggle('open'));
-          batchItem.appendChild(hdr); batchItem.appendChild(body);
+          batchItem.appendChild(hdr); 
+          batchItem.appendChild(body);
           acc.appendChild(batchItem);
         });
         container.appendChild(acc);
       }
 
-      // Render course view: group by semester (new syllabus) first
+      // Enhanced course view renderer  
       function renderCourseView(batches, container){
-        // New syllabus mapping: code -> {semester, title}
         const syllabus = {
           '1101': {semester:'Semester 1', title:'Introduction to Financial Accounting'},
           '1102': {semester:'Semester 1', title:'Introduction to Business'},
           '1103': {semester:'Semester 1', title:'Computer Concepts and Applications'},
           '1104': {semester:'Semester 1', title:'Mathematics for Business Decisions-I'},
           '1105': {semester:'Semester 1', title:'Business Communication'},
-
           '1201': {semester:'Semester 2', title:'Intermediate Accounting'},
           '1202': {semester:'Semester 2', title:'Microeconomics'},
           '1203': {semester:'Semester 2', title:'Management and Organizational Behavior'},
           '1204': {semester:'Semester 2', title:'Mathematics for Business Decisions-II'},
           '1205': {semester:'Semester 2', title:'Bangladesh Studies'},
-
           '2101': {semester:'Semester 3', title:'Advanced Financial Accounting-I'},
           '2102': {semester:'Semester 3', title:'Macroeconomics'},
           '2103': {semester:'Semester 3', title:'Programming and Database Management'},
           '2104': {semester:'Semester 3', title:'General Science and Environment'},
           '2105': {semester:'Semester 3', title:'Business Statistics-I'},
-
           '2201': {semester:'Semester 4', title:'Advanced Financial Accounting-II'},
           '2202': {semester:'Semester 4', title:'Financial Management'},
           '2203': {semester:'Semester 4', title:'Cost Accounting'},
           '2204': {semester:'Semester 4', title:'Marketing'},
           '2205': {semester:'Semester 4', title:'Business Statistics-II'},
-
           '3101': {semester:'Semester 5', title:'Management Accounting'},
           '3102': {semester:'Semester 5', title:'Banking and Insurance'},
           '3103': {semester:'Semester 5', title:'Audit and Assurance'},
           '3104': {semester:'Semester 5', title:'Income Tax: Laws and Practice'},
           '3105': {semester:'Semester 5', title:'Business Laws'},
-
           '3201': {semester:'Semester 6', title:'Forensic Accounting and Fraud Investigation'},
           '3202': {semester:'Semester 6', title:'Corporate Finance'},
           '3203': {semester:'Semester 6', title:'Accounting Information Systems'},
           '3204': {semester:'Semester 6', title:'VAT and Cross-border Taxation'},
           '3205': {semester:'Semester 6', title:'Corporate Laws, Governance and Secretarial Practices'},
-
           '4101': {semester:'Semester 7', title:'Advanced Management Accounting'},
           '4102': {semester:'Semester 7', title:'Financial Market and Investment Analysis'},
           '4103': {semester:'Semester 7', title:'IT Governance and Information System Audit'},
           '4104': {semester:'Semester 7', title:'Supply Chain and Operation Management'},
           '4105': {semester:'Semester 7', title:'Public Sector Accounting and Financial Management'},
-
           '4201': {semester:'Semester 8', title:'Accounting Theory'},
           '4202': {semester:'Semester 8', title:'Business Analysis and Valuation'},
           '4203': {semester:'Semester 8', title:'Data Analytics'},
@@ -832,30 +1661,24 @@
 
         const semesterOrder = ['Semester 1','Semester 2','Semester 3','Semester 4','Semester 5','Semester 6','Semester 7','Semester 8','Unmapped (old)'];
 
-        // Build new-semester -> courses -> entries map
         const semMap = new Map();
         batches.forEach(batch=>{
           batch.semesters.forEach(sem=>{
             sem.courses.forEach(course=>{
-              // prefer course.code if parseArchive provided it, otherwise try to extract 4-digit code
               const code = course.code || ( (course.title||'').match(/(\d{4})/) ? RegExp.$1 : null );
               let mappedSem = 'Unmapped (old)';
               let courseTitle = course.rawTitle || course.title || '';
               if(code && syllabus[code]){
                 mappedSem = syllabus[code].semester;
-                // use the mapped (clean) syllabus title for readability
                 courseTitle = syllabus[code].title;
               } else {
-                // mark old if this course code/title isn't in new syllabus
                 if(!/\(old\)$/i.test(courseTitle)) courseTitle = courseTitle + ' (old)';
               }
 
-              // prefix with code when available so titles look like "3202: Corporate Finance"
               const displayTitle = code ? (code + ': ' + courseTitle) : courseTitle;
 
               if(!semMap.has(mappedSem)) semMap.set(mappedSem, {title:mappedSem, courses: new Map()});
               const semObj = semMap.get(mappedSem);
-              // use the displayTitle as the course key so the renderer can use course.title safely
               const courseKey = displayTitle;
               if(!semObj.courses.has(courseKey)) semObj.courses.set(courseKey, {title: displayTitle, code: code, rawTitle: course.rawTitle || '', entries: []});
               semObj.courses.get(courseKey).entries.push({batch: batch.title, semesterOriginal: sem.title, tutors: course.tutors});
@@ -864,51 +1687,102 @@
         });
 
         container.innerHTML = '';
-        const semAcc = document.createElement('div'); semAcc.className='accordion';
+        
+        if (semMap.size === 0) {
+          const noResults = document.createElement('div');
+          noResults.className = 'no-results';
+          noResults.innerHTML = `
+            <div class="no-results-icon">🎓</div>
+            <h3>No courses found</h3>
+            <p>Try adjusting your search terms or filters</p>
+          `;
+          container.appendChild(noResults);
+          return;
+        }
+        
+        const semAcc = document.createElement('div'); 
+        semAcc.className='accordion';
 
-        // render semesters in defined order
         semesterOrder.forEach(semKey=>{
           if(!semMap.has(semKey)) return;
           const semObj = semMap.get(semKey);
-          const semItem = document.createElement('div'); semItem.className='item';
-          const semHdr = document.createElement('div'); semHdr.className='hdr'; semHdr.textContent = semObj.title;
-          const semBody = document.createElement('div'); semBody.className='body';
+          const semItem = document.createElement('div'); 
+          semItem.className='item';
+          
+          const semHdr = document.createElement('div'); 
+          semHdr.className='hdr'; 
+          
+          const semTitle = document.createElement('span');
+          semTitle.textContent = semObj.title;
+          
+          const semIcon = document.createElement('div');
+          semIcon.className = 'accordion-icon';
+          semIcon.textContent = '+';
+          
+          semHdr.appendChild(semTitle);
+          semHdr.appendChild(semIcon);
+          
+          const semBody = document.createElement('div'); 
+          semBody.className='body';
 
           Array.from(semObj.courses.values()).forEach(course=>{
-            const courseItem = document.createElement('div'); courseItem.className='item';
-            const courseHdr = document.createElement('div'); courseHdr.className='hdr'; courseHdr.textContent = course.title;
-            const courseBody = document.createElement('div'); courseBody.className='body';
+            const courseItem = document.createElement('div'); 
+            courseItem.className='course-card';
+            
+            const courseHdr = createCourseHeader(course);
+            const courseBody = document.createElement('div'); 
+            courseBody.className='body';
+            courseBody.style.maxHeight = '0';
+            courseBody.style.overflow = 'hidden';
+            courseBody.style.transition = 'max-height 0.3s ease';
 
             course.entries.forEach(e=>{
-              const entryItem = document.createElement('div'); entryItem.className='item';
-              const entryHdr = document.createElement('div'); entryHdr.className='hdr byline';
-              // Avoid repeating semester name if it's the same as the outer semester heading
+              const entryItem = document.createElement('div'); 
+              entryItem.className='item';
+              const entryHdr = document.createElement('div'); 
+              entryHdr.className='hdr byline';
+              
               let displayByline = e.batch;
               try{
                 const origNum = (e.semesterOriginal || '').toString().match(/(\d+)/);
                 const outerNum = (semObj.title || '').toString().match(/(\d+)/);
                 if(!(origNum && outerNum && origNum[1] === outerNum[1])){
-                  // only append semesterOriginal when it differs
                   if(e.semesterOriginal) displayByline = e.batch + ' — ' + e.semesterOriginal;
                 }
-              }catch(_){ /* ignore and fall back to showing batch only */ }
+              }catch(_){ }
+              
               entryHdr.textContent = displayByline;
-              const entryBody = document.createElement('div'); entryBody.className='body';
-              const ul = document.createElement('ul'); e.tutors.forEach(t=>{ const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
-              entryBody.appendChild(ul);
+              const entryBody = document.createElement('div'); 
+              entryBody.className='body';
+              
+              const teacherList = createTeacherList(e.tutors);
+              entryBody.appendChild(teacherList);
 
               entryHdr.addEventListener('click', ()=> entryItem.classList.toggle('open'));
-              entryItem.appendChild(entryHdr); entryItem.appendChild(entryBody);
+              entryItem.appendChild(entryHdr); 
+              entryItem.appendChild(entryBody);
               courseBody.appendChild(entryItem);
             });
 
-            courseHdr.addEventListener('click', ()=> courseItem.classList.toggle('open'));
-            courseItem.appendChild(courseHdr); courseItem.appendChild(courseBody);
+            courseHdr.addEventListener('click', ()=> {
+              const isOpen = courseItem.classList.contains('open');
+              if (isOpen) {
+                courseItem.classList.remove('open');
+                courseBody.style.maxHeight = '0';
+              } else {
+                courseItem.classList.add('open');
+                courseBody.style.maxHeight = courseBody.scrollHeight + 'px';
+              }
+            });
+            
+            courseItem.appendChild(courseHdr); 
+            courseItem.appendChild(courseBody);
             semBody.appendChild(courseItem);
           });
 
           semHdr.addEventListener('click', ()=> semItem.classList.toggle('open'));
-          semItem.appendChild(semHdr); semItem.appendChild(semBody);
+          semItem.appendChild(semHdr); 
+          semItem.appendChild(semBody);
           semAcc.appendChild(semItem);
         });
 
@@ -918,26 +1792,37 @@
       // On load: parse hidden archive and render (robust to errors)
       document.addEventListener('DOMContentLoaded', ()=>{
         const raw = document.querySelector('#raw-archive .archive');
-        if(!raw) console.warn('raw archive element not found; no data to render');
-        const batches = raw ? parseArchive(raw) : [];
+        if(!raw) {
+          console.warn('raw archive element not found; no data to render');
+          return;
+        }
+        
+        allBatches = parseArchive(raw);
+        
+        // Initialize enhanced UI
+        initializeEnhancedUI();
+        
+        // Update statistics
+        updateStatistics(allBatches);
 
         const batchView = document.getElementById('view-batch');
         const courseView = document.getElementById('view-course');
+        
         try{
-          renderBatchView(batches, batchView);
+          renderBatchView(allBatches, batchView);
         }catch(err){
           console.error('renderBatchView failed', err);
           if(batchView) batchView.innerHTML = '<p style="color:#a00">Failed to render batch view. See console for details.</p>';
         }
 
         try{
-          renderCourseView(batches, courseView);
+          renderCourseView(allBatches, courseView);
         }catch(err){
           console.error('renderCourseView failed', err);
           if(courseView) courseView.innerHTML = '<p style="color:#a00">Failed to render course view. See console for details.</p>';
         }
 
-        // tab switching - always attach listeners so tabs work even if rendering failed
+        // Enhanced tab switching
         document.querySelectorAll('.tab').forEach(t=> t.addEventListener('click', (e)=>{
           document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
           t.classList.add('active');
