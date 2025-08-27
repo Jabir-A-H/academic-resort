@@ -2597,6 +2597,43 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
   border: 1px solid var(--gray-200);
 }
 
+/* Position tags for faculty */
+.teachers-position-tag {
+  background: var(--blue-50);
+  color: var(--blue-700);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--blue-200);
+  margin-left: var(--space-sm);
+}
+
+/* Teacher info container for name and position */
+.teachers-teacher-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.teachers-teacher-name {
+  font-weight: var(--font-weight-medium);
+}
+
+/* Section title with position for teacher view */
+.teachers-section-title-with-position {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-bottom: var(--space-md);
+}
+
+.teachers-section-title-with-position .teachers-section-title {
+  margin: 0;
+}
+
 /* Teacher View Specific Styles */
 .teachers-teacher-courses {
   display: flex;
