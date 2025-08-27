@@ -205,8 +205,8 @@
         }
       }
 
-      // Create global rate limiter instance (HYPER-AGGRESSIVE for maximum speed)
-      const apiLimiter = new APIRateLimiter(150, 3); // Max 150 concurrent, 3ms between starts (FASTER!)
+      // Create global rate limiter instance (ULTRA-AGGRESSIVE for maximum speed with deeper search)
+      const apiLimiter = new APIRateLimiter(200, 2); // Max 200 concurrent, 2ms between starts (ULTRA-FAST!)
 
       // Get cache key for a folder
       function getCacheKey(folderId, currentDepth) {
@@ -636,9 +636,9 @@
           }
         }
 
-        // Search folders in parallel batches - 50 folders simultaneously for MAXIMUM speed
-        const PARALLEL_BATCH_SIZE = 50; // Process 50 folders simultaneously (ultra-aggressive!)
-        const MAX_SEARCH_DEPTH = 4; // Depth of 4 levels - optimal balance of coverage vs performance
+        // Search folders in parallel batches - 60 folders simultaneously for MAXIMUM speed
+        const PARALLEL_BATCH_SIZE = 60; // Process 60 folders simultaneously (ultra-aggressive for deeper search!)
+        const MAX_SEARCH_DEPTH = 5; // Depth of 5 levels for comprehensive shortcut folder discovery
 
         // Clear results container at start
         const container = document.getElementById("all-resources");
@@ -1327,7 +1327,7 @@
       async function fetchAllFilesRecursively(
         folderId,
         path = "",
-        maxDepth = 4, // Optimal depth of 4 levels - good coverage without excessive nesting
+        maxDepth = 5, // Depth of 5 levels for comprehensive shortcut folder discovery
         semester = "",
         batchLabel = "",
         statsElement = null,
