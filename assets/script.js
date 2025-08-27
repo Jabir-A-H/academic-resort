@@ -28,6 +28,9 @@ async function loadInclude(el) {
     // Mark as loaded
     el.setAttribute('data-include-loaded', '1');
 
+    // Wait for DOM to be updated before initializing components
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
     // Initialize features that depend on included content
     setupDynamicComponents();
 
@@ -52,21 +55,94 @@ function initIncludes(root = document) {
  */
 function setupDynamicComponents() {
   try {
+    // Try to setup sidebar, with retry if content isn't ready
     setupSidebarToggle();
     // Add more later: setupDarkMode(), setupModals(), etc.
   } catch (error) {
     console.error('Error setting up dynamic components:', error);
+    // Retry after a short delay if there was an error
+    setTimeout(() => {
+      console.log('Retrying dynamic components setup...');
+      setupSidebarToggle();
+    }, 200);
   }
 }
 
-function setupSidebarToggle() {
+/**
+ * Setup navigation link event handlers
+ */
+function setupNavLinkHandlers(appHeader, navLinks) {
+  if (!appHeader || !navLinks || navLinks.length === 0) {
+    console.log('Cannot setup nav link handlers - missing elements');
+    return;
+  }
+
+  const toggleEl = appHeader.querySelector('.menu-toggle');
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+
+  // Close sidebar when clicking a nav link (mobile UX)
+  Array.from(navLinks).forEach(link => {
+    // Remove any existing listeners by cloning the element
+    const newLink = link.cloneNode(true);
+    link.parentNode.replaceChild(newLink, link);
+    
+    newLink.addEventListener('click', () => {
+      // Only close on mobile
+      if (window.innerWidth <= 768) {
+        document.body.classList.remove('sidebar-expanded');
+        if (toggleEl) toggleEl.setAttribute('aria-expanded', 'false');
+        if (mobileToggle) mobileToggle.setAttribute('aria-expanded', 'false');
+        if (toggleEl) toggleEl.textContent = '☰';
+        if (mobileToggle) mobileToggle.innerHTML = '☰';
+      }
+    }, { passive: true });
+  });
+  
+  // Highlight current page - get fresh list after clone operations
+  const currentPath = location.pathname;
+  const updatedNavLinks = appHeader.querySelectorAll('.nav-item');
+  updatedNavLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    if (href && (currentPath.endsWith(href) || (href.includes('/') && currentPath.includes(href.split('/').pop())))) {
+      link.setAttribute('aria-current', 'page');
+      link.classList.add('active');
+    }
+  });
+  
+  console.log(`Set up ${updatedNavLinks.length} navigation link handlers`);
+}
+
+function setupSidebarToggle(retryCount = 0) {
   // Do not initialize sidebar on index.html
   const path = location.pathname || '';
   const isIndex = /(^|\/)index\.html$/.test(path) || /\/$/.test(path);
   if (isIndex) return;
 
   const appHeader = document.querySelector('.app-header');
-  if (!appHeader) return;
+  if (!appHeader) {
+    if (retryCount < 10) { // Max 10 retries (1 second total)
+      console.log(`App header not found, retrying in 100ms... (${retryCount + 1}/10)`);
+      setTimeout(() => setupSidebarToggle(retryCount + 1), 100);
+    } else {
+      console.error('App header not found after 10 retries, giving up');
+    }
+    return;
+  }
+
+  // Check if navigation links are loaded
+  const navLinks = appHeader.querySelectorAll('.nav-item');
+  if (navLinks.length === 0) {
+    if (retryCount < 15) { // Max 15 retries for nav links (1.5 seconds total)
+      console.log(`Navigation links not loaded yet, retrying in 100ms... (${retryCount + 1}/15)`);
+      setTimeout(() => setupSidebarToggle(retryCount + 1), 100);
+    } else {
+      console.error('Navigation links not found after 15 retries, proceeding without them');
+      // Continue with setup even without nav links
+    }
+    return;
+  }
+
+  console.log(`Found ${navLinks.length} navigation links after ${retryCount} retries`);
 
   // Prevent multiple initializations globally
   if (sidebarInitialized) {
@@ -88,6 +164,9 @@ function setupSidebarToggle() {
       mobileToggle.setAttribute('aria-expanded', 'false');
       mobileToggle.innerHTML = '☰';
     }
+    
+    // Re-setup nav link click handlers for the new page
+    setupNavLinkHandlers(appHeader, navLinks);
     return;
   }
 
@@ -225,28 +304,7 @@ function setupSidebarToggle() {
   });
 
   // Close sidebar when clicking a nav link (mobile UX)
-  appHeader.querySelectorAll('.nav-item').forEach(link => {
-    link.addEventListener('click', () => {
-      // Only close on mobile
-      if (window.innerWidth <= 768) {
-        document.body.classList.remove('sidebar-expanded');
-        if (toggleEl) toggleEl.setAttribute('aria-expanded', 'false');
-        if (mobileToggle) mobileToggle.setAttribute('aria-expanded', 'false');
-        if (toggleEl) toggleEl.textContent = '☰';
-        if (mobileToggle) mobileToggle.innerHTML = '☰';
-      }
-    }, { passive: true });
-  });
-  
-  // Highlight current page
-  const currentPath = location.pathname;
-  appHeader.querySelectorAll('.nav-item').forEach(link => {
-    const href = link.getAttribute('href');
-    if (href && (currentPath.endsWith(href) || (href.includes('/') && currentPath.includes(href.split('/').pop())))) {
-      link.setAttribute('aria-current', 'page');
-      link.classList.add('active');
-    }
-  });
+  setupNavLinkHandlers(appHeader, appHeader.querySelectorAll('.nav-item'));
   
   // ESC to close and keyboard navigation
   document.addEventListener('keydown', (e) => {
