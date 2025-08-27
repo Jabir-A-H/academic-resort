@@ -182,41 +182,24 @@
               const folderIdMatch = url.match(/'([^']+)'\+in\+parents/);
               const folderId = folderIdMatch ? folderIdMatch[1] : "unknown";
 
-              // Handle different error types with detailed logging
+              // Handle different error types
               if (response.status === 500) {
-                console.warn(
-                  `🚨 Server Error (500): Google Drive server issue for folder ${folderId}. This is usually temporary.`
-                );
-                resolve({ files: [] }); // Return empty result instead of failing
+                resolve({ files: [] });
                 return;
               } else if (response.status === 403) {
-                console.warn(
-                  `🔒 Permission Denied (403): No access to folder ${folderId}. Check if folder is shared or if API key has access.`
-                );
-                resolve({ files: [] }); // Return empty result instead of failing
+                resolve({ files: [] });
                 return;
               } else if (response.status === 404) {
-                console.warn(
-                  `📁 Not Found (404): Folder ${folderId} doesn't exist or was deleted.`
-                );
-                resolve({ files: [] }); // Return empty result instead of failing
+                resolve({ files: [] });
                 return;
               } else if (response.status === 429) {
-                console.warn(
-                  `⏱️ Rate Limited (429): Too many requests for folder ${folderId}. API quotas exceeded.`
-                );
-                resolve({ files: [] }); // Return empty result instead of failing
+                resolve({ files: [] });
                 return;
               } else if (response.status === 401) {
-                console.error(
-                  `🔑 Unauthorized (401): Invalid API key for folder ${folderId}. Check your API key.`
-                );
-                resolve({ files: [] }); // Return empty result instead of failing
+                resolve({ files: [] });
+                resolve({ files: [] });
                 return;
               } else {
-                console.error(
-                  `❌ Unknown Error (${response.status}): ${response.statusText} for folder ${folderId}`
-                );
                 throw new Error(
                   `API Error: ${response.status} - ${response.statusText}`
                 );
@@ -226,24 +209,9 @@
             const data = await response.json();
             resolve(data);
           } catch (error) {
-            // Enhanced error logging for network/parsing issues
             const folderIdMatch = url.match(/'([^']+)'\+in\+parents/);
             const folderId = folderIdMatch ? folderIdMatch[1] : "unknown";
-
-            if (error.name === "TypeError" && error.message.includes("fetch")) {
-              console.warn(
-                `🌐 Network Error: Failed to connect to Google Drive API for folder ${folderId}. Check internet connection.`
-              );
-            } else if (error.name === "SyntaxError") {
-              console.warn(
-                `📄 Parse Error: Invalid JSON response from Google Drive API for folder ${folderId}.`
-              );
-            } else {
-              console.warn(
-                `🔧 Request Failed: ${error.message} for folder ${folderId}`
-              );
-            }
-
+            console.warn(`� Error: ${folderId}`);
             resolve({ files: [] }); // Return empty result to continue search
           } finally {
             // Always decrement counter, whether success or error
@@ -263,8 +231,8 @@
         }
       }
 
-      // Create global rate limiter instance (OPTIMIZED within quota limits)
-      const apiLimiter = new APIRateLimiter(120, 4); // Max 120 concurrent, 4ms between starts (FAST)
+      // Create global rate limiter instance (BALANCED for speed and reliability)
+      const apiLimiter = new APIRateLimiter(200, 2); // Max 200 concurrent, 2ms between starts (AGGRESSIVE - low API usage allows this)
 
       // Get cache key for a folder
       function getCacheKey(folderId, currentDepth) {
@@ -616,35 +584,21 @@
           return;
         }
 
-        stats.textContent = "🔍 Searching...";
-
-        // Add timeout for maximum 45 seconds (better than 12 minutes!)
-        const searchPromise = smartSearch(
-          searchTerm,
-          semesterFilter,
-          batchFilter,
-          stats
-        );
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(
-            () =>
-              reject(new Error("Search timeout - results may be incomplete")),
-            45000
-          )
-        );
+        stats.textContent = "Searching...";
 
         try {
-          const results = await Promise.race([searchPromise, timeoutPromise]);
+          const results = await smartSearch(
+            searchTerm,
+            semesterFilter,
+            batchFilter,
+            stats
+          );
           displayResults(results);
           updateStats(results.length, "∞", ` (search results)`);
-          stats.innerHTML = `✅ Found ${results.length} results`;
+          stats.innerHTML = `Found ${results.length} results`;
         } catch (error) {
-          if (error.message.includes("timeout")) {
-            stats.textContent = `⚠️ Search timed out - try more specific terms`;
-          } else {
-            console.error("Search error:", error);
-            stats.textContent = "❌ Search failed. Please try again.";
-          }
+          console.error("Search error:", error);
+          stats.textContent = "Search failed. Please try again.";
         }
       }
 
@@ -757,10 +711,10 @@
             const currentResults = removeDuplicatesOptimized(results);
             if (currentResults.length > 0) {
               displayResults(currentResults);
-              // Update stats with results count on the right
-              statsElement.innerHTML = `� Speed-searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+              // Update stats with results count on the right (moved below displayResults for better UX)
+              statsElement.innerHTML = `� Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
             } else {
-              statsElement.textContent = `� Speed-searched ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
+              statsElement.textContent = `� Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
             }
 
             // Early termination if we have many results (increased threshold for more comprehensive results)
@@ -791,11 +745,7 @@
         saveResolvedFolderCache();
 
         // Final update - show completion in stats line
-        statsElement.innerHTML = `✅ Search complete <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
-
-        // Log rate limiter performance (easter egg for developers)
-        const finalStats = apiLimiter.getStats();
-        console.log("🚀 Search completed! Rate limiter stats:", finalStats);
+        statsElement.innerHTML = `Search complete <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
 
         return flatResults;
       }
@@ -1002,11 +952,6 @@
         let cachedFiles = loadFromPersistentCache(folderId, currentDepth);
 
         if (cachedFiles) {
-          // Update status to show cache hit
-          if (statsElement && path) {
-            statsElement.textContent = `✅ Searching in ${path}...`;
-          }
-
           // Also update in-memory cache
           const cacheKey = `${folderId}_${currentDepth}`;
           fileCache.set(cacheKey, cachedFiles);
@@ -1042,13 +987,9 @@
         }
 
         try {
-          // Update progress
-          if (statsElement && path) {
-            statsElement.textContent = `🔍 Searching in ${path}...`;
-          }
-
           // Rate-limited API call to prevent resource exhaustion - OPTIMIZED
           const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
+
           const data = await apiLimiter.makeRequest(url);
 
           // Cache the raw response in both memory and persistent storage
