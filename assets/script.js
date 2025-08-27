@@ -2,6 +2,10 @@
  * Simple HTML include loader
  * Usage: <div data-include="/assets/includes/sidebar.html"></div>
  */
+
+// Global flag to prevent multiple sidebar initializations
+let sidebarInitialized = false;
+
 async function loadInclude(el) {
   const src = el.getAttribute('data-include');
   if (!src) return;
@@ -47,8 +51,12 @@ function initIncludes(root = document) {
  * Setup interactive components that depend on included HTML
  */
 function setupDynamicComponents() {
-  setupSidebarToggle();
-  // Add more later: setupDarkMode(), setupModals(), etc.
+  try {
+    setupSidebarToggle();
+    // Add more later: setupDarkMode(), setupModals(), etc.
+  } catch (error) {
+    console.error('Error setting up dynamic components:', error);
+  }
 }
 
 function setupSidebarToggle() {
@@ -60,8 +68,32 @@ function setupSidebarToggle() {
   const appHeader = document.querySelector('.app-header');
   if (!appHeader) return;
 
-  // Only initialize once per header load
-  if (appHeader.hasAttribute('data-sidebar-initialized')) return;
+  // Prevent multiple initializations globally
+  if (sidebarInitialized) {
+    console.log('Sidebar already initialized, just updating state');
+    // Just ensure the header has the right classes and state
+    appHeader.classList.add('sidebar');
+    document.body.classList.add('has-sidebar');
+    // Reset to collapsed state on page load
+    document.body.classList.remove('sidebar-expanded');
+    
+    // Reset button states
+    const toggleEl = appHeader.querySelector('.menu-toggle');
+    const mobileToggle = document.querySelector('.mobile-menu-toggle');
+    if (toggleEl) {
+      toggleEl.setAttribute('aria-expanded', 'false');
+      toggleEl.textContent = '☰';
+    }
+    if (mobileToggle) {
+      mobileToggle.setAttribute('aria-expanded', 'false');
+      mobileToggle.innerHTML = '☰';
+    }
+    return;
+  }
+
+  console.log('Initializing sidebar for the first time');
+  // Mark as initialized
+  sidebarInitialized = true;
   appHeader.setAttribute('data-sidebar-initialized', '1');
 
   // Mark body that sidebar exists so layout CSS can offset
@@ -93,60 +125,73 @@ function setupSidebarToggle() {
     sidebarInclude.parentNode.insertBefore(mainContentWrapper, sidebarInclude.nextSibling);
   }
 
-  // Ensure collapsed by default
+  // Ensure collapsed by default on new page loads
   document.body.classList.remove('sidebar-expanded');
 
   // Ensure header has sidebar class for scoped CSS
   appHeader.classList.add('sidebar');
 
-  // Create overlay for mobile close behavior
-  let overlay = document.querySelector('.sidebar-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.className = 'sidebar-overlay';
-    document.body.appendChild(overlay);
-  }
+  // Clean up any existing mobile elements first
+  const existingOverlay = document.querySelector('.sidebar-overlay');
+  if (existingOverlay) existingOverlay.remove();
+  
+  const existingMobileToggle = document.querySelector('.mobile-menu-toggle');
+  if (existingMobileToggle) existingMobileToggle.remove();
 
-  // Create mobile hamburger button
-  let mobileToggle = document.querySelector('.mobile-menu-toggle');
-  if (!mobileToggle) {
-    mobileToggle = document.createElement('button');
-    mobileToggle.className = 'mobile-menu-toggle';
-    mobileToggle.innerHTML = '☰';
-    mobileToggle.setAttribute('aria-label', 'Toggle navigation menu');
-    mobileToggle.setAttribute('aria-expanded', 'false');
-    document.body.appendChild(mobileToggle);
-  }
+  // Create fresh overlay for mobile close behavior
+  const overlay = document.createElement('div');
+  overlay.className = 'sidebar-overlay';
+  document.body.appendChild(overlay);
+
+  // Create fresh mobile hamburger button
+  const mobileToggle = document.createElement('button');
+  mobileToggle.className = 'mobile-menu-toggle';
+  mobileToggle.innerHTML = '☰';
+  mobileToggle.setAttribute('aria-label', 'Toggle navigation menu');
+  mobileToggle.setAttribute('aria-expanded', 'false');
+  mobileToggle.setAttribute('type', 'button'); // Ensure it's a button
+  document.body.appendChild(mobileToggle);
+  
+  console.log('Mobile toggle created and added to body');
 
   const toggleEl = appHeader.querySelector('.menu-toggle');
   
   // Function to toggle sidebar
   const toggleSidebar = () => {
-    const expanded = document.body.classList.toggle('sidebar-expanded');
-    if (toggleEl) toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-    if (mobileToggle) mobileToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-    
-    // Update visual symbols with smooth transitions
-    if (toggleEl) toggleEl.textContent = expanded ? '←' : '☰';
-    if (mobileToggle) mobileToggle.innerHTML = expanded ? '✕' : '☰';
-    
-    // Focus management for accessibility
-    if (expanded) {
-      // Focus first nav item when opened
-      const firstNavItem = appHeader.querySelector('.nav-item');
-      if (firstNavItem) {
-        setTimeout(() => firstNavItem.focus(), 100);
+    try {
+      console.log('Toggle sidebar called');
+      const expanded = document.body.classList.toggle('sidebar-expanded');
+      console.log('Sidebar expanded:', expanded);
+      
+      if (toggleEl) toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      if (mobileToggle) mobileToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      
+      // Update visual symbols with smooth transitions
+      if (toggleEl) toggleEl.textContent = expanded ? '←' : '☰';
+      if (mobileToggle) mobileToggle.innerHTML = expanded ? '✕' : '☰';
+      
+      // Focus management for accessibility
+      if (expanded) {
+        // Focus first nav item when opened
+        const firstNavItem = appHeader.querySelector('.nav-item');
+        if (firstNavItem) {
+          setTimeout(() => firstNavItem.focus(), 100);
+        }
+      } else {
+        // Return focus to toggle button when closed
+        if (mobileToggle) mobileToggle.focus();
       }
-    } else {
-      // Return focus to toggle button when closed
-      if (mobileToggle) mobileToggle.focus();
+      
+      // Store user preference (only for desktop)
+      if (window.innerWidth >= 769) {
+        localStorage.setItem('sidebar-expanded', expanded);
+      }
+    } catch (error) {
+      console.error('Error in toggleSidebar:', error);
     }
-    
-    // Store user preference
-    localStorage.setItem('sidebar-expanded', expanded);
   };
   
-  // Restore user preference
+  // Restore user preference (only on desktop)
   const savedState = localStorage.getItem('sidebar-expanded');
   if (savedState === 'true' && window.innerWidth >= 769) {
     document.body.classList.add('sidebar-expanded');
@@ -156,10 +201,18 @@ function setupSidebarToggle() {
 
   // Add click listeners to both toggle buttons
   if (toggleEl) {
+    console.log('Adding click listener to desktop toggle');
     toggleEl.addEventListener('click', toggleSidebar, { passive: true });
   }
   if (mobileToggle) {
+    console.log('Adding click listener to mobile toggle');
     mobileToggle.addEventListener('click', toggleSidebar, { passive: true });
+    
+    // Also add touch events for better mobile responsiveness
+    mobileToggle.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      toggleSidebar();
+    }, { passive: false });
   }
 
   // Clicking overlay closes sidebar (mostly mobile)
@@ -552,6 +605,11 @@ function startBackgroundCachePreloader() {
     backgroundPreloader.startPreloading();
   }
 }
+
+// Reset global state when page unloads to ensure fresh initialization on next page
+window.addEventListener('beforeunload', () => {
+  sidebarInitialized = false;
+});
 
 // Make preloader available globally for debugging and manual control
 window.backgroundCachePreloader = {
