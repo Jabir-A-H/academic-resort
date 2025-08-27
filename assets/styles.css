@@ -2550,6 +2550,22 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
   gap: var(--space-xs);
 }
 
+.teachers-batch-group {
+  margin-bottom: var(--space-md);
+  border-left: 3px solid var(--blue-200);
+  padding-left: var(--space-md);
+}
+
+.teachers-batch-header {
+  margin-bottom: var(--space-sm);
+}
+
+.teachers-teacher-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
 .teachers-teacher-item {
   padding: var(--space-sm);
   background: var(--gray-50);

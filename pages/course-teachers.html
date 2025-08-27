@@ -28,9 +28,9 @@
             <div class="filter-group">
               <label for="viewSelect">View by:</label>
               <select id="viewSelect" class="filter-dropdown">
-                <option value="batch">Batch & Course</option>
-                <option value="course">Course & Batch</option>
-                <option value="teacher">Teacher & Course</option>
+                <option value="batch">Batch</option>
+                <option value="course">Course</option>
+                <option value="teacher">Teacher</option>
               </select>
             </div>
 
@@ -1095,7 +1095,14 @@
             const coursesGrid = document.createElement("div");
             coursesGrid.className = "teachers-courses-grid";
 
-            semester.courses.forEach((course) => {
+            // Sort courses by course code
+            const sortedCourses = [...semester.courses].sort((a, b) => {
+              const codeA = parseInt(a.code);
+              const codeB = parseInt(b.code);
+              return codeA - codeB;
+            });
+
+            sortedCourses.forEach((course) => {
               // Filter by course if selected
               if (
                 selectedCourse !== "all" &&
@@ -1171,8 +1178,8 @@
       ) {
         container.innerHTML = "";
 
-        // Group courses across all batches
-        const courseMap = new Map();
+        // Group courses by semester
+        const semesterMap = new Map();
 
         batches.forEach((batch) => {
           if (selectedBatch !== "all" && !batch.name.includes(selectedBatch))
@@ -1202,6 +1209,11 @@
                 if (teachersToShow.length === 0) return;
               }
 
+              if (!semesterMap.has(semester.name)) {
+                semesterMap.set(semester.name, new Map());
+              }
+
+              const courseMap = semesterMap.get(semester.name);
               if (!courseMap.has(courseKey)) {
                 courseMap.set(courseKey, {
                   name: course.name,
@@ -1212,88 +1224,107 @@
 
               courseMap.get(courseKey).offerings.push({
                 batch: batch.name,
-                semester: semester.name,
                 teachers: teachersToShow,
               });
             });
           });
         });
 
-        // Sort courses alphabetically
-        const sortedCourses = Array.from(courseMap.entries()).sort((a, b) =>
-          a[0].localeCompare(b[0])
-        );
+        // Sort semesters by order
+        const sortedSemesters = Array.from(semesterMap.keys()).sort((a, b) => {
+          const aIndex = semesterOrder.indexOf(a);
+          const bIndex = semesterOrder.indexOf(b);
+          if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+          if (aIndex !== -1) return -1;
+          if (bIndex !== -1) return 1;
+          return a.localeCompare(b);
+        });
 
-        sortedCourses.forEach(([courseKey, courseData]) => {
-          const courseSection = document.createElement("div");
-          courseSection.className = "teachers-section";
+        sortedSemesters.forEach((semesterName) => {
+          const semesterSection = document.createElement("div");
+          semesterSection.className = "teachers-section";
 
-          const courseHeader = document.createElement("h3");
-          courseHeader.className = "teachers-section-title";
-          courseHeader.innerHTML = `
-            ${courseData.name} <span class="teachers-course-code">${courseData.code}</span>
-          `;
-          courseSection.appendChild(courseHeader);
+          const semesterHeader = document.createElement("h3");
+          semesterHeader.className = "teachers-section-title";
+          semesterHeader.textContent = semesterName;
+          semesterSection.appendChild(semesterHeader);
 
-          const offeringsGrid = document.createElement("div");
-          offeringsGrid.className = "teachers-courses-grid";
+          const coursesGrid = document.createElement("div");
+          coursesGrid.className = "teachers-courses-grid";
 
-          // Sort offerings by batch order (latest first), then by semester order
-          courseData.offerings.sort((a, b) => {
-            const aBatchIndex = batchOrder.indexOf(a.batch);
-            const bBatchIndex = batchOrder.indexOf(b.batch);
-            if (aBatchIndex !== bBatchIndex) {
+          const courseMap = semesterMap.get(semesterName);
+
+          // Sort courses by course code within each semester
+          const sortedCourses = Array.from(courseMap.entries()).sort((a, b) => {
+            const codeA = parseInt(a[1].code);
+            const codeB = parseInt(b[1].code);
+            return codeA - codeB;
+          });
+
+          sortedCourses.forEach(([courseKey, courseData]) => {
+            const courseCard = document.createElement("div");
+            courseCard.className = "teachers-course-card";
+
+            const courseHeader = document.createElement("div");
+            courseHeader.className = "teachers-course-header";
+            courseHeader.innerHTML = `
+              <span class="teachers-course-name">${courseData.name}</span>
+              <span class="teachers-course-code">${courseData.code}</span>
+            `;
+
+            const offeringsContainer = document.createElement("div");
+            offeringsContainer.className = "teachers-list";
+
+            // Sort offerings by batch order (latest first)
+            courseData.offerings.sort((a, b) => {
+              const aBatchIndex = batchOrder.indexOf(a.batch);
+              const bBatchIndex = batchOrder.indexOf(b.batch);
               if (aBatchIndex !== -1 && bBatchIndex !== -1)
                 return aBatchIndex - bBatchIndex;
               if (aBatchIndex !== -1) return -1;
               if (bBatchIndex !== -1) return 1;
-            }
-            const aSemIndex = semesterOrder.indexOf(a.semester);
-            const bSemIndex = semesterOrder.indexOf(b.semester);
-            if (aSemIndex !== -1 && bSemIndex !== -1)
-              return aSemIndex - bSemIndex;
-            if (aSemIndex !== -1) return -1;
-            if (bSemIndex !== -1) return 1;
-            return a.semester.localeCompare(b.semester);
-          });
-
-          courseData.offerings.forEach((offering) => {
-            const offeringCard = document.createElement("div");
-            offeringCard.className = "teachers-course-card";
-
-            const offeringHeader = document.createElement("div");
-            offeringHeader.className = "teachers-course-header";
-            offeringHeader.innerHTML = `
-              <span class="teachers-batch-name">${offering.batch}</span>
-              <span class="teachers-semester-name">${offering.semester}</span>
-            `;
-
-            const teachersList = document.createElement("div");
-            teachersList.className = "teachers-list";
-
-            offering.teachers.forEach((teacher, index) => {
-              const teacherItem = document.createElement("div");
-              teacherItem.className = "teachers-teacher-item";
-
-              const teacherName = document.createElement("span");
-              teacherName.textContent = teacher;
-
-              const sectionTag = document.createElement("span");
-              sectionTag.className = "teachers-section-tag";
-              sectionTag.textContent = String.fromCharCode(65 + index); // A, B, C, etc.
-
-              teacherItem.appendChild(teacherName);
-              teacherItem.appendChild(sectionTag);
-              teachersList.appendChild(teacherItem);
+              return a.batch.localeCompare(b.batch);
             });
 
-            offeringCard.appendChild(offeringHeader);
-            offeringCard.appendChild(teachersList);
-            offeringsGrid.appendChild(offeringCard);
+            courseData.offerings.forEach((offering) => {
+              const batchGroup = document.createElement("div");
+              batchGroup.className = "teachers-batch-group";
+
+              const batchHeader = document.createElement("div");
+              batchHeader.className = "teachers-batch-header";
+              batchHeader.innerHTML = `<span class="teachers-batch-name">${offering.batch}</span>`;
+
+              const teachersList = document.createElement("div");
+              teachersList.className = "teachers-teacher-list";
+
+              offering.teachers.forEach((teacher, index) => {
+                const teacherItem = document.createElement("div");
+                teacherItem.className = "teachers-teacher-item";
+
+                const teacherName = document.createElement("span");
+                teacherName.textContent = teacher;
+
+                const sectionTag = document.createElement("span");
+                sectionTag.className = "teachers-section-tag";
+                sectionTag.textContent = String.fromCharCode(65 + index); // A, B, C, etc.
+
+                teacherItem.appendChild(teacherName);
+                teacherItem.appendChild(sectionTag);
+                teachersList.appendChild(teacherItem);
+              });
+
+              batchGroup.appendChild(batchHeader);
+              batchGroup.appendChild(teachersList);
+              offeringsContainer.appendChild(batchGroup);
+            });
+
+            courseCard.appendChild(courseHeader);
+            courseCard.appendChild(offeringsContainer);
+            coursesGrid.appendChild(courseCard);
           });
 
-          courseSection.appendChild(offeringsGrid);
-          container.appendChild(courseSection);
+          semesterSection.appendChild(coursesGrid);
+          container.appendChild(semesterSection);
         });
       }
 
