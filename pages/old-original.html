@@ -11,8 +11,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../assets/styles.css" />
-    <script src="../assets/api-config.js" defer></script>
-    <script src="../assets/drive-keys.js" defer></script>
     <script src="../assets/script.js" defer></script>
     <script src="../assets/api-rate-limiter.js" defer></script>
     <script src="../assets/browse-drive-manager.js" defer></script>
@@ -45,10 +43,7 @@
         </div>
 
         <div class="filter-row">
-          <select
-            id="semesterFilter"
-            onchange="browseSearch.handleFilterChange()"
-          >
+          <select id="semesterFilter" onchange="browseSearch.handleFilterChange()">
             <option value="">All Semesters</option>
             <option value="1st">1st Semester</option>
             <option value="2nd">2nd Semester</option>
@@ -116,8 +111,8 @@
     <div data-include="../assets/includes/footer.html"></div>
 
     <script>
-      // Drive API keys are centralized in `assets/drive-keys.js` and exposed as
-      // `window.DriveKeyManager`. Use DriveKeyManager.getNextApiKey() to rotate keys.
+      // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
+      const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
       let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
       let allFiles = []; // Store all loaded files for searching
       let isLoading = false;
@@ -530,7 +525,7 @@
       async function rebuildFolderCache(folderId, currentDepth, maxDepth) {
         if (currentDepth >= maxDepth) return;
 
-        const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DriveKeyManager.getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
+        const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
 
         try {
           const data = await apiLimiter.makeRequest(url); // Use foreground limiter for speed
@@ -998,7 +993,7 @@
 
         try {
           // Rate-limited API call to prevent resource exhaustion - OPTIMIZED
-          const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DriveKeyManager.getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
+          const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
 
           const data = await apiLimiter.makeRequest(url);
 
@@ -1128,7 +1123,7 @@
 
         try {
           const response = await fetch(
-            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DriveKeyManager.getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`
+            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`
           );
 
           if (!response.ok) {
@@ -1703,7 +1698,7 @@
 
             try {
               const response = await fetch(
-                `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DriveKeyManager.getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`
+                `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`
               );
 
               if (!response.ok) {

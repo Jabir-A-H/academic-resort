@@ -729,17 +729,37 @@
       let allCourses = new Map(); // courseName -> { batches: Set, teachers: Set, semesters: Set }
 
       // Faculty position and order mapping (based on official DU Accounting Department page)
-      // Faculty data will be loaded from external JSON file
+      // Faculty data will be loaded from external JSON file (normalized keys)
       let facultyData = {};
 
+      // Normalize a name by removing common honorifics/titles and trimming spaces
+      function normalizeName(name) {
+        if (!name) return "";
+        return name
+          .replace(
+            /^(Prof(?:\.\s*Dr\.|\.\s*Dr\.|\.|)\s+|Dr\.|Mr\.|Ms\.|Mrs\.|Sir\s+)/gi,
+            ""
+          )
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
       // Function to load faculty data from external JSON file
+      // Global position mapping (short labels)
+      let positionMappingGlobal = {};
+
       async function loadFacultyData() {
         try {
           const response = await fetch("../assets/faculty-mapping.json");
           const data = await response.json();
 
-          // Transform the JSON structure to the format expected by the page
-          facultyData = {};
+          // Support both older flat structure and new { faculty: { ... } } wrapper
+          const root = data.faculty || data;
+          const positionMap = data.positionMapping || {};
+          positionMappingGlobal = positionMap;
+
+          facultyData = {}; // will store normalized lowercased keys -> info
+
           const categories = [
             "professors",
             "associateProfessors",
@@ -749,56 +769,89 @@
           ];
 
           categories.forEach((category) => {
-            if (data[category]) {
-              data[category].forEach((faculty) => {
-                // Add main name
-                facultyData[faculty.name] = {
-                  position: faculty.position,
-                  order: faculty.order,
-                  cleanName: faculty.cleanName,
-                };
+            const list = root[category] || [];
+            list.forEach((faculty) => {
+              const posRaw = faculty.position || "Faculty";
+              const positionShort = positionMap[posRaw] || posRaw;
+              const info = {
+                position: positionShort,
+                order: faculty.order || 1000,
+                cleanName:
+                  faculty.cleanName ||
+                  normalizeName(faculty.name) ||
+                  faculty.name,
+                rawPosition: posRaw,
+                status: faculty.status || "unknown",
+              };
 
-                // Add alternative names if they exist
-                if (faculty.alternativeNames) {
-                  faculty.alternativeNames.forEach((altName) => {
-                    facultyData[altName] = {
-                      position: faculty.position,
-                      order: faculty.order,
-                      cleanName: faculty.cleanName,
-                    };
-                  });
-                }
+              // collect name variants
+              const variants = new Set();
+              if (faculty.name) variants.add(faculty.name);
+              if (faculty.cleanName) variants.add(faculty.cleanName);
+              if (
+                faculty.alternativeNames &&
+                Array.isArray(faculty.alternativeNames)
+              ) {
+                faculty.alternativeNames.forEach((alt) => variants.add(alt));
+              }
+
+              // also add normalized forms without titles
+              Array.from(variants).forEach((n) => {
+                const key = normalizeName(n).toLowerCase();
+                facultyData[key] = info;
               });
-            }
+            });
           });
 
           console.log(
             "Faculty data loaded successfully:",
             Object.keys(facultyData).length,
-            "entries"
+            "normalized entries"
           );
         } catch (error) {
           console.error("Error loading faculty data:", error);
-          // Fallback to empty object if loading fails
           facultyData = {};
         }
       }
 
-      // Function to get faculty info
+      // Function to get faculty info (robust, case-insensitive, normalized)
       function getFacultyInfo(teacherName) {
-        return (
-          facultyData[teacherName] || {
-            position: "Faculty",
-            order: 1000,
-            cleanName: teacherName,
+        if (!teacherName)
+          return { position: "Faculty", order: 1000, cleanName: teacherName };
+
+        const normalized = normalizeName(teacherName).toLowerCase();
+        if (facultyData[normalized]) return facultyData[normalized];
+
+        // Try fallback strategies: remove dots, multiple spaces, initials
+        const stripped = normalized
+          .replace(/\./g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (facultyData[stripped]) return facultyData[stripped];
+
+        // Attempt to match by last name if nothing else
+        const parts = stripped.split(" ");
+        if (parts.length > 1) {
+          const last = parts.slice(-1)[0];
+          // search for any key that ends with the last name
+          for (const [k, v] of Object.entries(facultyData)) {
+            if (k.endsWith(" " + last) || k === last) return v;
           }
-        );
+        }
+
+        return {
+          position: "Faculty",
+          order: 1000,
+          cleanName: normalizeName(teacherName) || teacherName,
+        };
       }
 
       // Function to get clean teacher name (without prefixes)
       function getCleanTeacherName(teacherName) {
         const facultyInfo = getFacultyInfo(teacherName);
-        return facultyInfo.cleanName || teacherName;
+        return (
+          facultyInfo.cleanName || normalizeName(teacherName) || teacherName
+        );
       }
 
       // Function to sort teachers by official order
@@ -1068,7 +1121,10 @@
                 const facultyInfo = getFacultyInfo(teacher);
                 const positionTag = document.createElement("span");
                 positionTag.className = "teachers-position-tag";
-                positionTag.textContent = facultyInfo.position;
+                positionTag.textContent =
+                  positionMappingGlobal[facultyInfo.rawPosition] ||
+                  facultyInfo.position ||
+                  "Faculty";
 
                 teacherInfo.appendChild(teacherName);
                 teacherInfo.appendChild(positionTag);
@@ -1249,7 +1305,10 @@
                 const facultyInfo = getFacultyInfo(teacher);
                 const positionTag = document.createElement("span");
                 positionTag.className = "teachers-position-tag";
-                positionTag.textContent = facultyInfo.position;
+                positionTag.textContent =
+                  positionMappingGlobal[facultyInfo.rawPosition] ||
+                  facultyInfo.position ||
+                  "Faculty";
 
                 teacherInfo.appendChild(teacherName);
                 teacherInfo.appendChild(positionTag);
@@ -1308,7 +1367,10 @@
           const facultyInfo = getFacultyInfo(teacherName);
           const positionTag = document.createElement("span");
           positionTag.className = "teachers-position-tag";
-          positionTag.textContent = facultyInfo.position;
+          positionTag.textContent =
+            positionMappingGlobal[facultyInfo.rawPosition] ||
+            facultyInfo.position ||
+            "Faculty";
 
           teacherHeader.appendChild(teacherNameSpan);
           teacherHeader.appendChild(positionTag);
