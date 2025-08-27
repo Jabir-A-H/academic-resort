@@ -178,15 +178,73 @@
             const response = await fetch(url);
 
             if (!response.ok) {
-              throw new Error(
-                `API Error: ${response.status} - ${response.statusText}`
-              );
+              // Extract folder ID for better debugging
+              const folderIdMatch = url.match(/'([^']+)'\+in\+parents/);
+              const folderId = folderIdMatch ? folderIdMatch[1] : "unknown";
+
+              // Handle different error types with detailed logging
+              if (response.status === 500) {
+                console.warn(
+                  `🚨 Server Error (500): Google Drive server issue for folder ${folderId}. This is usually temporary.`
+                );
+                resolve({ files: [] }); // Return empty result instead of failing
+                return;
+              } else if (response.status === 403) {
+                console.warn(
+                  `🔒 Permission Denied (403): No access to folder ${folderId}. Check if folder is shared or if API key has access.`
+                );
+                resolve({ files: [] }); // Return empty result instead of failing
+                return;
+              } else if (response.status === 404) {
+                console.warn(
+                  `📁 Not Found (404): Folder ${folderId} doesn't exist or was deleted.`
+                );
+                resolve({ files: [] }); // Return empty result instead of failing
+                return;
+              } else if (response.status === 429) {
+                console.warn(
+                  `⏱️ Rate Limited (429): Too many requests for folder ${folderId}. API quotas exceeded.`
+                );
+                resolve({ files: [] }); // Return empty result instead of failing
+                return;
+              } else if (response.status === 401) {
+                console.error(
+                  `🔑 Unauthorized (401): Invalid API key for folder ${folderId}. Check your API key.`
+                );
+                resolve({ files: [] }); // Return empty result instead of failing
+                return;
+              } else {
+                console.error(
+                  `❌ Unknown Error (${response.status}): ${response.statusText} for folder ${folderId}`
+                );
+                throw new Error(
+                  `API Error: ${response.status} - ${response.statusText}`
+                );
+              }
             }
 
             const data = await response.json();
             resolve(data);
           } catch (error) {
-            reject(error);
+            // Enhanced error logging for network/parsing issues
+            const folderIdMatch = url.match(/'([^']+)'\+in\+parents/);
+            const folderId = folderIdMatch ? folderIdMatch[1] : "unknown";
+
+            if (error.name === "TypeError" && error.message.includes("fetch")) {
+              console.warn(
+                `🌐 Network Error: Failed to connect to Google Drive API for folder ${folderId}. Check internet connection.`
+              );
+            } else if (error.name === "SyntaxError") {
+              console.warn(
+                `📄 Parse Error: Invalid JSON response from Google Drive API for folder ${folderId}.`
+              );
+            } else {
+              console.warn(
+                `🔧 Request Failed: ${error.message} for folder ${folderId}`
+              );
+            }
+
+            resolve({ files: [] }); // Return empty result to continue search
           } finally {
             // Always decrement counter, whether success or error
             this.activeRequests = Math.max(0, this.activeRequests - 1);
@@ -205,8 +263,8 @@
         }
       }
 
-      // Create global rate limiter instance (ULTRA-AGGRESSIVE for maximum speed with deeper search)
-      const apiLimiter = new APIRateLimiter(200, 2); // Max 200 concurrent, 2ms between starts (ULTRA-FAST!)
+      // Create global rate limiter instance (OPTIMIZED within quota limits)
+      const apiLimiter = new APIRateLimiter(120, 4); // Max 120 concurrent, 4ms between starts (FAST)
 
       // Get cache key for a folder
       function getCacheKey(folderId, currentDepth) {
@@ -636,8 +694,8 @@
           }
         }
 
-        // Search folders in parallel batches - 60 folders simultaneously for MAXIMUM speed
-        const PARALLEL_BATCH_SIZE = 60; // Process 60 folders simultaneously (ultra-aggressive for deeper search!)
+        // Search folders in parallel batches - 40 folders simultaneously for optimal speed
+        const PARALLEL_BATCH_SIZE = 40; // Process 40 folders simultaneously (optimized within quota)
         const MAX_SEARCH_DEPTH = 5; // Depth of 5 levels for comprehensive shortcut folder discovery
 
         // Clear results container at start
