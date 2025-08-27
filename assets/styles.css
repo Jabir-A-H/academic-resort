@@ -398,45 +398,6 @@ body.has-sidebar.sidebar-expanded {
   display: block;
 }
 
-/* Sidebar search */
-.sidebar-search {
-  margin: 0 0 16px 0;
-  transition: all 200ms ease;
-}
-
-.sidebar-search-input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-  color: #374151;
-  transition: all 200ms ease;
-}
-
-.sidebar-search-input:focus {
-  outline: none;
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background: white;
-}
-
-.sidebar-search-input::placeholder {
-  color: #9ca3af;
-  font-style: italic;
-}
-
-/* Show search only when expanded */
-body.sidebar-expanded .sidebar-search {
-  display: block !important;
-}
-
-/* Hide nav items that don't match search */
-.nav-item.search-hidden {
-  display: none !important;
-}
-
 .app-header.sidebar .subtitle,
 .app-header.sidebar .header-note {
   margin-bottom: 16px;
