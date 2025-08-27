@@ -17,17 +17,8 @@
     <div data-include="../assets/includes/sidebar.html"></div>
     <header class="app-header"><h1>Academic Resort</h1></header>
     <main class="container">
-      <div style="margin-bottom: 24px">
-        <h1
-          style="
-            text-align: center;
-            margin: 48px 0;
-            font-size: 2.5rem;
-            font-weight: 600;
-          "
-        >
-          Browse All Resources
-        </h1>
+      <div class="page-intro">
+        <h1 class="page-title">Browse All Resources</h1>
         <p>
           <b
             >Search and filter through all academic resources across all
@@ -123,6 +114,26 @@
       let isLoading = false;
       let fileCache = new Map(); // Cache for API responses
       let loadedFolders = new Set(); // Track which folders we've already loaded
+
+      // DOM element cache for performance optimization
+      const DOM_CACHE = {
+        globalSearch: null,
+        resultsStats: null,
+        semesterFilter: null,
+        batchFilter: null,
+        allResources: null,
+        accordionControls: null,
+
+        // Initialize cache
+        init() {
+          this.globalSearch = document.getElementById("globalSearch");
+          this.resultsStats = document.getElementById("resultsStats");
+          this.semesterFilter = document.getElementById("semesterFilter");
+          this.batchFilter = document.getElementById("batchFilter");
+          this.allResources = document.getElementById("all-resources");
+          this.accordionControls = document.getElementById("accordionControls");
+        },
+      };
 
       // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
 
@@ -423,7 +434,6 @@
             window.resolvedFolderCache.clear();
           }
 
-          console.log("🗑️ All cache data cleared (including folder links)");
           return true;
         } catch (error) {
           console.error("Failed to clear cache:", error);
@@ -500,13 +510,10 @@
 
           // Get fresh cache stats
           const cacheStats = getCacheStats();
-          statusElement.innerHTML = `✅ Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
-
-          console.log("✅ Fast cache rebuild completed!");
+          statusElement.innerHTML = `Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" class="cache-reload-link" title="Clear cache and reload fresh data">⟳</a>`;
         } catch (error) {
           statusElement.textContent =
-            "❌ Rebuild failed. Please refresh the page.";
-          console.error("Cache rebuild error:", error);
+            "Rebuild failed. Please refresh the page.";
         }
       }
 
@@ -546,59 +553,54 @@
 
       // Smart filter change handler - only search if there's text in search bar
       function handleFilterChange() {
-        const searchTerm = document
-          .getElementById("globalSearch")
-          .value.toLowerCase()
-          .trim();
+        const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
 
         // Only trigger search if there's already text in the search bar
         if (searchTerm && searchTerm.length >= 2) {
           optimizedSearch();
         } else {
           // Clear results if no search term
-          const stats = document.getElementById("resultsStats");
           displayResults([]);
-          stats.textContent = "Enter a search term to find resources.";
+          DOM_CACHE.resultsStats.textContent =
+            "Enter a search term to find resources.";
         }
       }
 
       // Optimized search - only load data when user searches (like Google Drive)
       async function optimizedSearch() {
-        const searchTerm = document
-          .getElementById("globalSearch")
-          .value.toLowerCase()
-          .trim();
-        const semesterFilter = document.getElementById("semesterFilter").value;
-        const batchFilter = document.getElementById("batchFilter").value;
-        const stats = document.getElementById("resultsStats");
+        const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
+        const semesterFilter = DOM_CACHE.semesterFilter.value;
+        const batchFilter = DOM_CACHE.batchFilter.value;
 
         // Always require a search term for manual search
         if (!searchTerm) {
           displayResults([]);
-          stats.textContent = "Enter a search term to find resources.";
+          DOM_CACHE.resultsStats.textContent =
+            "Enter a search term to find resources.";
           return;
         }
 
         if (searchTerm.length < 2) {
-          stats.textContent = "Type at least 2 characters to search...";
+          DOM_CACHE.resultsStats.textContent =
+            "Type at least 2 characters to search...";
           return;
         }
 
-        stats.textContent = "Searching...";
+        DOM_CACHE.resultsStats.textContent = "Searching...";
 
         try {
           const results = await smartSearch(
             searchTerm,
             semesterFilter,
             batchFilter,
-            stats
+            DOM_CACHE.resultsStats
           );
           displayResults(results);
           updateStats(results.length, "∞", ` (search results)`);
-          stats.innerHTML = `Found ${results.length} results`;
+          DOM_CACHE.resultsStats.innerHTML = `Found ${results.length} results`;
         } catch (error) {
-          console.error("Search error:", error);
-          stats.textContent = "Search failed. Please try again.";
+          DOM_CACHE.resultsStats.textContent =
+            "Search failed. Please try again.";
         }
       }
 
@@ -654,8 +656,7 @@
 
         // Clear results container at start
         const container = document.getElementById("all-resources");
-        container.innerHTML =
-          '<div class="live-results" style="color: #a0aec0; font-size: 0.9em; text-align: center; padding: 20px;">Searching...</div>';
+        container.innerHTML = '<div class="live-results">Searching...</div>';
 
         let totalFolders = 0;
         let completedFolders = 0;
@@ -1087,219 +1088,6 @@
         return results;
       }
 
-      // Optimized duplicate removal
-      function removeDuplicatesOptimized(files) {
-        const uniqueFiles = new Map();
-
-        files.forEach((file) => {
-          const key = `${file.id}_${file.path}`;
-          if (!uniqueFiles.has(key)) {
-            uniqueFiles.set(key, file);
-          }
-        });
-
-        return Array.from(uniqueFiles.values()).sort((a, b) => {
-          // Sort by relevance: exact matches first, then by depth, then alphabetically
-          if (a.depth !== b.depth) return a.depth - b.depth;
-          return a.name.localeCompare(b.name);
-        });
-      }
-
-      // Progressive search by levels (1, 2, 3, 4)
-      async function searchByLevels() {
-        const searchTerm = document
-          .getElementById("globalSearch")
-          .value.toLowerCase()
-          .trim();
-        const semesterFilter = document.getElementById("semesterFilter").value;
-        const batchFilter = document.getElementById("batchFilter").value;
-        const stats = document.getElementById("resultsStats");
-        const btn = document.getElementById("searchLevelBtn");
-
-        if (!searchTerm && !semesterFilter && !batchFilter) {
-          stats.textContent =
-            "Please enter a search term or select filters first.";
-          return;
-        }
-
-        if (searchTerm && searchTerm.length < 2) {
-          stats.textContent = "Please enter at least 2 characters to search.";
-          return;
-        }
-
-        // Disable button during search
-        btn.disabled = true;
-        btn.textContent = "Searching...";
-
-        try {
-          let allLevelResults = [];
-
-          // Search through levels 1-4 progressively
-          for (let level = 1; level <= 4; level++) {
-            stats.textContent = `Searching level ${level} folders...`;
-
-            const levelResults = await searchAtLevel(
-              level,
-              searchTerm,
-              semesterFilter,
-              batchFilter
-            );
-            allLevelResults = allLevelResults.concat(levelResults);
-
-            // Show results progressively
-            stats.textContent = `Found ${
-              allLevelResults.length
-            } results through level ${level}. ${
-              level < 4 ? "Searching deeper..." : "Search complete!"
-            }`;
-
-            // Remove duplicates and display current results
-            const uniqueResults = removeDuplicates(allLevelResults);
-            displayResults(uniqueResults);
-            updateStats(
-              uniqueResults.length,
-              allFiles.length,
-              ` (through level ${level})`
-            );
-
-            // Small delay to show progress
-            await new Promise((resolve) => setTimeout(resolve, 500));
-          }
-
-          stats.textContent = `Search complete! Found ${allLevelResults.length} results across all levels.`;
-        } catch (error) {
-          console.error("Error during level search:", error);
-          stats.textContent = "Error occurred during search. Please try again.";
-        } finally {
-          // Re-enable button
-          btn.disabled = false;
-          btn.textContent = "🔍 Search by Levels";
-        }
-      }
-
-      // Search at a specific depth level
-      async function searchAtLevel(
-        targetLevel,
-        searchTerm,
-        semesterFilter,
-        batchFilter
-      ) {
-        const levelResults = [];
-
-        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
-          // Apply semester filter
-          if (semesterFilter && semester !== semesterFilter) continue;
-
-          for (const [batchKey, batchInfo] of Object.entries(batches)) {
-            // Apply batch filter
-            if (batchFilter && batchKey !== batchFilter) continue;
-
-            try {
-              const files = await fetchFilesAtDepth(
-                batchInfo.folderId,
-                "",
-                targetLevel,
-                0,
-                semester,
-                batchKey,
-                batchInfo.label
-              );
-
-              // Filter results based on search term
-              const matchingFiles = files.filter((file) => {
-                return (
-                  !searchTerm ||
-                  file.name.toLowerCase().includes(searchTerm) ||
-                  file.path.toLowerCase().includes(searchTerm) ||
-                  batchInfo.label.toLowerCase().includes(searchTerm)
-                );
-              });
-
-              levelResults.push(...matchingFiles);
-            } catch (error) {
-              console.error(
-                `Error searching ${semester} - ${batchInfo.label} at level ${targetLevel}:`,
-                error
-              );
-            }
-          }
-        }
-
-        return levelResults;
-      }
-
-      // Fetch files at a specific depth level only - OPTIMIZED
-      async function fetchFilesAtDepth(
-        folderId,
-        path = "",
-        targetDepth = 1,
-        currentDepth = 0,
-        semester = "",
-        batchKey = "",
-        batchLabel = ""
-      ) {
-        if (currentDepth > targetDepth) return [];
-
-        try {
-          const response = await fetch(
-            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`
-          );
-
-          if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
-          }
-
-          const data = await response.json();
-          let results = [];
-
-          if (data.files) {
-            for (const file of data.files) {
-              const filePath = path ? `${path}/${file.name}` : file.name;
-
-              // If we're at the target depth, add this file to results
-              if (currentDepth === targetDepth) {
-                results.push({
-                  ...file,
-                  path: filePath,
-                  depth: currentDepth,
-                  isFolder:
-                    file.mimeType === "application/vnd.google-apps.folder",
-                  semester: semester,
-                  batch: batchKey,
-                  batchLabel: batchLabel,
-                  parentPath: path,
-                });
-              }
-
-              // If it's a folder and we haven't reached target depth, go deeper
-              if (
-                file.mimeType === "application/vnd.google-apps.folder" &&
-                currentDepth < targetDepth
-              ) {
-                const subFiles = await fetchFilesAtDepth(
-                  file.id,
-                  filePath,
-                  targetDepth,
-                  currentDepth + 1,
-                  semester,
-                  batchKey,
-                  batchLabel
-                );
-                results = results.concat(subFiles);
-              }
-            }
-          }
-
-          return results;
-        } catch (error) {
-          console.error(
-            `Error fetching files at depth ${currentDepth}:`,
-            error
-          );
-          return [];
-        }
-      }
-
       // Optimized duplicate removal for speed
       function removeDuplicatesOptimized(files) {
         if (files.length === 0) return [];
@@ -1315,11 +1103,6 @@
         });
 
         return Array.from(uniqueResults.values());
-      }
-
-      // Remove duplicate files from search results (legacy fallback)
-      function removeDuplicates(files) {
-        return removeDuplicatesOptimized(files); // Use optimized version
       }
 
       // Recursively fetch all files from a folder with progress tracking - OPTIMIZED
@@ -1435,19 +1218,17 @@
 
       // Display search results with hierarchical tree structure
       function displayResults(files) {
-        const container = document.getElementById("all-resources");
-        const accordionControls = document.getElementById("accordionControls");
-        container.innerHTML = "";
+        DOM_CACHE.allResources.innerHTML = "";
 
         if (files.length === 0) {
-          container.innerHTML =
+          DOM_CACHE.allResources.innerHTML =
             '<div class="no-results">No files found. Use search to find specific files or folders.</div>';
-          accordionControls.style.display = "none";
+          DOM_CACHE.accordionControls.style.display = "none";
           return;
         }
 
         // Show accordion controls when there are results
-        accordionControls.style.display = "flex";
+        DOM_CACHE.accordionControls.style.display = "flex";
 
         // Build hierarchical tree structure
         const treeStructure = buildTreeStructure(files);
@@ -1531,7 +1312,7 @@
 
           semesterDiv.appendChild(semesterHeader);
           semesterDiv.appendChild(semesterContent);
-          container.appendChild(semesterDiv);
+          DOM_CACHE.allResources.appendChild(semesterDiv);
         });
       }
 
@@ -1977,17 +1758,13 @@
 
       // Global filter function for deep search with improved responsiveness
       function globalFilter() {
-        const searchTerm = document
-          .getElementById("globalSearch")
-          .value.toLowerCase()
-          .trim();
-        const semesterFilter = document.getElementById("semesterFilter").value;
-        const batchFilter = document.getElementById("batchFilter").value;
-        const stats = document.getElementById("resultsStats");
+        const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
+        const semesterFilter = DOM_CACHE.semesterFilter.value;
+        const batchFilter = DOM_CACHE.batchFilter.value;
 
         // Show loading state during search if many files
         if (allFiles.length > 1000 && searchTerm) {
-          stats.textContent = "Searching through files...";
+          DOM_CACHE.resultsStats.textContent = "Searching through files...";
         }
 
         if (!searchTerm && !semesterFilter && !batchFilter) {
@@ -2000,7 +1777,8 @@
         // If search term is too short, provide feedback
         if (searchTerm && searchTerm.length < 2) {
           displayResults([]);
-          stats.textContent = "Type at least 2 characters to search...";
+          DOM_CACHE.resultsStats.textContent =
+            "Type at least 2 characters to search...";
           return;
         }
 
@@ -2056,13 +1834,12 @@
 
       // Update results statistics
       function updateStats(shown, total, extraMessage = "") {
-        const stats = document.getElementById("resultsStats");
         if (shown === 0 && total === 0) {
-          stats.textContent = "No resources loaded yet.";
+          DOM_CACHE.resultsStats.textContent = "No resources loaded yet.";
         } else if (shown === 0) {
-          stats.textContent = `No matches found in ${total} total resources.`;
+          DOM_CACHE.resultsStats.textContent = `No matches found in ${total} total resources.`;
         } else {
-          stats.textContent = `Showing ${shown} of ${total} resources${extraMessage}`;
+          DOM_CACHE.resultsStats.textContent = `Showing ${shown} of ${total} resources${extraMessage}`;
         }
       }
 
@@ -2081,7 +1858,8 @@
 
       // Update the page initialization to be lightweight
       window.addEventListener("DOMContentLoaded", async () => {
-        const stats = document.getElementById("resultsStats");
+        // Initialize DOM cache for performance
+        DOM_CACHE.init();
 
         // Load resolved folder cache
         loadResolvedFolderCache();
@@ -2092,14 +1870,10 @@
         // Get cache statistics
         const cacheStats = getCacheStats();
 
-        // Check background preloader status
-        // Background preloader disabled - was causing incomplete cache states
-        // const backgroundStats = window.backgroundCachePreloader?.stats();
-
         if (cacheStats.entries > 0) {
-          stats.innerHTML = `✅ Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
+          DOM_CACHE.resultsStats.innerHTML = `Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
         } else {
-          stats.textContent =
+          DOM_CACHE.resultsStats.textContent =
             "Ready to search! Enter terms above. First search will build cache and may take a moment.";
         }
 
@@ -2108,26 +1882,20 @@
 
           // Re-check cache stats after loading mapping
           const updatedCacheStats = getCacheStats();
-          // Background preloader disabled - was causing incomplete cache states
-          // const backgroundStats = window.backgroundCachePreloader?.stats();
 
           if (updatedCacheStats.entries > 0) {
-            stats.innerHTML = `✅ Ready! ${updatedCacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
+            DOM_CACHE.resultsStats.innerHTML = `Ready! ${updatedCacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" style="color: #6b7280; font-size: 0.85em; text-decoration: none; margin-left: 8px;" title="Clear cache and reload fresh data">⟳</a>`;
           } else {
-            stats.textContent =
-              "✅ Ready! Enter search terms or select filters to find resources. First search will build cache.";
+            DOM_CACHE.resultsStats.textContent =
+              "Ready! Enter search terms or select filters to find resources. First search will build cache.";
           }
         } catch (error) {
-          console.error("Failed to load drive mapping:", error);
-          stats.textContent =
-            "⚠️ Ready with basic setup. Some features may be limited.";
+          DOM_CACHE.resultsStats.textContent =
+            "Ready with basic setup. Some features may be limited.";
         }
 
         // Show empty state initially
         displayResults([]);
-
-        // Log cache info to console for debugging (easter egg for developers!)
-        console.log("📋 Cache Status:", cacheStats);
       });
 
       // === ACCORDION FUNCTIONALITY ===
@@ -2227,528 +1995,5 @@
           });
       }
     </script>
-
-    <style>
-      /* === ACCORDION STYLES === */
-      .semester-header h2,
-      .batch-header h3 {
-        margin: 0;
-        padding: 0;
-      }
-
-      .accordion-btn {
-        width: 100%;
-        background: none;
-        border: none;
-        text-align: left;
-        padding: 12px 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        font-size: inherit;
-        font-weight: inherit;
-        color: inherit;
-        border-radius: 8px;
-        transition: all 0.2s ease;
-      }
-
-      .accordion-btn:hover {
-        background: rgba(0, 0, 0, 0.05);
-        transform: translateX(2px);
-      }
-
-      .accordion-btn:active {
-        background: rgba(0, 0, 0, 0.1);
-      }
-
-      .accordion-icon {
-        margin-right: 12px;
-        font-size: 14px;
-        color: #666;
-        transition: transform 0.2s ease;
-        display: inline-block;
-        width: 18px;
-        text-align: center;
-      }
-
-      .semester-header .accordion-btn {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #2196f3;
-        padding: 8px 12px;
-      }
-
-      .batch-header .accordion-btn {
-        font-size: 1.2rem;
-        font-weight: 500;
-        color: #333;
-      }
-
-      .semester-content,
-      .batch-content {
-        overflow: hidden;
-        transition: all 0.3s ease;
-      }
-
-      /* Smooth animation for accordion */
-      .semester-content[style*="display: none"],
-      .batch-content[style*="display: none"] {
-        opacity: 0;
-        max-height: 0;
-      }
-
-      /* Results header and controls */
-      .results-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-
-      .accordion-controls {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      .control-btn {
-        background: #f0f9ff;
-        border: 1px solid #0ea5e9;
-        color: #0369a1;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 0.85em;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-      }
-
-      .control-btn:hover {
-        background: #0ea5e9;
-        color: white;
-        transform: translateY(-1px);
-      }
-
-      .control-btn:active {
-        transform: translateY(0);
-      }
-
-      @media (max-width: 768px) {
-        .results-header {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-
-        .accordion-controls {
-          width: 100%;
-          justify-content: flex-start;
-        }
-      }
-
-      .search-panel {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 24px;
-      }
-
-      .search-row {
-        margin-bottom: 16px;
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
-
-      .search-row input {
-        flex: 1;
-        padding: 12px 16px;
-        font-size: 1.1rem;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-      }
-
-      #loadNextBtn {
-        padding: 12px 16px;
-        background-color: #2196f3;
-        color: white;
-        border: 1px solid #2196f3;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        white-space: nowrap;
-        transition: all 0.3s ease;
-      }
-
-      #loadNextBtn:hover {
-        background-color: #1976d2;
-      }
-
-      #loadNextBtn:disabled {
-        background-color: #ccc;
-        border-color: #ccc;
-        cursor: not-allowed;
-      }
-
-      #searchLevelBtn {
-        padding: 12px 16px;
-        background-color: #4caf50;
-        color: white;
-        border: 1px solid #4caf50;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        white-space: nowrap;
-      }
-
-      #searchLevelBtn:hover {
-        background-color: #45a049;
-      }
-
-      #searchLevelBtn:disabled {
-        background-color: #ccc;
-        border-color: #ccc;
-        cursor: not-allowed;
-      }
-
-      .depth-indicator {
-        font-size: 0.8rem;
-        color: #666;
-        margin-left: 8px;
-        padding: 2px 6px;
-        background-color: #f0f0f0;
-        border-radius: 3px;
-      }
-
-      .filter-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .filter-row select {
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-        min-width: 150px;
-      }
-
-      .results-stats {
-        margin-bottom: 16px;
-        font-weight: 600;
-        color: #666;
-      }
-
-      .semester-group {
-        margin-bottom: 8px;
-        padding-left: 16px;
-      }
-
-      .semester-group h2 {
-        margin: 0 0 4px 0;
-        color: #2196f3;
-        display: block;
-        width: 100%;
-      }
-
-      .batch-group {
-        margin-bottom: 12px;
-        background: #fff;
-        border-radius: 6px;
-        padding: 8px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-      }
-
-      .batch-group h3 {
-        margin: 0 0 6px 0;
-        color: #333;
-        border-bottom: 1px solid #f0f0f0;
-        padding-bottom: 4px;
-        display: block;
-        width: 100%;
-      }
-
-      .files-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .file-item {
-        padding: 8px 0;
-        border-bottom: 1px solid #f0f0f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .file-item:last-child {
-        border-bottom: none;
-      }
-
-      .file-link {
-        text-decoration: none;
-        color: #2196f3;
-        font-weight: 500;
-      }
-
-      .file-link:hover {
-        text-decoration: underline;
-      }
-
-      .file-meta {
-        font-size: 0.9rem;
-        color: #666;
-        font-style: italic;
-      }
-
-      .no-results {
-        text-align: center;
-        padding: 48px;
-        color: #666;
-        font-size: 1.1rem;
-      }
-
-      @media (max-width: 768px) {
-        .filter-row {
-          flex-direction: column;
-        }
-
-        .filter-row select {
-          min-width: 100%;
-        }
-
-        .file-item {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 4px;
-        }
-      }
-
-      /* Tree structure styles for browse page */
-      .batch-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-
-      .batch-header h3 {
-        margin: 0;
-      }
-
-      .root-folder-btn {
-        background: none;
-        color: #666;
-        border: 1px solid #ddd;
-        padding: 6px 8px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.2s ease;
-      }
-
-      .root-folder-btn:hover {
-        background: #f5f5f5;
-        color: #2196f3;
-        border-color: #2196f3;
-      }
-
-      .drive-list {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-      }
-
-      .drive-list-item {
-        padding: 8px 0 8px 20px;
-        border-bottom: 1px solid #eee;
-        font-size: 1rem;
-      }
-
-      .folder-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .folder-link {
-        flex-grow: 1;
-        text-decoration: none;
-        color: #333;
-      }
-
-      .folder-link:hover {
-        color: #2196f3;
-      }
-
-      .folder-actions {
-        display: flex;
-        gap: 4px;
-      }
-
-      .expand-btn {
-        background: none;
-        border: 1px solid #ddd;
-        padding: 4px 8px;
-        cursor: pointer;
-        border-radius: 4px;
-        font-size: 12px;
-      }
-
-      .expand-btn:hover {
-        background-color: #f0f0f0;
-      }
-
-      .subfolder-list {
-        list-style: none;
-        padding-left: 20px;
-        margin: 8px 0;
-        border-left: 2px solid #eee;
-      }
-
-      .subfolder-item {
-        padding: 4px 0;
-        font-size: 0.9rem;
-      }
-
-      .subfolder-item .folder-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 2px 0;
-      }
-
-      .subfolder-item .folder-actions {
-        display: flex;
-        gap: 2px;
-      }
-
-      .subfolder-item .expand-btn {
-        padding: 2px 6px;
-        font-size: 10px;
-      }
-
-      .subfolder-item a {
-        text-decoration: none;
-        color: #666;
-      }
-
-      .subfolder-item a:hover {
-        color: #2196f3;
-      }
-
-      /* Nested subfolders with increased indentation */
-      .subfolder-list .subfolder-list {
-        padding-left: 15px;
-        border-left: 1px solid #ddd;
-      }
-
-      .loading,
-      .error,
-      .empty {
-        color: #999;
-        font-style: italic;
-        padding: 8px 0;
-      }
-
-      .error {
-        color: #e74c3c;
-      }
-
-      /* Search results styling */
-      .search-results {
-        margin-top: 16px;
-      }
-
-      .search-result-item {
-        padding: 8px 0;
-        border-bottom: 1px solid #f0f0f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .result-link {
-        text-decoration: none;
-        color: #333;
-        font-weight: 500;
-      }
-
-      .result-link:hover {
-        color: #2196f3;
-      }
-
-      .file-path {
-        font-size: 0.85rem;
-        color: #666;
-        font-style: italic;
-      }
-
-      .no-results {
-        text-align: center;
-        padding: 40px 20px;
-        color: #666;
-        font-style: italic;
-      }
-
-      /* Tree structure styles */
-      .tree-results {
-        margin-top: 16px;
-      }
-
-      .tree-file {
-        margin: 2px 0;
-      }
-
-      .file-item {
-        display: flex;
-        align-items: center;
-        padding: 6px 8px;
-        border-radius: 4px;
-        transition: background-color 0.2s ease;
-      }
-
-      .file-item:hover {
-        background: #f1f3f4;
-      }
-
-      .file-icon {
-        margin-right: 8px;
-        font-size: 16px;
-      }
-
-      .file-name {
-        color: #333;
-        text-decoration: none;
-        font-weight: 500;
-      }
-
-      .result-link {
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        align-items: center;
-        width: 100%;
-      }
-
-      .result-link:hover .file-name {
-        color: #2196f3;
-        text-decoration: underline;
-      }
-
-      /* Tree indentation lines */
-      .tree-folder:not(:first-child)::before,
-      .tree-file:not(:first-child)::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        width: 1px;
-        background: #dee2e6;
-        height: 100%;
-      }
-    </style>
   </body>
 </html>
