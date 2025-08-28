@@ -396,14 +396,24 @@ class BrowseDisplayManager {
 window.BrowseDisplayManager = BrowseDisplayManager;
 
 // ====== BOOTSTRAP: create global instances for legacy pages ======
+
 (function () {
-  // Delay until DOM is available (scripts are deferred so DOM should be parsed)
+  // Ensure DOM cache is initialized before constructing managers
+  if (window.DOM_CACHE && typeof window.DOM_CACHE.init === 'function') {
+    window.DOM_CACHE.init();
+  } else if (typeof DOM_CACHE !== 'undefined' && typeof DOM_CACHE.init === 'function') {
+    DOM_CACHE.init();
+    window.DOM_CACHE = DOM_CACHE;
+  }
+
   try {
     const apiKeys = (window.DriveKeyManager && window.DriveKeyManager.getApiKeys && window.DriveKeyManager.getApiKeys()) || [];
 
     // Only create if not already present
     if (!window.browseDrive) {
+      // Pass DOM_CACHE to BrowseDriveManager if constructor supports it
       window.browseDrive = new BrowseDriveManager(apiKeys);
+      if (window.DOM_CACHE) window.browseDrive.domCache = window.DOM_CACHE;
     }
 
     if (!window.browseSearch) {
