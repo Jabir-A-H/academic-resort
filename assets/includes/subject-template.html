@@ -1,0 +1,306 @@
+<!-- Subject Page Template -->
+<script type="text/template" id="subject-page-template">
+  <!-- Subject page will be populated by JavaScript -->
+</script>
+
+<script>
+  // Subject page configuration that will be set by each page
+  window.subjectConfig = window.subjectConfig || {};
+  
+  function initializeSubjectPage() {
+    const config = window.subjectConfig;
+    if (!config) {
+      console.error('Subject configuration not found');
+      return;
+    }
+    
+    // Update breadcrumb
+    updateBreadcrumb(config);
+    
+    // Update page title and description  
+    updatePageHeader(config);
+    
+    // Create standardized sections
+    createStandardizedSections(config);
+    
+    // Initialize collapsible sections
+    initializeCollapsibleSections();
+  }
+  
+  function updateBreadcrumb(config) {
+    const breadcrumb = document.querySelector('.breadcrumb');
+    if (breadcrumb) {
+      breadcrumb.innerHTML = `
+        <a href="../../index.html">Home</a> >
+        <a href="../${config.semesterPage}">${config.semesterName}</a> >
+        <span>${config.title}</span>
+      `;
+    }
+  }
+  
+  function updatePageHeader(config) {
+    const pageTitle = document.querySelector('.page-title');
+    const pageDescription = document.querySelector('.page-description');
+    const quickActions = document.querySelector('.quick-actions');
+    
+    if (pageTitle) {
+      pageTitle.textContent = `${config.title} (${config.code})`;
+    }
+    
+    if (pageDescription) {
+      pageDescription.innerHTML = `<b>${config.description}</b>`;
+    }
+    
+    if (quickActions) {
+      quickActions.innerHTML = `
+        <a href="../course-teachers.html?course=${config.code}" class="action-btn">
+          <span class="icon">👩‍🏫</span>
+          View Teachers
+        </a>
+        <a href="../browse.html?search=${config.code}" class="action-btn">
+          <span class="icon">🔍</span>
+          Search Resources
+        </a>
+        <a href="../${config.semesterPage}" class="action-btn">
+          <span class="icon">📚</span>
+          All ${config.semesterName}
+        </a>
+      `;
+    }
+  }
+  
+  function createStandardizedSections(config) {
+    const container = document.querySelector('.subject-content');
+    if (!container) return;
+    
+    container.innerHTML = `
+      <!-- Course Overview -->
+      <section class="card collapsible-section" id="overview">
+        <div class="section-header" onclick="toggleSection('overview')">
+          <h2>📋 Course Overview</h2>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-content">
+          <div class="course-info-grid">
+            <div class="info-card">
+              <h4>Course Code:</h4>
+              <p>${config.code}</p>
+            </div>
+            <div class="info-card">
+              <h4>Course Title:</h4>
+              <p>${config.title}</p>
+            </div>
+            <div class="info-card">
+              <h4>Credit Hours:</h4>
+              <p>${config.credits || '3 Credits'}</p>
+            </div>
+            <div class="info-card">
+              <h4>Semester:</h4>
+              <p>${config.semesterName}</p>
+            </div>
+            <div class="info-card">
+              <h4>Prerequisites:</h4>
+              <p>${config.prerequisites || 'None'}</p>
+            </div>
+          </div>
+          <div class="course-description">
+            <p>${config.detailedDescription}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Study Materials Section -->
+      <section class="card collapsible-section" id="study">
+        <div class="section-header" onclick="toggleSection('study')">
+          <h2>📚 Study Materials</h2>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-content">
+          <div class="subsection collapsible-subsection" id="personal-notes">
+            <div class="subsection-header" onclick="toggleSubsection('personal-notes')">
+              <h3>📝 Personal Notes</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <p>Student-created study notes and summaries</p>
+              <div class="resource-placeholder">Content will be loaded here...</div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="slides-lectures">
+            <div class="subsection-header" onclick="toggleSubsection('slides-lectures')">
+              <h3>🎯 Slides and Lecture Materials</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <p>Official lecture slides and presentation materials</p>
+              <div class="resource-placeholder">Content will be loaded here...</div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="books-manuals">
+            <div class="subsection-header" onclick="toggleSubsection('books-manuals')">
+              <h3>📖 Books and Manuals</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <p>Textbooks, reference materials, and official manuals</p>
+              <div class="resource-placeholder">Content will be loaded here...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Questions Section -->
+      <section class="card collapsible-section" id="questions">
+        <div class="section-header" onclick="toggleSection('questions')">
+          <h2>❓ Questions & Examinations</h2>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-content">
+          <div class="subsection collapsible-subsection" id="class-test">
+            <div class="subsection-header" onclick="toggleSubsection('class-test')">
+              <h3>📝 Class Test Questions</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <div class="question-bank">
+                ${config.classTestQuestions || '<p>Class test questions will be added here.</p>'}
+              </div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="midterm">
+            <div class="subsection-header" onclick="toggleSubsection('midterm')">
+              <h3>🎯 Midterm Questions</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <div class="question-bank">
+                ${config.midtermQuestions || '<p>Midterm questions will be added here.</p>'}
+              </div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="final">
+            <div class="subsection-header" onclick="toggleSubsection('final')">
+              <h3>🏆 Final Questions</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <div class="question-bank">
+                ${config.finalQuestions || '<p>Final exam questions will be added here.</p>'}
+              </div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="question-banks">
+            <div class="subsection-header" onclick="toggleSubsection('question-banks')">
+              <h3>🗂️ Question Banks</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <div class="question-bank">
+                ${config.questionBanks || '<p>Comprehensive question banks will be added here.</p>'}
+              </div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="test-banks">
+            <div class="subsection-header" onclick="toggleSubsection('test-banks')">
+              <h3>📊 Test Banks</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <div class="question-bank">
+                ${config.testBanks || '<p>Test banks and practice materials will be added here.</p>'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+  
+  function initializeCollapsibleSections() {
+    // Start with all sections collapsed except overview
+    const sections = document.querySelectorAll('.collapsible-section');
+    sections.forEach((section, index) => {
+      const content = section.querySelector('.section-content');
+      const icon = section.querySelector('.toggle-icon');
+      
+      if (index === 0) { // Keep first section (overview) open
+        content.style.display = 'block';
+        icon.textContent = '▲';
+      } else {
+        content.style.display = 'none';
+        icon.textContent = '▼';
+      }
+    });
+    
+    // Start with all subsections collapsed
+    const subsections = document.querySelectorAll('.collapsible-subsection');
+    subsections.forEach(subsection => {
+      const content = subsection.querySelector('.subsection-content');
+      const icon = subsection.querySelector('.toggle-icon');
+      content.style.display = 'none';
+      icon.textContent = '▼';
+    });
+  }
+  
+  function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    
+    const content = section.querySelector('.section-content');
+    const icon = section.querySelector('.toggle-icon');
+    
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      icon.textContent = '▲';
+    } else {
+      content.style.display = 'none';
+      icon.textContent = '▼';
+    }
+  }
+  
+  function toggleSubsection(subsectionId) {
+    const subsection = document.getElementById(subsectionId);
+    if (!subsection) return;
+    
+    const content = subsection.querySelector('.subsection-content');
+    const icon = subsection.querySelector('.toggle-icon');
+    
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      icon.textContent = '▲';
+    } else {
+      content.style.display = 'none';
+      icon.textContent = '▼';
+    }
+  }
+  
+  // Legacy TOC toggle for compatibility
+  function toggleTOC() {
+    const toc = document.getElementById('table-of-contents');
+    const toggle = document.getElementById('toc-toggle');
+    
+    if (toc && toggle) {
+      if (toc.style.display === 'none') {
+        toc.style.display = 'block';
+        toggle.textContent = '▲';
+      } else {
+        toc.style.display = 'none';
+        toggle.textContent = '▼';
+      }
+    }
+  }
+  
+  // Auto-initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSubjectPage);
+  } else {
+    // DOM already loaded
+    setTimeout(initializeSubjectPage, 100);
+  }
+</script>

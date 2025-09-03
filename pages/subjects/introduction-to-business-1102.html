@@ -20,10 +20,10 @@
 
       <div class="page-intro">
         <h1 class="page-title">Introduction to Business (1102)</h1>
-        <p>
+        <p class="page-description">
           <b>
-            Essential business fundamentals covering organizational structures, 
-            business environments, and foundational concepts for business students.
+            Comprehensive resources for Introduction to Business course including notes, 
+            assignments, question banks, and materials from different batches and teachers.
           </b>
         </p>
         
@@ -50,124 +50,108 @@
             <span class="toc-toggle" id="toc-toggle">▼</span>
           </div>
           <ul class="small toc-content" id="table-of-contents">
-            <li><a href="#course-overview">Course Overview</a></li>
-            <li><a href="#notes-materials">Notes & Materials</a></li>
-            <li><a href="#assignments">Assignments</a></li>
-            <li><a href="#question-banks">Question Banks</a></li>
-            <li><a href="#case-studies">Case Studies</a></li>
-            <li><a href="#teacher-resources">Teacher Resources</a></li>
+            <li><a href="#overview">Course Overview</a></li>
+            <li><a href="#study">Study Materials</a></li>
+            <li><a href="#questions">Questions & Examinations</a></li>
           </ul>
         </div>
       </div>
 
-      <!-- Course Description -->
-      <section class="card" id="course-overview">
-        <h2>Course Overview</h2>
-        <div class="course-info">
-          <div class="course-details">
-            <p><strong>Course Code:</strong> 1102</p>
-            <p><strong>Course Title:</strong> Introduction to Business</p>
-            <p><strong>Semester:</strong> 1st Semester</p>
-            <p><strong>Prerequisites:</strong> None</p>
-          </div>
-          <div class="course-description">
-            <p>
-              This course introduces fundamental business concepts including business environments, 
-              organizational structures, management principles, and basic business operations. 
-              Students learn about different types of businesses, stakeholders, and the role of 
-              business in society.
-            </p>
-          </div>
-        </div>
-      </section>
+      <!-- Main Subject Content -->
+      <div class="subject-content">
+        <!-- Content will be populated by template -->
+      </div>
 
-      <!-- Notes & Materials Section -->
-      <section class="card" id="notes-materials">
-        <h2>📖 Study Materials</h2>
-        <div class="resource-grid">
-          <div class="resource-card">
-            <h3>Lecture Notes</h3>
-            <p>Comprehensive notes on business fundamentals</p>
-          </div>
-          <div class="resource-card">
-            <h3>Business Concepts</h3>
-            <p>Key terminology and definitions</p>
-          </div>
-          <div class="resource-card">
-            <h3>Reference Materials</h3>
-            <p>Additional reading and resources</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Question Banks Section -->
-      <section class="card" id="question-banks">
-        <h2>❓ Sample Questions</h2>
-        
-        <div class="question-section">
-          <h3>Mid-term Questions</h3>
-          <div class="typed-questions">
-            <div class="question">
-              <p><strong>Q1:</strong> Define business and explain the various types of business organizations.</p>
-            </div>
-            <div class="question">
-              <p><strong>Q2:</strong> Discuss the role of stakeholders in business decision-making.</p>
-            </div>
-            <div class="question">
-              <p><strong>Q3:</strong> Compare and contrast profit and non-profit organizations.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="question-section">
-          <h3>Final Exam Questions</h3>
-          <div class="typed-questions">
-            <div class="question">
-              <p><strong>Q1:</strong> Analyze the impact of technological changes on modern business practices.</p>
-            </div>
-            <div class="question">
-              <p><strong>Q2:</strong> Explain the concept of corporate social responsibility with examples.</p>
-            </div>
-            <div class="question">
-              <p><strong>Q3:</strong> Discuss the challenges and opportunities of globalization for businesses.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Case Studies -->
-      <section class="card" id="case-studies">
-        <h2>📊 Case Studies</h2>
-        <div class="case-study">
-          <h3>Small Business Analysis</h3>
-          <p>Examine the challenges faced by small businesses in competitive markets.</p>
-        </div>
-        <div class="case-study">
-          <h3>Corporate Strategy</h3>
-          <p>Study successful business strategies of major corporations.</p>
-        </div>
-      </section>
     </main>
 
-    <div data-include="../../assets/includes/footer.html"></div>
+    <!-- Load subject template -->
+    <div data-include="../../assets/includes/subject-template.html"></div>
 
     <script>
-      function toggleTOC() {
-        const tocContent = document.getElementById("table-of-contents");
-        const tocToggle = document.getElementById("toc-toggle");
-
-        if (tocContent.style.display === "none") {
-          tocContent.style.display = "block";
-          tocToggle.textContent = "▲";
-        } else {
-          tocContent.style.display = "none";
-          tocToggle.textContent = "▼";
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        console.log("Introduction to Business (1102) page loaded");
-      });
+      // Configure this subject page
+      window.subjectConfig = {
+        code: '1102',
+        title: 'Introduction to Business',
+        description: 'Comprehensive resources for Introduction to Business course including notes, assignments, question banks, and materials from different batches and teachers.',
+        detailedDescription: 'This course introduces students to the basic concepts of business, including business environments, organizational structures, management principles, and fundamental business operations.',
+        semesterName: '1st Semester',
+        semesterPage: '1st.html',
+        credits: '3 Credits',
+        prerequisites: 'None',
+        
+        // Sample questions for each type
+        classTestQuestions: `
+          <div class="question-item">
+            <p><strong>Q1:</strong> Define key concepts related to Introduction to Business and explain their importance.</p>
+          </div>
+          <div class="question-item">
+            <p><strong>Q2:</strong> Explain the fundamental principles of Introduction to Business.</p>
+          </div>
+          <div class="question-item">
+            <p><strong>Q3:</strong> Provide practical examples demonstrating Introduction to Business concepts.</p>
+          </div>
+        `,
+        
+        midtermQuestions: `
+          <div class="question-item">
+            <p><strong>Q1:</strong> Analyze the core concepts of Introduction to Business with detailed explanations.</p>
+          </div>
+          <div class="question-item">
+            <p><strong>Q2:</strong> Solve problems related to Introduction to Business using appropriate methods.</p>
+          </div>
+          <div class="question-item">
+            <p><strong>Q3:</strong> Compare and contrast different approaches in Introduction to Business.</p>
+          </div>
+          <div class="question-item">
+            <p><strong>Q4:</strong> Apply Introduction to Business principles to real-world scenarios.</p>
+          </div>
+        `,
+        
+        finalQuestions: `
+          <div class="question-item">
+            <p><strong>Q1:</strong> Comprehensive analysis of Introduction to Business covering all major topics.</p>
+          </div>
+          <div class="question-item">
+            <p><strong>Q2:</strong> Critical evaluation of Introduction to Business theories and applications.</p>
+          </div>
+          <div class="question-item">
+            <p><strong>Q3:</strong> Design solutions using Introduction to Business methodologies.</p>
+          </div>
+          <div class="question-item">
+            <p><strong>Q4:</strong> Integration of Introduction to Business concepts with other business disciplines.</p>
+          </div>
+        `,
+        
+        questionBanks: `
+          <div class="question-bank-section">
+            <h4>📝 Fundamentals</h4>
+            <p><strong>Q1:</strong> What is Introduction to Business? Discuss its nature, scope, and objectives.</p>
+            <p><strong>Q2:</strong> Explain the key principles of Introduction to Business with examples.</p>
+            <p><strong>Q3:</strong> Analyze the importance of Introduction to Business in modern business.</p>
+          </div>
+          <div class="question-bank-section">
+            <h4>📊 Applications</h4>
+            <p><strong>Q1:</strong> How is Introduction to Business applied in real business scenarios?</p>
+            <p><strong>Q2:</strong> Discuss case studies related to Introduction to Business.</p>
+            <p><strong>Q3:</strong> Evaluate the effectiveness of Introduction to Business methods.</p>
+          </div>
+        `,
+        
+        testBanks: `
+          <div class="test-bank-section">
+            <h4>🔢 Problem-Solving</h4>
+            <p><strong>Problem 1:</strong> Solve practical problems using Introduction to Business techniques</p>
+            <p><strong>Problem 2:</strong> Calculate and analyze relevant Introduction to Business metrics</p>
+            <p><strong>Problem 3:</strong> Design solutions for Introduction to Business challenges</p>
+          </div>
+          <div class="test-bank-section">
+            <h4>📋 Conceptual Questions</h4>
+            <p><strong>Q1:</strong> Explain the theoretical foundation of Introduction to Business</p>
+            <p><strong>Q2:</strong> Discuss the evolution and trends in Introduction to Business</p>
+            <p><strong>Q3:</strong> Analyze the future prospects of Introduction to Business</p>
+          </div>
+        `
+      };
     </script>
   </body>
 </html>

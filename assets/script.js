@@ -1,4 +1,30 @@
 /**
+ * Fix relative paths in included HTML based on current page depth
+ */
+function fixRelativePaths(html) {
+  const currentPath = window.location.pathname;
+  let pathPrefix = '';
+  
+  // Determine path prefix based on page depth
+  if (currentPath.includes('/pages/subjects/')) {
+    // We're in a subject page (2 levels deep)
+    pathPrefix = '../../';
+  } else if (currentPath.includes('/pages/')) {
+    // We're in a regular page (1 level deep)
+    pathPrefix = '../';
+  } else {
+    // We're at root level
+    pathPrefix = '';
+  }
+  
+  // Fix href paths in navigation links
+  html = html.replace(/href="\.\.\/index\.html"/g, `href="${pathPrefix}index.html"`);
+  html = html.replace(/href="\.\.\/pages\//g, `href="${pathPrefix}pages/`);
+  
+  return html;
+}
+
+/**
  * Simple HTML include loader
  * Usage: <div data-include="/assets/includes/sidebar.html"></div>
  */
@@ -22,7 +48,11 @@ async function loadInclude(el) {
 
     const res = await fetch(src, { cache: 'no-cache' });
     if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
-    const html = await res.text();
+    let html = await res.text();
+    
+    // Fix relative paths based on current page depth
+    html = fixRelativePaths(html);
+    
     el.innerHTML = html;
 
     // Mark as loaded
