@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-08-27",
+  "lastUpdated": "2025-09-04",
   "source": "Official DU Accounting & Information Systems Department Faculty List",
   "faculty": {
     "professors": [
@@ -7,123 +7,105 @@
         "name": "Md. Maksudur Rahman Sarker",
         "position": "Professor & Chairman",
         "order": 1,
-        "cleanName": "Md. Maksudur Rahman Sarker",
-        "status": "active"
+        "cleanName": "Md. Maksudur Rahman Sarker"
       },
       {
         "name": "Dr. Riazur Rahman Chowdhury",
         "position": "Professor",
         "order": 2,
-        "cleanName": "Riazur Rahman Chowdhury",
-        "status": "active"
+        "cleanName": "Riazur Rahman Chowdhury"
       },
       {
         "name": "Dr. Dhiman Kumar Chowdhury",
         "position": "Professor",
         "order": 3,
-        "cleanName": "Dhiman Kumar Chowdhury",
-        "status": "active"
+        "cleanName": "Dhiman Kumar Chowdhury"
       },
       {
         "name": "Dr. Mahmuda Akter",
         "position": "Professor",
         "order": 4,
-        "cleanName": "Mahmuda Akter",
-        "status": "active"
+        "cleanName": "Mahmuda Akter"
       },
       {
         "name": "Dr. Mahfuzul Hoque",
         "position": "Professor",
         "order": 5,
-        "cleanName": "Mahfuzul Hoque",
-        "status": "active"
+        "cleanName": "Mahfuzul Hoque"
       },
       {
         "name": "Md. Nazim Uddin Bhuiyan",
         "position": "Professor",
         "order": 6,
-        "cleanName": "Md. Nazim Uddin Bhuiyan",
-        "status": "active"
+        "cleanName": "Md. Nazim Uddin Bhuiyan"
       },
       {
         "name": "Dr. Md. Monzur Morshed",
         "position": "Professor",
         "order": 7,
-        "cleanName": "Md. Monzur Morshed",
-        "status": "active"
+        "cleanName": "Md. Monzur Morshed"
       },
       {
         "name": "Dr. Md. Sharif Hossain",
         "position": "Professor",
         "order": 8,
-        "cleanName": "Md. Sharif Hossain",
-        "status": "on_deputation",
-        "note": "On Deputation"
+        "cleanName": "Md. Sharif Hossain"
       },
       {
         "name": "Dr. Mizanur Rahman",
         "position": "Professor",
         "order": 9,
-        "cleanName": "Mizanur Rahman",
-        "status": "active"
+        "cleanName": "Mizanur Rahman"
       },
       {
         "name": "Dr. Mohammad Tareq",
         "position": "Professor",
         "order": 10,
-        "cleanName": "Mohammad Tareq",
-        "status": "active"
+        "cleanName": "Mohammad Tareq"
       },
       {
         "name": "Sadia Afroze",
         "position": "Professor",
         "order": 11,
         "cleanName": "Sadia Afroze",
-        "status": "active",
         "alternativeNames": ["Ms. Sadia Afroze"]
       },
       {
         "name": "Dr. Dewan Mahboob Hossain",
         "position": "Professor",
         "order": 12,
-        "cleanName": "Dewan Mahboob Hossain",
-        "status": "active"
+        "cleanName": "Dewan Mahboob Hossain"
       },
       {
         "name": "Amirus Salat",
         "position": "Professor",
         "order": 13,
-        "cleanName": "Amirus Salat",
-        "status": "active"
+        "cleanName": "Amirus Salat"
       },
       {
         "name": "Tanzina Haque",
         "position": "Professor",
         "order": 14,
-        "cleanName": "Tanzina Haque",
-        "status": "active"
+        "cleanName": "Tanzina Haque"
       },
       {
         "name": "Dr. Ranjan Kumar Mitra",
         "position": "Professor",
         "order": 15,
-        "cleanName": "Ranjan Kumar Mitra",
-        "status": "active"
+        "cleanName": "Ranjan Kumar Mitra"
       },
       {
         "name": "Dr. Md. Musfiqur Rahman",
         "position": "Professor",
         "order": 16,
         "cleanName": "Md. Musfiqur Rahman",
-        "status": "active",
         "alternativeNames": ["Dr. Md. Mushfiqur Rahman"]
       },
       {
         "name": "Dr. Md. Saiful Alam",
         "position": "Professor",
         "order": 17,
-        "cleanName": "Md. Saiful Alam",
-        "status": "active"
+        "cleanName": "Md. Saiful Alam"
       }
     ],
     "associateProfessors": [
@@ -131,76 +113,64 @@
         "name": "Al-Amin",
         "position": "Associate Professor",
         "order": 18,
-        "cleanName": "Al-Amin",
-        "status": "active"
+        "cleanName": "Al-Amin"
       },
       {
         "name": "Rumana Ahmed",
         "position": "Associate Professor",
         "order": 19,
-        "cleanName": "Rumana Ahmed",
-        "status": "active"
+        "cleanName": "Rumana Ahmed"
       },
       {
         "name": "Bilkis Akhter",
         "position": "Associate Professor",
         "order": 20,
-        "cleanName": "Bilkis Akhter",
-        "status": "study_leave",
-        "note": "On Study Leave"
+        "cleanName": "Bilkis Akhter"
       },
       {
         "name": "Dr. Mohammad Moniruzzaman",
         "position": "Associate Professor",
         "order": 21,
-        "cleanName": "Mohammad Moniruzzaman",
-        "status": "active"
+        "cleanName": "Mohammad Moniruzzaman"
       },
       {
         "name": "Dr. Kawsar Jahan",
         "position": "Associate Professor",
         "order": 22,
         "cleanName": "Kawsar Jahan",
-        "status": "active",
         "alternativeNames": ["Kawsar Jahan"]
       },
       {
         "name": "Ishter Mahal",
         "position": "Associate Professor",
         "order": 23,
-        "cleanName": "Ishter Mahal",
-        "status": "active"
+        "cleanName": "Ishter Mahal"
       },
       {
         "name": "Dr. Md. Jamil Sharif, FCMA",
         "position": "Associate Professor",
         "order": 24,
         "cleanName": "Md. Jamil Sharif",
-        "status": "active",
-        "alternativeNames": ["Dr. Md. Jamil Sharif", "Dr. Md. Jamil Sharif, ACMA"]
+        "alternativeNames": ["Dr. Md. Jamil Sharif, ACMA"]
       },
       {
         "name": "Dr. Moshahida Sultana",
         "position": "Associate Professor",
         "order": 25,
         "cleanName": "Moshahida Sultana",
-        "status": "active",
         "alternativeNames": ["Moshahida Sultana"]
       },
       {
         "name": "Dr. Minhaj Ferdous",
         "position": "Associate Professor",
         "order": 26,
-        "cleanName": "Minhaj Ferdous",
-        "status": "active"
+        "cleanName": "Minhaj Ferdous"
       },
       {
         "name": "Dr. Anup Kumar Saha, FCMA",
         "position": "Associate Professor",
         "order": 27,
-        "cleanName": "Anup Kumar Saha",
-        "status": "on_leave",
-        "note": "On Leave"
+        "cleanName": "Anup Kumar Saha"
       }
     ],
     "assistantProfessors": [
@@ -208,85 +178,69 @@
         "name": "Md. Mazharul Anwar",
         "position": "Assistant Professor",
         "order": 28,
-        "cleanName": "Md. Mazharul Anwar",
-        "status": "active"
+        "cleanName": "Md. Mazharul Anwar"
       },
       {
         "name": "Shah Alam",
         "position": "Assistant Professor",
         "order": 29,
-        "cleanName": "Shah Alam",
-        "status": "active"
+        "cleanName": "Shah Alam"
       },
       {
         "name": "Md. Ahasan Uddin",
         "position": "Assistant Professor",
         "order": 30,
-        "cleanName": "Md. Ahasan Uddin",
-        "status": "active"
+        "cleanName": "Md. Ahasan Uddin"
       },
       {
         "name": "Jannatul Naima",
         "position": "Assistant Professor",
         "order": 31,
-        "cleanName": "Jannatul Naima",
-        "status": "study_leave",
-        "note": "On Study Leave"
+        "cleanName": "Jannatul Naima"
       },
       {
         "name": "Md. Mahadi Hasan",
         "position": "Assistant Professor",
         "order": 32,
-        "cleanName": "Md. Mahadi Hasan",
-        "status": "active"
+        "cleanName": "Md. Mahadi Hasan"
       },
       {
         "name": "Mohammad Saif Uddin Bhuiyah, ACMA",
         "position": "Assistant Professor",
         "order": 33,
         "cleanName": "Mohammad Saif Uddin Bhuiyah",
-        "status": "active",
         "alternativeNames": ["Mohammad Saif Uddin Bhuiyah"]
       },
       {
         "name": "Md. Rezaul Karim",
         "position": "Assistant Professor",
         "order": 34,
-        "cleanName": "Md. Rezaul Karim",
-        "status": "study_leave",
-        "note": "On Study Leave"
+        "cleanName": "Md. Rezaul Karim"
       },
       {
         "name": "Hasina Begum",
         "position": "Assistant Professor",
         "order": 35,
         "cleanName": "Hasina Begum",
-        "status": "active",
         "alternativeNames": ["Ms. Hasina Begum"]
       },
       {
         "name": "Ahmed Rizvan Hasan",
         "position": "Assistant Professor",
         "order": 36,
-        "cleanName": "Ahmed Rizvan Hasan",
-        "status": "study_leave",
-        "note": "On Study Leave"
+        "cleanName": "Ahmed Rizvan Hasan"
       },
       {
         "name": "Asia Khatun",
         "position": "Assistant Professor",
         "order": 37,
-        "cleanName": "Asia Khatun",
-        "status": "active",
-        "alternativeNames": ["Asiya Khatun"]
+        "cleanName": "Asia Khatun"
       },
       {
         "name": "Raihan Sobhan",
         "position": "Assistant Professor",
         "order": 38,
-        "cleanName": "Raihan Sobhan",
-        "status": "active",
-        "alternativeNames": ["Raihan Subhan"]
+        "cleanName": "Raihan Sobhan"
       }
     ],
     "lecturers": [
@@ -294,104 +248,62 @@
         "name": "Md. Sahid Hossain",
         "position": "Lecturer",
         "order": 39,
-        "cleanName": "Md. Sahid Hossain",
-        "status": "study_leave",
-        "note": "On Study Leave"
+        "cleanName": "Md. Sahid Hossain"
       },
       {
         "name": "Sanjida Afrin",
         "position": "Lecturer",
         "order": 40,
-        "cleanName": "Sanjida Afrin",
-        "status": "active"
+        "cleanName": "Sanjida Afrin"
       },
       {
         "name": "Shawrin Ahmed Khan",
         "position": "Lecturer",
         "order": 41,
-        "cleanName": "Shawrin Ahmed Khan",
-        "status": "active"
+        "cleanName": "Shawrin Ahmed Khan"
       }
     ],
-    "otherFaculty": [
+    "honoraryProfessors": [
       {
-        "name": "Mamtaz Uddin Ahmed",
-        "position": "Faculty",
+        "name": "Dr. Tahmina Khatun",
+        "position": "Honorary Professor",
         "order": 100,
-        "cleanName": "Mamtaz Uddin Ahmed",
-        "status": "unknown",
-        "note": "Appears in course assignments but not in current official faculty list"
-      },
-      {
-        "name": "Dr. Yousuf Kamal",
-        "position": "Faculty",
-        "order": 101,
-        "cleanName": "Yousuf Kamal",
-        "status": "unknown",
-        "note": "Appears in course assignments but not in current official faculty list"
-      },
-      {
-        "name": "Dr Mohammed Mehadi Masud Mazumder",
-        "position": "Faculty",
-        "order": 102,
-        "cleanName": "Mohammed Mehadi Masud Mazumder",
-        "status": "unknown",
-        "note": "Appears in course assignments but not in current official faculty list"
+        "cleanName": "Tahmina Khatun",
+        "department": "Economics"
       },
       {
         "name": "Md. Abdul Hakim",
-        "position": "Faculty",
-        "order": 103,
+        "position": "Honorary Professor",
+        "order": 101,
         "cleanName": "Md. Abdul Hakim",
-        "status": "unknown",
-        "note": "Appears in course assignments but not in current official faculty list"
+        "department": "Mathematics"
+      }
+    ],
+    "guestTeachers": [
+      {
+        "name": "Mamtaz Uddin Ahmed",
+        "position": "Guest Teacher",
+        "order": 200,
+        "cleanName": "Mamtaz Uddin Ahmed"
       },
       {
-        "name": "Dr. Mohammed Almujaddade Alfasane",
-        "position": "Faculty",
-        "order": 104,
-        "cleanName": "Mohammed Almujaddade Alfasane",
-        "status": "unknown",
-        "note": "Appears in course assignments but not in current official faculty list"
+        "name": "Dr. Yousuf Kamal",
+        "position": "Guest Teacher",
+        "order": 201,
+        "cleanName": "Yousuf Kamal"
+      },
+      {
+        "name": "Dr Mohammed Mehadi Masud Mazumder",
+        "position": "Guest Teacher",
+        "order": 202,
+        "cleanName": "Mohammed Mehadi Masud Mazumder"
       },
       {
         "name": "Sir Jagadish",
-        "position": "Faculty",
-        "order": 105,
-        "cleanName": "Jagadish",
-        "status": "unknown",
-        "note": "Appears in course assignments but not in current official faculty list"
-      },
-      {
-        "name": "Md. Hashem",
-        "position": "Faculty",
-        "order": 106,
-        "cleanName": "Md. Hashem",
-        "status": "unknown",
-        "note": "Appears in course assignments but not in current official faculty list"
-      },
-      {
-        "name": "Tahmina Ahmed",
-        "position": "Faculty",
-        "order": 107,
-        "cleanName": "Tahmina Ahmed",
-        "status": "unknown",
-        "note": "Appears in course assignments but not in current official faculty list"
+        "position": "Guest Teacher",
+        "order": 203,
+        "cleanName": "Jagadish"
       }
     ]
-  },
-  "positionMapping": {
-    "Professor": "Prof",
-    "Associate Professor": "Assoc Prof", 
-    "Assistant Professor": "Asst Prof",
-    "Lecturer": "Lecturer",
-    "Faculty": "Faculty"
-  },
-  "statusMapping": {
-    "active": "Active",
-    "study_leave": "Study Leave",
-    "on_leave": "On Leave", 
-    "on_deputation": "On Deputation",
-    "unknown": "Unknown"
   }
 }

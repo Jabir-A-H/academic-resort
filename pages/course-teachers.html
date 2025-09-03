@@ -732,6 +732,48 @@
       // Faculty data will be loaded from external JSON file
       let facultyData = {};
 
+      // Function to normalize teacher names (remove titles/honorifics for matching)
+      function normalizeName(name) {
+        if (!name) return "";
+
+        // Remove common academic titles and honorifics
+        const titlePrefixes = [
+          "Dr.",
+          "Prof.",
+          "Professor",
+          "Mr.",
+          "Ms.",
+          "Mrs.",
+          "Miss",
+          "Sir",
+          "Madam",
+          "ACMA",
+          "ACA",
+          "FCMA",
+          "FCA",
+          "CPA",
+        ];
+
+        let normalized = name.trim();
+
+        // Remove prefixes
+        for (const prefix of titlePrefixes) {
+          const regex = new RegExp(`^${prefix}\\s+`, "gi");
+          normalized = normalized.replace(regex, "");
+        }
+
+        // Remove suffixes (titles after comma)
+        normalized = normalized.replace(
+          /,\s*(Dr|Prof|Professor|ACMA|ACA|FCMA|FCA|CPA)\.?$/gi,
+          ""
+        );
+
+        // Clean up extra whitespace
+        normalized = normalized.replace(/\s+/g, " ").trim();
+
+        return normalized;
+      }
+
       // Function to load faculty data from external JSON file
       async function loadFacultyData() {
         try {
@@ -745,12 +787,13 @@
             "associateProfessors",
             "assistantProfessors",
             "lecturers",
-            "otherFaculty",
+            "honoraryProfessors",
+            "guestTeachers",
           ];
 
           categories.forEach((category) => {
-            if (data[category]) {
-              data[category].forEach((faculty) => {
+            if (data.faculty && data.faculty[category]) {
+              data.faculty[category].forEach((faculty) => {
                 // Add main name
                 facultyData[faculty.name] = {
                   position: faculty.position,
@@ -784,21 +827,35 @@
         }
       }
 
-      // Function to get faculty info
+      // Function to get faculty info with improved name matching
       function getFacultyInfo(teacherName) {
-        return (
-          facultyData[teacherName] || {
-            position: "Faculty",
-            order: 1000,
-            cleanName: teacherName,
+        // First try direct match
+        if (facultyData[teacherName]) {
+          return facultyData[teacherName];
+        }
+
+        // Try normalized name matching
+        const normalizedInput = normalizeName(teacherName);
+        for (const [key, value] of Object.entries(facultyData)) {
+          if (normalizeName(key) === normalizedInput) {
+            return value;
           }
-        );
+        }
+
+        // Fallback to default
+        return {
+          position: "Faculty",
+          order: 1000,
+          cleanName: normalizeName(teacherName) || teacherName,
+        };
       }
 
       // Function to get clean teacher name (without prefixes)
       function getCleanTeacherName(teacherName) {
         const facultyInfo = getFacultyInfo(teacherName);
-        return facultyInfo.cleanName || teacherName;
+        return (
+          facultyInfo.cleanName || normalizeName(teacherName) || teacherName
+        );
       }
 
       // Function to sort teachers by official order
