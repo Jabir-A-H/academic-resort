@@ -452,25 +452,12 @@
 
           // Update status to show rebuilding
           const stats = document.getElementById("resultsStats");
-          stats.textContent =
-            "🔄 Cache cleared! Rebuilding cache with priority speed...";
+          stats.textContent = "🔄 Cache cleared! Rebuilding cache...";
 
-          // Start immediate foreground rebuilding (faster since user is engaged)
-          if (
-            window.backgroundCachePreloader &&
-            window.backgroundCachePreloader.instance()
-          ) {
-            const preloader = window.backgroundCachePreloader.instance();
-            preloader.stopPreloading(); // Stop background preloader
-
-            // Start faster rebuild for immediate use
-            setTimeout(() => {
-              startImmediateRebuild(stats);
-            }, 500);
-          } else {
-            // Fallback to page reload if background preloader not available
-            location.reload();
-          }
+          // Start immediate rebuild for immediate use
+          setTimeout(() => {
+            startImmediateRebuild(stats);
+          }, 500);
         }
       }
 
