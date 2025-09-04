@@ -2,16 +2,13 @@
   "code": "1101",
   "title": "Introduction to Financial Accounting",
   "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
+  "current_batch": "30th Batch",
+  "current_teacher": "Dr. Mahfuzul Hoque",
   "study_materials": {
     "class_updates": {
       "type": "document",
-      "links": [
-        {
-          "label": "Class Updates Document",
-          "url": "",
-          "type": "document"
-        }
-      ]
+      "url": "",
+      "label": "Latest Class Updates & Announcements"
     },
     "notes": {
       "type": "folder",

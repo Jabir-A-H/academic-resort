@@ -2,16 +2,13 @@
   "code": "1102",
   "title": "Introduction to Business",
   "description": "Fundamental business concepts, organizational structures, and basic business operations and management principles.",
+  "current_batch": "30th Batch",
+  "current_teacher": "Sadia Afroze",
   "study_materials": {
     "class_updates": {
       "type": "document",
-      "links": [
-        {
-          "label": "Class Updates Document",
-          "url": "",
-          "type": "document"
-        }
-      ]
+      "url": "",
+      "label": "Latest Class Updates & Announcements"
     },
     "notes": {
       "type": "folder",

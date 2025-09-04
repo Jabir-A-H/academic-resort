@@ -2,16 +2,18 @@
   "code": "1103",
   "title": "Computer Concepts",
   "description": "Introduction to computer systems, software applications, and basic programming concepts for business students.",
+  "current_batch": "30th Batch",
+  "current_teacher": "Ahmed Rizvan Hasan",
   "study_materials": {
     "class_updates": {
       "type": "document",
-      "links": [
-        {
-          "label": "Class Updates Document",
-          "url": "",
-          "type": "document"
-        }
-      ]
+      "url": "",
+      "label": "Latest Class Updates & Announcements"
+    },
+    "class_updates": {
+      "type": "document",
+      "url": "",
+      "label": "Latest Class Updates & Announcements"
     },
     "notes": {
       "type": "folder",

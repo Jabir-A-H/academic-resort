@@ -2,16 +2,13 @@
   "code": "1203",
   "title": "Management & Organizational Behavior",
   "description": "Leadership principles, team dynamics, and organizational management strategies for business environments.",
+  "current_batch": "30th Batch",
+  "current_teacher": "Dr. Mizanur Rahman",
   "study_materials": {
     "class_updates": {
       "type": "document",
-      "links": [
-        {
-          "label": "Class Updates Document",
-          "url": "",
-          "type": "document"
-        }
-      ]
+      "url": "",
+      "label": "Latest Class Updates & Announcements"
     },
     "notes": {
       "type": "folder",

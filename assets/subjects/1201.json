@@ -2,16 +2,13 @@
   "code": "1201",
   "title": "Intermediate Accounting", 
   "description": "Advanced accounting principles, financial reporting standards, and complex accounting transactions and procedures.",
+  "current_batch": "30th Batch",
+  "current_teacher": "Dr. Md. Monzur Morshed",
   "study_materials": {
     "class_updates": {
       "type": "document",
-      "links": [
-        {
-          "label": "Class Updates Document",
-          "url": "",
-          "type": "document"
-        }
-      ]
+      "url": "",
+      "label": "Latest Class Updates & Announcements"
     },
     "notes": {
       "type": "folder",

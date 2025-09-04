@@ -2,16 +2,13 @@
   "code": "1202",
   "title": "Microeconomics",
   "description": "Consumer behavior, market structures, economic decision-making principles and microeconomic analysis.",
+  "current_batch": "30th Batch",
+  "current_teacher": "Dr. Tahmina Khatun",
   "study_materials": {
     "class_updates": {
       "type": "document", 
-      "links": [
-        {
-          "label": "Class Updates Document",
-          "url": "",
-          "type": "document"
-        }
-      ]
+      "url": "https://docs.google.com/document/d/1example_doc_id/edit",
+      "label": "Latest Class Updates & Announcements"
     },
     "notes": {
       "type": "folder",

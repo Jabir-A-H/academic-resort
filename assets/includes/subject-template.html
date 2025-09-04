@@ -109,10 +109,23 @@
     
     const studyMaterials = subjectData.study_materials;
     
-    // Class Updates
+    // Class Updates - Simple document link
     const classUpdatesContent = document.getElementById('class-updates-content');
     if (classUpdatesContent && studyMaterials.class_updates) {
-      classUpdatesContent.innerHTML = createContentLinks(studyMaterials.class_updates.links);
+      if (studyMaterials.class_updates.url) {
+        classUpdatesContent.innerHTML = `
+          <a href="${studyMaterials.class_updates.url}" target="_blank" rel="noopener" class="document-link">
+            <span class="doc-icon">📄</span>
+            ${studyMaterials.class_updates.label}
+          </a>
+        `;
+      } else {
+        classUpdatesContent.innerHTML = `
+          <div class="placeholder-link">
+            ${studyMaterials.class_updates.label} (Coming soon)
+          </div>
+        `;
+      }
     }
     
     // Personal Notes
@@ -160,7 +173,7 @@
       previousContent.innerHTML = createContentLinks(studyMaterials.previous_materials.links);
     }
     
-    // Questions sections
+    // Questions sections - Only Current and Previous
     if (subjectData.questions) {
       const currentQuestionsContent = document.getElementById('current-questions-content');
       if (currentQuestionsContent && subjectData.questions.current_questions) {
@@ -171,6 +184,33 @@
       if (previousQuestionsContent && subjectData.questions.previous_questions) {
         previousQuestionsContent.innerHTML = createContentLinks(subjectData.questions.previous_questions);
       }
+    }
+    
+    // Update course details with current batch and teacher
+    updateCourseDetails(subjectData);
+  }
+
+  function updateCourseDetails(subjectData) {
+    const courseInfoGrid = document.querySelector('.course-info-grid');
+    if (courseInfoGrid && subjectData) {
+      courseInfoGrid.innerHTML = `
+        <div class="info-card">
+          <h4>Course Code:</h4>
+          <p>${subjectData.code}</p>
+        </div>
+        <div class="info-card">
+          <h4>Course Title:</h4>
+          <p>${subjectData.title}</p>
+        </div>
+        <div class="info-card">
+          <h4>Current Batch:</h4>
+          <p>${subjectData.current_batch || 'To be announced'}</p>
+        </div>
+        <div class="info-card">
+          <h4>Current Teacher:</h4>
+          <p>${subjectData.current_teacher || 'To be announced'}</p>
+        </div>
+      `;
     }
   }
 
@@ -279,13 +319,13 @@
       <section class="card collapsible-section" id="study">
         <div class="section-header" onclick="toggleSection('study')">
           <h2>Study Materials</h2>
-          <span class="toggle-icon">▼</span>
+          <span class="toggle-icon">▲</span>
         </div>
         <div class="section-content">
           <div class="subsection collapsible-subsection" id="class-updates">
             <div class="subsection-header" onclick="toggleSubsection('class-updates')">
               <h3>Class Updates</h3>
-              <span class="toggle-icon">▼</span>
+              <span class="toggle-icon">▲</span>
             </div>
             <div class="subsection-content">
               <p>Latest class updates and announcements</p>
@@ -296,7 +336,7 @@
           <div class="subsection collapsible-subsection" id="personal-notes">
             <div class="subsection-header" onclick="toggleSubsection('personal-notes')">
               <h3>Personal Notes</h3>
-              <span class="toggle-icon">▼</span>
+              <span class="toggle-icon">▲</span>
             </div>
             <div class="subsection-content">
               <p>Student-created study notes and summaries</p>
@@ -307,7 +347,7 @@
           <div class="subsection collapsible-subsection" id="slides-lectures">
             <div class="subsection-header" onclick="toggleSubsection('slides-lectures')">
               <h3>Slides and Lecture Materials</h3>
-              <span class="toggle-icon">▼</span>
+              <span class="toggle-icon">▲</span>
             </div>
             <div class="subsection-content">
               <p>Official lecture slides and presentation materials</p>
@@ -318,7 +358,7 @@
           <div class="subsection collapsible-subsection" id="books-manuals">
             <div class="subsection-header" onclick="toggleSubsection('books-manuals')">
               <h3>Books and Manuals</h3>
-              <span class="toggle-icon">▼</span>
+              <span class="toggle-icon">▲</span>
             </div>
             <div class="subsection-content">
               <p>Textbooks, reference materials, and official manuals</p>
@@ -343,73 +383,13 @@
       <section class="card collapsible-section" id="questions">
         <div class="section-header" onclick="toggleSection('questions')">
           <h2>Questions & Examinations</h2>
-          <span class="toggle-icon">▼</span>
+          <span class="toggle-icon">▲</span>
         </div>
         <div class="section-content">
-          <div class="subsection collapsible-subsection" id="class-test">
-            <div class="subsection-header" onclick="toggleSubsection('class-test')">
-              <h3>Class Test Questions</h3>
-              <span class="toggle-icon">▼</span>
-            </div>
-            <div class="subsection-content">
-              <div class="resource-placeholder" id="class-test-content">
-                <p>Class test questions will be added here.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="subsection collapsible-subsection" id="midterm">
-            <div class="subsection-header" onclick="toggleSubsection('midterm')">
-              <h3>Midterm Questions</h3>
-              <span class="toggle-icon">▼</span>
-            </div>
-            <div class="subsection-content">
-              <div class="resource-placeholder" id="midterm-content">
-                <p>Midterm questions will be added here.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="subsection collapsible-subsection" id="final">
-            <div class="subsection-header" onclick="toggleSubsection('final')">
-              <h3>Final Questions</h3>
-              <span class="toggle-icon">▼</span>
-            </div>
-            <div class="subsection-content">
-              <div class="resource-placeholder" id="final-content">
-                <p>Final exam questions will be added here.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="subsection collapsible-subsection" id="question-banks">
-            <div class="subsection-header" onclick="toggleSubsection('question-banks')">
-              <h3>Question Banks</h3>
-              <span class="toggle-icon">▼</span>
-            </div>
-            <div class="subsection-content">
-              <div class="resource-placeholder" id="question-banks-content">
-                <p>Comprehensive question banks will be added here.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="subsection collapsible-subsection" id="test-banks">
-            <div class="subsection-header" onclick="toggleSubsection('test-banks')">
-              <h3>Test Banks</h3>
-              <span class="toggle-icon">▼</span>
-            </div>
-            <div class="subsection-content">
-              <div class="resource-placeholder" id="test-banks-content">
-                <p>Test banks and practice materials will be added here.</p>
-              </div>
-            </div>
-          </div>
-          
           <div class="subsection collapsible-subsection" id="current-questions">
             <div class="subsection-header" onclick="toggleSubsection('current-questions')">
               <h3>Current Questions</h3>
-              <span class="toggle-icon">▼</span>
+              <span class="toggle-icon">▲</span>
             </div>
             <div class="subsection-content">
               <div class="resource-placeholder" id="current-questions-content">Loading content...</div>
@@ -427,40 +407,101 @@
           </div>
         </div>
       </section>
+
+      <!-- Previous Teachers Section -->
+      <section class="card collapsible-section" id="previous-teachers">
+        <div class="section-header" onclick="toggleSection('previous-teachers')">
+          <h2>Previous Teachers</h2>
+          <span class="toggle-icon">▲</span>
+        </div>
+        <div class="section-content">
+          <div class="teachers-list" id="previous-teachers-content">
+            Loading previous teachers information...
+          </div>
+        </div>
+      </section>
     `;
   }
   
   function initializeCollapsibleSections() {
     try {
-      // Start with all sections collapsed except overview
+      // Main sections: Course Overview, Study Materials, Questions, and Previous Teachers all expanded
       const sections = document.querySelectorAll('.collapsible-section');
-      sections.forEach((section, index) => {
+      sections.forEach(section => {
         const content = section.querySelector('.section-content');
         const icon = section.querySelector('.toggle-icon');
         
         if (content && icon) {
-          if (index === 0) { // Keep first section (overview) open
-            content.style.display = 'block';
-            icon.textContent = '▲';
-          } else {
-            content.style.display = 'none';
-            icon.textContent = '▼';
-          }
+          content.style.display = 'block';
+          icon.textContent = '▲';
         }
       });
       
-      // Start with all subsections collapsed
+      // Subsections: All expanded except "Previous" ones
       const subsections = document.querySelectorAll('.collapsible-subsection');
       subsections.forEach(subsection => {
         const content = subsection.querySelector('.subsection-content');
         const icon = subsection.querySelector('.toggle-icon');
+        const isPreviousSection = subsection.id.includes('previous');
+        
         if (content && icon) {
-          content.style.display = 'none';
-          icon.textContent = '▼';
+          if (isPreviousSection) {
+            // Keep previous sections collapsed
+            content.style.display = 'none';
+            icon.textContent = '▼';
+          } else {
+            // All other subsections expanded
+            content.style.display = 'block';
+            icon.textContent = '▲';
+          }
         }
       });
+      
+      // Load previous teachers
+      loadPreviousTeachers();
     } catch (error) {
       console.error('Error initializing collapsible sections:', error);
+    }
+  }
+  
+  async function loadPreviousTeachers() {
+    try {
+      const response = await fetch('../../assets/faculty-mapping.json');
+      if (!response.ok) {
+        console.warn('Could not load faculty mapping');
+        return;
+      }
+      
+      const facultyData = await response.json();
+      const config = window.subjectConfig;
+      
+      // Sample data - this would ideally come from a course-teacher mapping
+      const previousTeachers = [
+        { name: "Dr. Tahmina Khatun", batch: "29th Batch" },
+        { name: "Dr. Yousuf Kamal", batch: "28th Batch" },
+        { name: "Mamtaz Uddin Ahmed", batch: "27th Batch" }
+      ];
+      
+      const previousTeachersContent = document.getElementById('previous-teachers-content');
+      if (previousTeachersContent) {
+        if (previousTeachers.length > 0) {
+          const teachersHTML = previousTeachers.map(teacher => `
+            <div class="teacher-item">
+              <span class="teacher-name">${teacher.name}</span>
+              <span class="teacher-batch">${teacher.batch}</span>
+            </div>
+          `).join('');
+          previousTeachersContent.innerHTML = teachersHTML;
+        } else {
+          previousTeachersContent.innerHTML = '<p>No previous teacher information available.</p>';
+        }
+      }
+    } catch (error) {
+      console.error('Error loading previous teachers:', error);
+      const previousTeachersContent = document.getElementById('previous-teachers-content');
+      if (previousTeachersContent) {
+        previousTeachersContent.innerHTML = '<p>Unable to load previous teachers information.</p>';
+      }
     }
   }
   
@@ -504,6 +545,53 @@
         font-size: 14px;
         font-style: italic;
         margin-bottom: 8px;
+      }
+
+      .document-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        border: 1px solid #2196f3;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #1565c0;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        margin-bottom: 8px;
+      }
+
+      .document-link:hover {
+        background: linear-gradient(135deg, #bbdefb, #90caf9);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(33, 150, 243, 0.2);
+      }
+
+      .doc-icon {
+        font-size: 18px;
+      }
+
+      .teacher-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        margin-bottom: 8px;
+      }
+
+      .teacher-name {
+        font-weight: 500;
+        color: #495057;
+      }
+
+      .teacher-batch {
+        color: #6c757d;
+        font-size: 14px;
       }
     `;
     document.head.appendChild(styleElement);
