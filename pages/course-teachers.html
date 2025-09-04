@@ -19,34 +19,7 @@
         <!-- Page Header -->
         <div class="teachers-page-header">
           <h2>Teachers' Profiles</h2>
-          <p>Find teachers by course, batch, or semester and access their subject pages</p>
-          
-          <!-- Quick Navigation to Subject Pages -->
-          <div class="quick-nav-teachers">
-            <h4>Quick Access to Subject Pages</h4>
-            <div class="subject-nav-grid">
-              <a href="subjects/financial-accounting-1101.html" class="subject-nav-btn">
-                <span class="subject-code">1101</span>
-                <span class="subject-name">Financial Accounting</span>
-              </a>
-              <a href="subjects/introduction-to-business-1102.html" class="subject-nav-btn">
-                <span class="subject-code">1102</span>
-                <span class="subject-name">Business Intro</span>
-              </a>
-              <a href="subjects/computer-concepts-1103.html" class="subject-nav-btn">
-                <span class="subject-code">1103</span>
-                <span class="subject-name">Computer Concepts</span>
-              </a>
-              <a href="subjects/business-mathematics-1104.html" class="subject-nav-btn">
-                <span class="subject-code">1104</span>
-                <span class="subject-name">Business Math</span>
-              </a>
-              <a href="subjects/business-communication-1105.html" class="subject-nav-btn">
-                <span class="subject-code">1105</span>
-                <span class="subject-name">Communication</span>
-              </a>
-            </div>
-          </div>
+          <p>Find teachers by course, batch, or semester</p>
         </div>
 
         <!-- Filter Controls -->
@@ -1667,7 +1640,27 @@
 
         // Set initial reset button state
         updateResetButtonVisibility();
+        
+        // Check for URL parameters for automatic filtering
+        checkUrlParameters();
       });
+      
+      // Check URL parameters for automatic course filtering
+      function checkUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseParam = urlParams.get('course');
+        
+        if (courseParam) {
+          // Set the course filter
+          const courseSelect = document.getElementById("courseSelect");
+          courseSelect.value = courseParam;
+          
+          // Trigger filter change
+          setTimeout(() => {
+            handleFilterChange();
+          }, 100);
+        }
+      }
     </script>
   </body>
 </html>

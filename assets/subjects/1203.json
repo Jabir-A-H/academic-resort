@@ -4,80 +4,22 @@
   "description": "Leadership principles, team dynamics, and organizational management strategies for business environments.",
   "current_batch": "30th Batch",
   "current_teacher": "Dr. Mizanur Rahman",
-  "study_materials": {
-    "class_updates": {
-      "type": "document",
-      "url": "",
-      "label": "Latest Class Updates & Announcements"
-    },
-    "notes": {
-      "type": "folder",
-      "current": [
-        {
-          "label": "Personal Notes - Current Batch",
-          "folderId": "1GqE1mLi-ir3OCvBdMBgChCIpws8dTGI7",
-          "type": "folder"
-        }
-      ],
-      "previous": []
-    },
-    "slides_lectures": {
-      "type": "folder",
-      "current": [
-        {
-          "label": "30th Batch Materials",
-          "folderId": "1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
-          "type": "folder"
-        }
-      ],
-      "previous": [
-        {
-          "label": "29th Batch Materials",
-          "folderId": "1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8",
-          "type": "folder"
-        }
-      ]
-    },
-    "books_manuals": {
-      "type": "folder",
-      "current": [
-        {
-          "label": "Books & Slides",
-          "folderId": "1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU",
-          "type": "folder"
-        }
-      ],
-      "previous": []
-    },
-    "previous_materials": {
-      "type": "folder",
-      "links": [
-        {
-          "label": "28th Batch Archive",
-          "folderId": "1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj",
-          "type": "folder"
-        }
-      ]
-    }
-  },
-  "questions": {
-    "current_questions": [
-      {
-        "label": "Class Test Questions",
-        "url": "",
-        "type": "document"
-      },
-      {
-        "label": "Midterm Questions",
-        "url": "",
-        "type": "document"
-      },
-      {
-        "label": "Final Questions",
-        "url": "",
-        "type": "document"
-      }
+  "links": {
+    "class_updates": "",
+    "notes": [
+      "https://drive.google.com/drive/folders/1GqE1mLi-ir3OCvBdMBgChCIpws8dTGI7"
     ],
+    "slides_lectures": [
+      "https://drive.google.com/drive/folders/1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
+      "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8"
+    ],
+    "books_manuals": [
+      "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
+    ],
+    "previous_materials": [
+      "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj"
+    ],
+    "current_questions": [],
     "previous_questions": []
   }
 }

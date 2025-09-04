@@ -105,24 +105,24 @@
   }
 
   function populateSubjectLinks(subjectData) {
-    if (!subjectData.study_materials) return;
+    if (!subjectData.links) return;
     
-    const studyMaterials = subjectData.study_materials;
+    const links = subjectData.links;
     
     // Class Updates - Simple document link
     const classUpdatesContent = document.getElementById('class-updates-content');
-    if (classUpdatesContent && studyMaterials.class_updates) {
-      if (studyMaterials.class_updates.url) {
+    if (classUpdatesContent && links.class_updates) {
+      if (links.class_updates && links.class_updates !== '') {
         classUpdatesContent.innerHTML = `
-          <a href="${studyMaterials.class_updates.url}" target="_blank" rel="noopener" class="document-link">
+          <a href="${links.class_updates}" target="_blank" rel="noopener" class="document-link">
             <span class="doc-icon">📄</span>
-            ${studyMaterials.class_updates.label}
+            Latest Class Updates & Announcements
           </a>
         `;
       } else {
         classUpdatesContent.innerHTML = `
           <div class="placeholder-link">
-            ${studyMaterials.class_updates.label} (Coming soon)
+            Latest Class Updates & Announcements (Coming soon)
           </div>
         `;
       }
@@ -130,60 +130,38 @@
     
     // Personal Notes
     const personalNotesContent = document.getElementById('personal-notes-content');
-    if (personalNotesContent && studyMaterials.notes) {
-      let notesHTML = '';
-      if (studyMaterials.notes.current) {
-        notesHTML += createContentLinks(studyMaterials.notes.current);
-      }
-      if (studyMaterials.notes.previous && studyMaterials.notes.previous.length > 0) {
-        notesHTML += createContentLinks(studyMaterials.notes.previous);
-      }
-      personalNotesContent.innerHTML = notesHTML || 'No notes available yet.';
+    if (personalNotesContent && links.notes) {
+      personalNotesContent.innerHTML = createLinksFromArray(links.notes) || 'No notes available yet.';
     }
     
     // Slides and Lectures
     const slidesContent = document.getElementById('slides-content');
-    if (slidesContent && studyMaterials.slides_lectures) {
-      let slidesHTML = '';
-      if (studyMaterials.slides_lectures.current) {
-        slidesHTML += createContentLinks(studyMaterials.slides_lectures.current);
-      }
-      if (studyMaterials.slides_lectures.previous && studyMaterials.slides_lectures.previous.length > 0) {
-        slidesHTML += createContentLinks(studyMaterials.slides_lectures.previous);
-      }
-      slidesContent.innerHTML = slidesHTML || 'No slide materials available yet.';
+    if (slidesContent && links.slides_lectures) {
+      slidesContent.innerHTML = createLinksFromArray(links.slides_lectures) || 'No slide materials available yet.';
     }
     
     // Books and Manuals
     const booksContent = document.getElementById('books-content');
-    if (booksContent && studyMaterials.books_manuals) {
-      let booksHTML = '';
-      if (studyMaterials.books_manuals.current) {
-        booksHTML += createContentLinks(studyMaterials.books_manuals.current);
-      }
-      if (studyMaterials.books_manuals.previous && studyMaterials.books_manuals.previous.length > 0) {
-        booksHTML += createContentLinks(studyMaterials.books_manuals.previous);
-      }
-      booksContent.innerHTML = booksHTML || 'No books/manuals available yet.';
+    if (booksContent && links.books_manuals) {
+      booksContent.innerHTML = createLinksFromArray(links.books_manuals) || 'No books/manuals available yet.';
     }
     
     // Previous Materials
     const previousContent = document.getElementById('previous-materials-content');
-    if (previousContent && studyMaterials.previous_materials) {
-      previousContent.innerHTML = createContentLinks(studyMaterials.previous_materials.links);
+    if (previousContent && links.previous_materials) {
+      previousContent.innerHTML = createLinksFromArray(links.previous_materials) || 'No previous materials available yet.';
     }
     
-    // Questions sections - Only Current and Previous
-    if (subjectData.questions) {
-      const currentQuestionsContent = document.getElementById('current-questions-content');
-      if (currentQuestionsContent && subjectData.questions.current_questions) {
-        currentQuestionsContent.innerHTML = createContentLinks(subjectData.questions.current_questions);
-      }
-      
-      const previousQuestionsContent = document.getElementById('previous-questions-content');
-      if (previousQuestionsContent && subjectData.questions.previous_questions) {
-        previousQuestionsContent.innerHTML = createContentLinks(subjectData.questions.previous_questions);
-      }
+    // Current Questions
+    const currentQuestionsContent = document.getElementById('current-questions-content');
+    if (currentQuestionsContent && links.current_questions) {
+      currentQuestionsContent.innerHTML = createLinksFromArray(links.current_questions) || 'No current questions available yet.';
+    }
+    
+    // Previous Questions
+    const previousQuestionsContent = document.getElementById('previous-questions-content');
+    if (previousQuestionsContent && links.previous_questions) {
+      previousQuestionsContent.innerHTML = createLinksFromArray(links.previous_questions) || 'No previous questions available yet.';
     }
     
     // Update course details with current batch and teacher
@@ -212,6 +190,34 @@
         </div>
       `;
     }
+  }
+
+  function createLinksFromArray(linkArray) {
+    if (!linkArray || linkArray.length === 0) return '';
+    
+    return linkArray.map(url => {
+      if (!url || url === '') return '<div class="placeholder-link">Link coming soon</div>';
+      
+      // Parse the URL to determine type
+      if (url.includes('docs.google.com/document')) {
+        return createDocumentLink(url, 'Document');
+      } else if (url.includes('drive.google.com/drive/folders')) {
+        // Extract folder ID from URL
+        const match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+        const folderId = match ? match[1] : null;
+        if (folderId) {
+          return createDriveLink(folderId, 'Drive Folder');
+        }
+      } else if (url.includes('drive.google.com/file')) {
+        return createDocumentLink(url, 'Drive File');
+      }
+      
+      // Fallback for other URLs
+      return `<a href="${url}" target="_blank" rel="noopener" class="drive-link">
+        <span class="drive-icon">🔗</span>
+        Link
+      </a>`;
+    }).join('<br>');
   }
 
   function createContentLinks(links) {
@@ -272,15 +278,15 @@
     if (quickActions) {
       quickActions.innerHTML = `
         <a href="../course-teachers.html?course=${config.code}" class="action-btn">
-          <span class="icon">Teachers</span>
+          <span class="icon">👨‍🏫</span>
           View Teachers
         </a>
         <a href="../browse.html?search=${config.code}" class="action-btn">
-          <span class="icon">Search</span>
+          <span class="icon">🔍</span>
           Search Resources
         </a>
         <a href="../${config.semesterPage}" class="action-btn">
-          <span class="icon">Back</span>
+          <span class="icon">↩️</span>
           All ${config.semesterName}
         </a>
       `;
@@ -408,18 +414,7 @@
         </div>
       </section>
 
-      <!-- Previous Teachers Section -->
-      <section class="card collapsible-section" id="previous-teachers">
-        <div class="section-header" onclick="toggleSection('previous-teachers')">
-          <h2>Previous Teachers</h2>
-          <span class="toggle-icon">▲</span>
-        </div>
-        <div class="section-content">
-          <div class="teachers-list" id="previous-teachers-content">
-            Loading previous teachers information...
-          </div>
-        </div>
-      </section>
+
     `;
   }
   
@@ -457,53 +452,12 @@
         }
       });
       
-      // Load previous teachers
-      loadPreviousTeachers();
+
     } catch (error) {
       console.error('Error initializing collapsible sections:', error);
     }
   }
-  
-  async function loadPreviousTeachers() {
-    try {
-      const response = await fetch('../../assets/faculty-mapping.json');
-      if (!response.ok) {
-        console.warn('Could not load faculty mapping');
-        return;
-      }
-      
-      const facultyData = await response.json();
-      const config = window.subjectConfig;
-      
-      // Sample data - this would ideally come from a course-teacher mapping
-      const previousTeachers = [
-        { name: "Dr. Tahmina Khatun", batch: "29th Batch" },
-        { name: "Dr. Yousuf Kamal", batch: "28th Batch" },
-        { name: "Mamtaz Uddin Ahmed", batch: "27th Batch" }
-      ];
-      
-      const previousTeachersContent = document.getElementById('previous-teachers-content');
-      if (previousTeachersContent) {
-        if (previousTeachers.length > 0) {
-          const teachersHTML = previousTeachers.map(teacher => `
-            <div class="teacher-item">
-              <span class="teacher-name">${teacher.name}</span>
-              <span class="teacher-batch">${teacher.batch}</span>
-            </div>
-          `).join('');
-          previousTeachersContent.innerHTML = teachersHTML;
-        } else {
-          previousTeachersContent.innerHTML = '<p>No previous teacher information available.</p>';
-        }
-      }
-    } catch (error) {
-      console.error('Error loading previous teachers:', error);
-      const previousTeachersContent = document.getElementById('previous-teachers-content');
-      if (previousTeachersContent) {
-        previousTeachersContent.innerHTML = '<p>Unable to load previous teachers information.</p>';
-      }
-    }
-  }
+
   
   // Add CSS for drive links
   if (!document.querySelector('#drive-links-css')) {
@@ -573,26 +527,7 @@
         font-size: 18px;
       }
 
-      .teacher-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 16px;
-        background: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
-        margin-bottom: 8px;
-      }
 
-      .teacher-name {
-        font-weight: 500;
-        color: #495057;
-      }
-
-      .teacher-batch {
-        color: #6c757d;
-        font-size: 14px;
-      }
     `;
     document.head.appendChild(styleElement);
   }

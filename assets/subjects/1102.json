@@ -4,74 +4,18 @@
   "description": "Fundamental business concepts, organizational structures, and basic business operations and management principles.",
   "current_batch": "30th Batch",
   "current_teacher": "Sadia Afroze",
-  "study_materials": {
-    "class_updates": {
-      "type": "document",
-      "url": "",
-      "label": "Latest Class Updates & Announcements"
-    },
-    "notes": {
-      "type": "folder",
-      "current": [
-        {
-          "label": "Personal Notes - Current Batch",
-          "folderId": "",
-          "type": "folder"
-        }
-      ],
-      "previous": []
-    },
-    "slides_lectures": {
-      "type": "folder",
-      "current": [
-        {
-          "label": "30th Batch Materials",
-          "folderId": "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
-          "type": "folder"
-        }
-      ],
-      "previous": [
-        {
-          "label": "29th Batch Materials",
-          "folderId": "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
-          "type": "folder"
-        }
-      ]
-    },
-    "books_manuals": {
-      "type": "folder",
-      "current": [],
-      "previous": []
-    },
-    "previous_materials": {
-      "type": "folder",
-      "links": [
-        {
-          "label": "28th Batch Archive",
-          "folderId": "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
-          "type": "folder"
-        }
-      ]
-    }
-  },
-  "questions": {
-    "current_questions": [
-      {
-        "label": "Class Test Questions",
-        "url": "",
-        "type": "document"
-      },
-      {
-        "label": "Midterm Questions",
-        "url": "",
-        "type": "document"
-      },
-      {
-        "label": "Final Questions",
-        "url": "",
-        "type": "document"
-      }
+  "links": {
+    "class_updates": "",
+    "notes": [],
+    "slides_lectures": [
+      "https://drive.google.com/drive/folders/1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+      "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
     ],
+    "books_manuals": [],
+    "previous_materials": [
+      "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
+    ],
+    "current_questions": [],
     "previous_questions": []
   }
 }

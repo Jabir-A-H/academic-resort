@@ -4,102 +4,23 @@
   "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
   "current_batch": "30th Batch",
   "current_teacher": "Dr. Mahfuzul Hoque",
-  "study_materials": {
-    "class_updates": {
-      "type": "document",
-      "url": "",
-      "label": "Latest Class Updates & Announcements"
-    },
-    "notes": {
-      "type": "folder",
-      "current": [
-        {
-          "label": "Personal Notes - Current Batch",
-          "folderId": "1S0SFn1__66OTcOu5GoLo8iC-GKFrihqE",
-          "type": "folder"
-        }
-      ],
-      "previous": [
-        {
-          "label": "Notes from Seniors",
-          "folderId": "1dWMahU0ugtF9Em5sGZ0aywkuGY1noN81",
-          "type": "folder"
-        }
-      ]
-    },
-    "slides_lectures": {
-      "type": "folder",
-      "current": [
-        {
-          "label": "30th Batch Materials",
-          "folderId": "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
-          "type": "folder"
-        }
-      ],
-      "previous": [
-        {
-          "label": "29th Batch Materials",
-          "folderId": "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
-          "type": "folder"
-        },
-        {
-          "label": "28th Batch Materials", 
-          "folderId": "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
-          "type": "folder"
-        }
-      ]
-    },
-    "books_manuals": {
-      "type": "folder",
-      "current": [
-        {
-          "label": "Textbooks & Reference Materials",
-          "folderId": "",
-          "type": "folder"
-        }
-      ],
-      "previous": []
-    },
-    "previous_materials": {
-      "type": "folder",
-      "links": [
-        {
-          "label": "27th Batch Archive",
-          "folderId": "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
-          "type": "folder"
-        },
-        {
-          "label": "26th Batch Archive",
-          "folderId": "1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu",
-          "type": "folder"
-        }
-      ]
-    }
-  },
-  "questions": {
-    "current_questions": [
-      {
-        "label": "Class Test Questions",
-        "url": "",
-        "type": "document"
-      },
-      {
-        "label": "Midterm Questions",
-        "url": "",
-        "type": "document"
-      },
-      {
-        "label": "Final Questions",
-        "url": "",
-        "type": "document"
-      }
+  "links": {
+    "class_updates": "",
+    "notes": [
+      "https://drive.google.com/drive/folders/1S0SFn1__66OTcOu5GoLo8iC-GKFrihqE",
+      "https://drive.google.com/drive/folders/1dWMahU0ugtF9Em5sGZ0aywkuGY1noN81"
     ],
-    "previous_questions": [
-      {
-        "label": "Previous Years Questions",
-        "folderId": "",
-        "type": "folder"
-      }
-    ]
+    "slides_lectures": [
+      "https://drive.google.com/drive/folders/1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+      "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
+      "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
+    ],
+    "books_manuals": [],
+    "previous_materials": [
+      "https://drive.google.com/drive/folders/1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
+      "https://drive.google.com/drive/folders/1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu"
+    ],
+    "current_questions": [],
+    "previous_questions": []
   }
 }
