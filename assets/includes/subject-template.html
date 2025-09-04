@@ -87,67 +87,115 @@
 
   async function loadDriveContent(config) {
     try {
-      // Load drive mapping
-      const response = await fetch('../../assets/drive-mapping.json');
+      // Load subject-specific JSON mapping
+      const response = await fetch(`../../assets/subjects/${config.code}.json`);
       if (!response.ok) {
-        console.warn('Could not load drive mapping');
+        console.warn('Could not load subject mapping for:', config.code);
         return;
       }
       
-      const driveData = await response.json();
-      const semesterKey = config.semesterPage.replace('.html', ''); // '1st', '2nd', etc.
-      const semesterData = driveData[semesterKey];
+      const subjectData = await response.json();
       
-      if (!semesterData) {
-        console.warn('No drive data found for semester:', semesterKey);
-        return;
-      }
-      
-      // Populate sections with drive links
-      populateDriveLinks(semesterData);
+      // Populate sections with subject-specific drive links
+      populateSubjectLinks(subjectData);
       
     } catch (error) {
-      console.error('Error loading drive content:', error);
+      console.error('Error loading subject content:', error);
     }
   }
 
-  function populateDriveLinks(semesterData) {
-    if (!semesterData.batches) return;
+  function populateSubjectLinks(subjectData) {
+    if (!subjectData.study_materials) return;
+    
+    const studyMaterials = subjectData.study_materials;
+    
+    // Class Updates
+    const classUpdatesContent = document.getElementById('class-updates-content');
+    if (classUpdatesContent && studyMaterials.class_updates) {
+      classUpdatesContent.innerHTML = createContentLinks(studyMaterials.class_updates.links);
+    }
     
     // Personal Notes
     const personalNotesContent = document.getElementById('personal-notes-content');
-    if (personalNotesContent && semesterData.batches.personal) {
-      personalNotesContent.innerHTML = createDriveLink(
-        semesterData.batches.personal.folderId, 
-        semesterData.batches.personal.label
-      );
+    if (personalNotesContent && studyMaterials.notes) {
+      let notesHTML = '';
+      if (studyMaterials.notes.current) {
+        notesHTML += createContentLinks(studyMaterials.notes.current);
+      }
+      if (studyMaterials.notes.previous && studyMaterials.notes.previous.length > 0) {
+        notesHTML += createContentLinks(studyMaterials.notes.previous);
+      }
+      personalNotesContent.innerHTML = notesHTML || 'No notes available yet.';
     }
     
-    // Books and Slides
-    const booksContent = document.getElementById('books-content');
-    if (booksContent && semesterData.batches.books) {
-      booksContent.innerHTML = createDriveLink(
-        semesterData.batches.books.folderId, 
-        semesterData.batches.books.label
-      );
-    } else if (booksContent && semesterData.batches.syllabus) {
-      booksContent.innerHTML = createDriveLink(
-        semesterData.batches.syllabus.folderId, 
-        semesterData.batches.syllabus.label
-      );
-    }
-    
-    // Slides content - use available batch materials
+    // Slides and Lectures
     const slidesContent = document.getElementById('slides-content');
-    if (slidesContent) {
+    if (slidesContent && studyMaterials.slides_lectures) {
       let slidesHTML = '';
-      Object.entries(semesterData.batches).forEach(([key, batch]) => {
-        if (key !== 'personal' && key !== 'books' && key !== 'syllabus' && batch.folderId) {
-          slidesHTML += createDriveLink(batch.folderId, batch.label) + '<br>';
-        }
-      });
+      if (studyMaterials.slides_lectures.current) {
+        slidesHTML += createContentLinks(studyMaterials.slides_lectures.current);
+      }
+      if (studyMaterials.slides_lectures.previous && studyMaterials.slides_lectures.previous.length > 0) {
+        slidesHTML += createContentLinks(studyMaterials.slides_lectures.previous);
+      }
       slidesContent.innerHTML = slidesHTML || 'No slide materials available yet.';
     }
+    
+    // Books and Manuals
+    const booksContent = document.getElementById('books-content');
+    if (booksContent && studyMaterials.books_manuals) {
+      let booksHTML = '';
+      if (studyMaterials.books_manuals.current) {
+        booksHTML += createContentLinks(studyMaterials.books_manuals.current);
+      }
+      if (studyMaterials.books_manuals.previous && studyMaterials.books_manuals.previous.length > 0) {
+        booksHTML += createContentLinks(studyMaterials.books_manuals.previous);
+      }
+      booksContent.innerHTML = booksHTML || 'No books/manuals available yet.';
+    }
+    
+    // Previous Materials
+    const previousContent = document.getElementById('previous-materials-content');
+    if (previousContent && studyMaterials.previous_materials) {
+      previousContent.innerHTML = createContentLinks(studyMaterials.previous_materials.links);
+    }
+    
+    // Questions sections
+    if (subjectData.questions) {
+      const currentQuestionsContent = document.getElementById('current-questions-content');
+      if (currentQuestionsContent && subjectData.questions.current_questions) {
+        currentQuestionsContent.innerHTML = createContentLinks(subjectData.questions.current_questions);
+      }
+      
+      const previousQuestionsContent = document.getElementById('previous-questions-content');
+      if (previousQuestionsContent && subjectData.questions.previous_questions) {
+        previousQuestionsContent.innerHTML = createContentLinks(subjectData.questions.previous_questions);
+      }
+    }
+  }
+
+  function createContentLinks(links) {
+    if (!links || links.length === 0) return 'No content available yet.';
+    
+    return links.map(link => {
+      if (link.folderId) {
+        return createDriveLink(link.folderId, link.label);
+      } else if (link.url) {
+        return createDocumentLink(link.url, link.label);
+      } else {
+        return `<div class="placeholder-link">${link.label} (Coming soon)</div>`;
+      }
+    }).join('<br>');
+  }
+
+  function createDocumentLink(url, label) {
+    if (!url) {
+      return `<div class="placeholder-link">${label} (Coming soon)</div>`;
+    }
+    return `<a href="${url}" target="_blank" rel="noopener" class="drive-link">
+      <span class="drive-icon">📄</span>
+      ${label}
+    </a>`;
   }
 
   function createDriveLink(folderId, label) {
@@ -220,21 +268,9 @@
               <h4>Course Title:</h4>
               <p>${config.title}</p>
             </div>
-            <div class="info-card">
-              <h4>Credit Hours:</h4>
-              <p>${config.credits || '3 Credits'}</p>
-            </div>
-            <div class="info-card">
-              <h4>Semester:</h4>
-              <p>${config.semesterName}</p>
-            </div>
-            <div class="info-card">
-              <h4>Prerequisites:</h4>
-              <p>${config.prerequisites || 'None'}</p>
-            </div>
           </div>
           <div class="course-description">
-            <p>${config.detailedDescription}</p>
+            <p>${config.description}</p>
           </div>
         </div>
       </section>
@@ -246,6 +282,17 @@
           <span class="toggle-icon">▼</span>
         </div>
         <div class="section-content">
+          <div class="subsection collapsible-subsection" id="class-updates">
+            <div class="subsection-header" onclick="toggleSubsection('class-updates')">
+              <h3>Class Updates</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <p>Latest class updates and announcements</p>
+              <div class="resource-placeholder" id="class-updates-content">Loading content...</div>
+            </div>
+          </div>
+          
           <div class="subsection collapsible-subsection" id="personal-notes">
             <div class="subsection-header" onclick="toggleSubsection('personal-notes')">
               <h3>Personal Notes</h3>
@@ -278,6 +325,17 @@
               <div class="resource-placeholder" id="books-content">Loading content...</div>
             </div>
           </div>
+          
+          <div class="subsection collapsible-subsection" id="previous-materials">
+            <div class="subsection-header" onclick="toggleSubsection('previous-materials')">
+              <h3>Previous Materials</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <p>Materials from previous batches and semesters</p>
+              <div class="resource-placeholder" id="previous-materials-content">Loading content...</div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -294,8 +352,8 @@
               <span class="toggle-icon">▼</span>
             </div>
             <div class="subsection-content">
-              <div class="question-bank">
-                ${config.classTestQuestions || '<p>Class test questions will be added here.</p>'}
+              <div class="resource-placeholder" id="class-test-content">
+                <p>Class test questions will be added here.</p>
               </div>
             </div>
           </div>
@@ -306,8 +364,8 @@
               <span class="toggle-icon">▼</span>
             </div>
             <div class="subsection-content">
-              <div class="question-bank">
-                ${config.midtermQuestions || '<p>Midterm questions will be added here.</p>'}
+              <div class="resource-placeholder" id="midterm-content">
+                <p>Midterm questions will be added here.</p>
               </div>
             </div>
           </div>
@@ -318,8 +376,8 @@
               <span class="toggle-icon">▼</span>
             </div>
             <div class="subsection-content">
-              <div class="question-bank">
-                ${config.finalQuestions || '<p>Final exam questions will be added here.</p>'}
+              <div class="resource-placeholder" id="final-content">
+                <p>Final exam questions will be added here.</p>
               </div>
             </div>
           </div>
@@ -330,8 +388,8 @@
               <span class="toggle-icon">▼</span>
             </div>
             <div class="subsection-content">
-              <div class="question-bank">
-                ${config.questionBanks || '<p>Comprehensive question banks will be added here.</p>'}
+              <div class="resource-placeholder" id="question-banks-content">
+                <p>Comprehensive question banks will be added here.</p>
               </div>
             </div>
           </div>
@@ -342,9 +400,29 @@
               <span class="toggle-icon">▼</span>
             </div>
             <div class="subsection-content">
-              <div class="question-bank">
-                ${config.testBanks || '<p>Test banks and practice materials will be added here.</p>'}
+              <div class="resource-placeholder" id="test-banks-content">
+                <p>Test banks and practice materials will be added here.</p>
               </div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="current-questions">
+            <div class="subsection-header" onclick="toggleSubsection('current-questions')">
+              <h3>Current Questions</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <div class="resource-placeholder" id="current-questions-content">Loading content...</div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="previous-questions">
+            <div class="subsection-header" onclick="toggleSubsection('previous-questions')">
+              <h3>Previous Questions</h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="subsection-content">
+              <div class="resource-placeholder" id="previous-questions-content">Loading content...</div>
             </div>
           </div>
         </div>
@@ -414,6 +492,18 @@
 
       .drive-icon {
         font-size: 16px;
+      }
+
+      .placeholder-link {
+        display: inline-block;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border: 1px dashed #ced4da;
+        border-radius: 6px;
+        color: #6c757d;
+        font-size: 14px;
+        font-style: italic;
+        margin-bottom: 8px;
       }
     `;
     document.head.appendChild(styleElement);

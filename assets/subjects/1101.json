@@ -1,0 +1,108 @@
+{
+  "code": "1101",
+  "title": "Introduction to Financial Accounting",
+  "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
+  "study_materials": {
+    "class_updates": {
+      "type": "document",
+      "links": [
+        {
+          "label": "Class Updates Document",
+          "url": "",
+          "type": "document"
+        }
+      ]
+    },
+    "notes": {
+      "type": "folder",
+      "current": [
+        {
+          "label": "Personal Notes - Current Batch",
+          "folderId": "1S0SFn1__66OTcOu5GoLo8iC-GKFrihqE",
+          "type": "folder"
+        }
+      ],
+      "previous": [
+        {
+          "label": "Notes from Seniors",
+          "folderId": "1dWMahU0ugtF9Em5sGZ0aywkuGY1noN81",
+          "type": "folder"
+        }
+      ]
+    },
+    "slides_lectures": {
+      "type": "folder",
+      "current": [
+        {
+          "label": "30th Batch Materials",
+          "folderId": "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+          "type": "folder"
+        }
+      ],
+      "previous": [
+        {
+          "label": "29th Batch Materials",
+          "folderId": "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
+          "type": "folder"
+        },
+        {
+          "label": "28th Batch Materials", 
+          "folderId": "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
+          "type": "folder"
+        }
+      ]
+    },
+    "books_manuals": {
+      "type": "folder",
+      "current": [
+        {
+          "label": "Textbooks & Reference Materials",
+          "folderId": "",
+          "type": "folder"
+        }
+      ],
+      "previous": []
+    },
+    "previous_materials": {
+      "type": "folder",
+      "links": [
+        {
+          "label": "27th Batch Archive",
+          "folderId": "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
+          "type": "folder"
+        },
+        {
+          "label": "26th Batch Archive",
+          "folderId": "1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu",
+          "type": "folder"
+        }
+      ]
+    }
+  },
+  "questions": {
+    "current_questions": [
+      {
+        "label": "Class Test Questions",
+        "url": "",
+        "type": "document"
+      },
+      {
+        "label": "Midterm Questions",
+        "url": "",
+        "type": "document"
+      },
+      {
+        "label": "Final Questions",
+        "url": "",
+        "type": "document"
+      }
+    ],
+    "previous_questions": [
+      {
+        "label": "Previous Years Questions",
+        "folderId": "",
+        "type": "folder"
+      }
+    ]
+  }
+}
