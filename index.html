@@ -238,7 +238,12 @@
           placeholder="Search academic resources..."
           oninput="debounce(optimizedSearch, 500)()"
         />
-        <div class="search-icon">🔍</div>
+        <div class="search-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
       </div>
       
       <!-- Search Filters -->
@@ -876,9 +881,9 @@
             const currentResults = removeDuplicatesOptimized(results);
             if (currentResults.length > 0) {
               displayResults(currentResults);
-              statsElement.innerHTML = `🔍 Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+              statsElement.innerHTML = `Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
             } else {
-              statsElement.textContent = `🔍 Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
+              statsElement.textContent = `Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
             }
 
             // Early termination if we have many results
