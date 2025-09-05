@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Browse All Resources - Academic Resort</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="preconnect" href="https://www.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1883,20 +1885,20 @@
 
         // Show empty state initially
         displayResults([]);
-        
+
         // Check for URL parameters and auto-search
         checkUrlParameters();
       });
-      
+
       // Check URL parameters for automatic search
       function checkUrlParameters() {
         const urlParams = new URLSearchParams(window.location.search);
-        const searchParam = urlParams.get('search');
-        
+        const searchParam = urlParams.get("search");
+
         if (searchParam) {
           // Set the search term in the input field
           DOM_CACHE.globalSearch.value = searchParam;
-          
+
           // Trigger the search
           setTimeout(() => {
             optimizedSearch();

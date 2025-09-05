@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Teachers' Profiles — Academic Resort</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
     <script src="../assets/script.js" defer></script>
   </head>
@@ -1640,21 +1642,21 @@
 
         // Set initial reset button state
         updateResetButtonVisibility();
-        
+
         // Check for URL parameters for automatic filtering
         checkUrlParameters();
       });
-      
+
       // Check URL parameters for automatic course filtering
       function checkUrlParameters() {
         const urlParams = new URLSearchParams(window.location.search);
-        const courseParam = urlParams.get('course');
-        
+        const courseParam = urlParams.get("course");
+
         if (courseParam) {
           // Set the course filter
           const courseSelect = document.getElementById("courseSelect");
           courseSelect.value = courseParam;
-          
+
           // Trigger filter change
           setTimeout(() => {
             handleFilterChange();
