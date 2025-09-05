@@ -1,314 +1,245 @@
-<header class="app-header" role="navigation" aria-label="Main navigation">
-  <button
-    class="menu-toggle"
-    aria-label="Toggle navigation"
-    aria-expanded="false"
-  >
-    ☰
-  </button>
-  <h1><a href="../index.html" aria-label="Academic Resort - Home">Academic Resort</a></h1>
+<!-- Google-style Header Navigation -->
+<div class="google-header">
+  <div class="header-content">
+    <div class="header-left">
+      <h1 class="page-title">Academic Resort</h1>
+    </div>
+    <div class="header-right">
+      <a href="../index.html" class="home-link" title="Academic Resort Home">🏠 Home</a>
+      <div class="apps-dropdown">
+        <button class="apps-btn" onclick="toggleAppsDropdown()" title="Quick Access">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM16,6c0,1.1 0.9,2 2,2s2,-0.9 2,-2 -0.9,-2 -2,-2 -2,0.9 -2,2zM12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2z"/>
+          </svg>
+        </button>
+        <div class="apps-dropdown-content" id="appsDropdown">
+          <div class="apps-grid">
+            <a class="app-item" href="../pages/1st.html">
+              <div class="app-icon">1️⃣</div>
+              <span class="app-label">1st Semester</span>
+            </a>
+            <a class="app-item" href="../pages/2nd.html">
+              <div class="app-icon">2️⃣</div>
+              <span class="app-label">2nd Semester</span>
+            </a>
+            <a class="app-item" href="../pages/3rd.html">
+              <div class="app-icon">3️⃣</div>
+              <span class="app-label">3rd Semester</span>
+            </a>
+            <a class="app-item" href="../pages/4th.html">
+              <div class="app-icon">4️⃣</div>
+              <span class="app-label">4th Semester</span>
+            </a>
+            <a class="app-item" href="../pages/5th.html">
+              <div class="app-icon">5️⃣</div>
+              <span class="app-label">5th Semester</span>
+            </a>
+            <a class="app-item" href="../pages/6th.html">
+              <div class="app-icon">6️⃣</div>
+              <span class="app-label">6th Semester</span>
+            </a>
+            <a class="app-item" href="../pages/7th.html">
+              <div class="app-icon">7️⃣</div>
+              <span class="app-label">7th Semester</span>
+            </a>
+            <a class="app-item" href="../pages/8th.html">
+              <div class="app-icon">8️⃣</div>
+              <span class="app-label">8th Semester</span>
+            </a>
+            <a class="app-item" href="../pages/mba-1st.html">
+              <div class="app-icon">🎯</div>
+              <span class="app-label">MBA 1st</span>
+            </a>
+            <a class="app-item" href="../pages/mba-2nd.html">
+              <div class="app-icon">🎓</div>
+              <span class="app-label">MBA 2nd</span>
+            </a>
+            <a class="app-item" href="../pages/teachers.html">
+              <div class="app-icon">👨‍🏫</div>
+              <span class="app-label">Teachers</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Toggle apps dropdown
+  function toggleAppsDropdown() {
+    const dropdown = document.getElementById('appsDropdown');
+    dropdown.classList.toggle('show');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('appsDropdown');
+    const appsBtn = document.querySelector('.apps-btn');
+    
+    if (dropdown && !dropdown.contains(event.target) && !appsBtn.contains(event.target)) {
+      dropdown.classList.remove('show');
+    }
+  });
+</script>
+
+<style>
+  /* Google-style Header for all pages */
+  .google-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e5e7eb;
+    padding: 8px 20px;
+  }
   
-  <nav role="navigation" aria-label="Site navigation">
-    <a class="nav-item" href="../index.html" data-tooltip="Academic Resort">
-      <span class="icon" aria-hidden="true">
-        <svg
-          viewBox="0 0 24 24"
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M3 9l9-7 9 7" />
-          <path d="M9 22V12h6v10" />
-        </svg>
-      </span>
-      <span class="label">Academic Resort</span>
-    </a>
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .page-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .home-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    color: #374151;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s ease;
+  }
+  
+  .home-link:hover {
+    background: #f3f4f6;
+  }
+  
+  .apps-dropdown {
+    position: relative;
+  }
+  
+  .apps-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #5f6368;
+    transition: background 0.2s ease;
+  }
+  
+  .apps-btn:hover {
+    background: #f1f3f4;
+  }
+  
+  .apps-dropdown-content {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 16px;
+    min-width: 320px;
+    display: none;
+    z-index: 1001;
+  }
+  
+  .apps-dropdown-content.show {
+    display: block;
+  }
+  
+  .apps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  
+  .app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #3c4043;
+    transition: background 0.2s ease;
+  }
+  
+  .app-item:hover {
+    background: #f8f9fa;
+  }
+  
+  .app-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  
+  .app-label {
+    font-size: 12px;
+    text-align: center;
+    font-weight: 400;
+    line-height: 1.2;
+  }
 
-    <!-- Semesters with numeric SVGs (1-8) -->
-    <a class="nav-item" href="../pages/1st.html" data-tooltip="1st Semester">
-      <span class="icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <rect
-            width="24"
-            height="24"
-            rx="6"
-            fill="currentColor"
-            opacity="0.12"
-          />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="12"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            1
-          </text>
-        </svg>
-      </span>
-      <span class="label">1st Semester</span>
-    </a>
-    <a class="nav-item" href="../pages/2nd.html" data-tooltip="2nd Semester">
-      <span class="icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <rect
-            width="24"
-            height="24"
-            rx="6"
-            fill="currentColor"
-            opacity="0.12"
-          />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="12"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            2
-          </text>
-        </svg>
-      </span>
-      <span class="label">2nd Semester</span>
-    </a>
-    <a class="nav-item" href="../pages/3rd.html" data-tooltip="3rd Semester">
-      <span class="icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <rect
-            width="24"
-            height="24"
-            rx="6"
-            fill="currentColor"
-            opacity="0.12"
-          />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="12"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            3
-          </text>
-        </svg>
-      </span>
-      <span class="label">3rd Semester</span>
-    </a>
-    <a class="nav-item" href="../pages/4th.html" data-tooltip="4th Semester">
-      <span class="icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <rect
-            width="24"
-            height="24"
-            rx="6"
-            fill="currentColor"
-            opacity="0.12"
-          />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="12"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            4
-          </text>
-        </svg>
-      </span>
-      <span class="label">4th Semester</span>
-    </a>
-    <a class="nav-item" href="../pages/5th.html" data-tooltip="5th Semester">
-      <span class="icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <rect
-            width="24"
-            height="24"
-            rx="6"
-            fill="currentColor"
-            opacity="0.12"
-          />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="12"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            5
-          </text>
-        </svg>
-      </span>
-      <span class="label">5th Semester</span>
-    </a>
-    <a class="nav-item" href="../pages/6th.html" data-tooltip="6th Semester">
-      <span class="icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <rect
-            width="24"
-            height="24"
-            rx="6"
-            fill="currentColor"
-            opacity="0.12"
-          />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="12"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            6
-          </text>
-        </svg>
-      </span>
-      <span class="label">6th Semester</span>
-    </a>
-    <a class="nav-item" href="../pages/7th.html" data-tooltip="7th Semester">
-      <span class="icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <rect
-            width="24"
-            height="24"
-            rx="6"
-            fill="currentColor"
-            opacity="0.12"
-          />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="12"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            7
-          </text>
-        </svg>
-      </span>
-      <span class="label">7th Semester</span>
-    </a>
-    <a class="nav-item" href="../pages/8th.html" data-tooltip="8th Semester">
-      <span class="icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <rect
-            width="24"
-            height="24"
-            rx="6"
-            fill="currentColor"
-            opacity="0.12"
-          />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="12"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            8
-          </text>
-        </svg>
-      </span>
-      <span class="label">8th Semester</span>
-    </a>
+  /* Adjust page content for header */
+  body {
+    padding-top: 60px;
+  }
 
-    <a class="nav-item" href="../pages/mba-1st.html" data-tooltip="MBA 1st Semester">
-      <span class="icon" aria-hidden="true">
-        <svg
-          viewBox="0 0 24 24"
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M22 12l-10 7L2 12l10-7 10 7z" />
-          <path d="M6 15v5" />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="10"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            1
-          </text>
-        </svg>
-      </span>
-      <span class="label">MBA 1st Semester</span>
-    </a>
-    <a class="nav-item" href="../pages/mba-2nd.html" data-tooltip="MBA 2nd Semester">
-      <span class="icon" aria-hidden="true">
-        <svg
-          viewBox="0 0 24 24"
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M22 12l-10 7L2 12l10-7 10 7z" />
-          <path d="M6 15v5" />
-          <text
-            x="12"
-            y="16"
-            text-anchor="middle"
-            font-size="10"
-            fill="currentColor"
-            font-family="Inter, Arial"
-            font-weight="700"
-          >
-            2
-          </text>
-        </svg>
-      </span>
-      <span class="label">MBA 2nd Semester</span>
-    </a>
-    <a class="nav-item" href="../pages/course-teachers.html" data-tooltip="Course Teachers">
-      <span class="icon" aria-hidden="true">
-        <svg
-          viewBox="0 0 24 24"
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M20 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M4 21v-2a4 4 0 0 1 3-3.87" />
-          <circle cx="12" cy="7" r="4" />
-          <path d="M6 21h12" />
-        </svg>
-      </span>
-      <span class="label">Course Teachers</span>
-    </a>
-
-
-  </nav>
-</header>
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .header-content {
+      padding: 0 10px;
+    }
+    
+    .page-title {
+      font-size: 16px;
+    }
+    
+    .apps-dropdown-content {
+      min-width: 280px;
+      right: -10px;
+    }
+    
+    .apps-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .header-right {
+      gap: 10px;
+    }
+    
+    .home-link {
+      padding: 6px 8px;
+      font-size: 13px;
+    }
+  }
+</style>
