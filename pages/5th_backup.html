@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>8th Semester - Academic Resort</title>
+    <title>4th Semester - Academic Resort</title>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
@@ -17,10 +17,10 @@
     </header>
     <main class="container">
       <div class="page-intro">
-        <h1 class="page-title">8th Semester - Advanced Foundation</h1>
+        <h1 class="page-title">4th Semester - Advanced Foundation</h1>
         <p>
           <b>
-            Explore comprehensive resources for all 8th Semester courses. Each
+            Explore comprehensive resources for all 4th Semester courses. Each
             subject has its own dedicated page with organized materials,
             question banks, and teacher-specific resources.
           </b>
@@ -29,11 +29,11 @@
         <!-- Subject Cards -->
         <div class="subjects-grid">
           <a
-            href="subjects/advanced-financial-accounting-ii-4201.html"
+            href="subjects/advanced-financial-accounting-ii-2201.html"
             class="subject-card"
           >
             <div class="subject-header">
-              <span class="subject-code">4201</span>
+              <span class="subject-code">2201</span>
               <span class="subject-icon">📊</span>
             </div>
             <h3>Advanced Financial Accounting-II</h3>
@@ -46,9 +46,9 @@
             </div>
           </a>
 
-          <a href="subjects/financial-management-4202.html" class="subject-card">
+          <a href="subjects/financial-management-2202.html" class="subject-card">
             <div class="subject-header">
-              <span class="subject-code">4202</span>
+              <span class="subject-code">2202</span>
               <span class="subject-icon">💰</span>
             </div>
             <h3>Financial Management</h3>
@@ -120,8 +120,8 @@
         <div class="quick-access">
           <h3>Quick Access</h3>
           <div class="quick-access-links">
-            <a href="../index.html?search=4201" class="quick-link">Search 4201 Resources</a>
-            <a href="course-teachers.html?course=4202" class="quick-link">View Teachers</a>
+            <a href="../index.html?search=2201" class="quick-link">Search 2201 Resources</a>
+            <a href="course-teachers.html?course=2202" class="quick-link">View Teachers</a>
           </div>
         </div>
 
@@ -234,12 +234,12 @@
 
       // Get cache key for a folder
       function getCacheKey(folderId, depth = 0) {
-        return `driveCache_8th_${CACHE_VERSION}_${folderId}_${depth}`;
+        return `driveCache_4th_${CACHE_VERSION}_${folderId}_${depth}`;
       }
 
       // Get global cache metadata key
       function getGlobalCacheKey() {
-        return `driveCacheMetadata_8th_${CACHE_VERSION}`;
+        return `driveCacheMetadata_4th_${CACHE_VERSION}`;
       }
 
       // Save data to persistent cache with timestamp
@@ -339,7 +339,7 @@
 
       // Initialize when DOM is loaded
       document.addEventListener("DOMContentLoaded", async function () {
-        console.log("Loading 8th semester resources...");
+        console.log("Loading 4th semester resources...");
 
         try {
           // Load drive mapping configuration
@@ -351,10 +351,10 @@
           const mapping = await response.json();
           console.log("Drive mapping loaded:", mapping);
 
-          // Extract 8th semester data
-          if (mapping["8th"] && mapping["8th"].batches) {
-            batches = mapping["8th"].batches;
-            console.log("8th semester batches:", batches);
+          // Extract 4th semester data
+          if (mapping["4th"] && mapping["4th"].batches) {
+            batches = mapping["4th"].batches;
+            console.log("4th semester batches:", batches);
 
             // Build table of contents
             buildTableOfContents();
@@ -362,8 +362,8 @@
             // Start loading batches with controlled concurrency
             await loadAllBatches();
           } else {
-            console.error("No 8th semester data found in mapping");
-            showError("Configuration not found for 8th semester");
+            console.error("No 4th semester data found in mapping");
+            showError("Configuration not found for 4th semester");
           }
         } catch (error) {
           console.error("Error loading drive mapping:", error);

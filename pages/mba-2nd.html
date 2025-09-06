@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>MBA 2nd Semester - Academic Resort</title>
+    <title>MBA 1st Semester - Academic Resort</title>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
@@ -17,10 +17,10 @@
     </header>
     <main class="container">
       <div class="page-intro">
-        <h1 class="page-title">MBA 2nd Semester - Strategic Excellence</h1>
+        <h1 class="page-title">MBA 1st Semester - Foundation & Leadership</h1>
         <p>
           <b>
-            Explore comprehensive resources for all MBA 2nd Semester courses.
+            Explore comprehensive resources for all MBA 1st Semester courses.
             Each subject has its own dedicated page with organized materials,
             question banks, and teacher-specific resources.
           </b>
@@ -28,31 +28,18 @@
 
         <!-- Subject Cards -->
         <div class="subjects-grid">
-          <a href="subjects/contemporary-issues-6201.html" class="subject-card">
-            <div class="subject-header">
-              <span class="subject-code">6201</span>
-              <span class="subject-icon">🎯</span>
-            </div>
-            <h3>Contemporary Issues in Accounting</h3>
-            <p>Current trends and challenges in modern accounting practice</p>
-            <div class="subject-meta">
-              <span class="resource-count">50+ Resources</span>
-              <span class="question-count">35+ Questions</span>
-            </div>
-          </a>
-
           <a
-            href="subjects/advanced-cost-management-6202.html"
+            href="subjects/advanced-financial-accounting-6201.html"
             class="subject-card"
           >
             <div class="subject-header">
-              <span class="subject-code">6202</span>
-              <span class="subject-icon">⚙️</span>
+              <span class="subject-code">6201</span>
+              <span class="subject-icon">📊</span>
             </div>
-            <h3>Advanced Cost & Management Accounting</h3>
+            <h3>Advanced Financial Accounting</h3>
             <p>
-              Advanced costing methods, management control systems, and
-              strategic cost analysis
+              Advanced accounting principles, complex financial reporting, and
+              international standards
             </p>
             <div class="subject-meta">
               <span class="resource-count">45+ Resources</span>
@@ -61,20 +48,74 @@
           </a>
 
           <a
-            href="subjects/corporate-tax-planning-7203.html"
+            href="subjects/corporate-governance-6102.html"
             class="subject-card"
           >
             <div class="subject-header">
-              <span class="subject-code">7203</span>
-              <span class="subject-icon">💼</span>
+              <span class="subject-code">6102</span>
+              <span class="subject-icon">👤</span>
             </div>
-            <h3>Corporate Tax Planning</h3>
+            <h3>Corporate Governance and Accountability</h3>
             <p>
-              Strategic tax planning, compliance, and optimization strategies
+              Corporate governance principles, accountability frameworks, and
+              ethical business practices
             </p>
             <div class="subject-meta">
               <span class="resource-count">40+ Resources</span>
-              <span class="question-count">26+ Questions</span>
+              <span class="question-count">25+ Questions</span>
+            </div>
+          </a>
+
+          <a
+            href="subjects/advanced-research-methodology-6103.html"
+            class="subject-card"
+          >
+            <div class="subject-header">
+              <span class="subject-code">6103</span>
+              <span class="subject-icon">📈</span>
+            </div>
+            <h3>Advanced Research Methodology</h3>
+            <p>
+              Advanced statistical methods, research design, and data analysis
+              techniques
+            </p>
+            <div class="subject-meta">
+              <span class="resource-count">50+ Resources</span>
+              <span class="question-count">35+ Questions</span>
+            </div>
+          </a>
+
+          <a
+            href="subjects/government-accounting-7103.html"
+            class="subject-card"
+          >
+            <div class="subject-header">
+              <span class="subject-code">7103</span>
+              <span class="subject-icon">💰</span>
+            </div>
+            <h3>Government Accounting</h3>
+            <p>Public sector accounting, budgeting, and financial management</p>
+            <div class="subject-meta">
+              <span class="resource-count">48+ Resources</span>
+              <span class="question-count">32+ Questions</span>
+            </div>
+          </a>
+
+          <a
+            href="subjects/strategic-management-7112.html"
+            class="subject-card"
+          >
+            <div class="subject-header">
+              <span class="subject-code">7112</span>
+              <span class="subject-icon">📢</span>
+            </div>
+            <h3>Strategic Management</h3>
+            <p>
+              Corporate strategy, competitive advantage, and strategic planning
+            </p>
+            <div class="subject-meta">
+              <span class="resource-count">42+ Resources</span>
+              <span class="question-count">28+ Questions</span>
             </div>
           </a>
         </div>
@@ -83,15 +124,383 @@
         <div class="quick-access">
           <h3>Quick Access</h3>
           <div class="quick-access-links">
-            <a href="../index.html?search=MBA601" class="quick-link"
-              >Search MBA601 Resources</a
+            <a href="../index.html?search=6201" class="quick-link"
+              >Search MBA Resources</a
             >
-            <a href="course-teachers.html?course=MBA602" class="quick-link"
+            <a href="course-teachers.html?course=6201" class="quick-link"
               >View Teachers</a
             >
           </div>
         </div>
+
+        <!-- Traditional Table of Contents for Batch Archives -->
+        <div class="toc-accordion">
+          <div class="toc-header" onclick="toggleTOC()">
+            <h4 class="font-weight-semibold">Batch Archives</h4>
+            <span class="toc-toggle" id="toc-toggle">▼</span>
+          </div>
+          <ul class="small toc-content" id="table-of-contents">
+            <!-- Will be populated dynamically -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Simple batch list -->
+      <div id="batches-container">
+        <section class="drive-batch-container" id="batch-27">
+          <div class="card drive-embed-card">
+            <div class="batch-header">
+              <h2>27th MBA Batch</h2>
+              <button
+                class="root-folder-btn"
+                id="root-btn-27"
+                title="Open root folder"
+              >
+                ↗
+              </button>
+            </div>
+            <div class="drive-list-wrapper">
+              <div class="drive-spinner" id="spinner-27"></div>
+              <ul id="drive-list-27" class="drive-list"></ul>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
+
+    <div data-include="../assets/includes/footer.html"></div>
+
+    <script>
+      // Batch folders - loaded from JSON
+      let batches = {};
+
+      // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
+      const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
+
+      // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
+
+      // Cache configuration
+      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const CACHE_VERSION = "v1"; // Increment this to force cache refresh on updates
+
+      // Get cache key for a folder
+      function getCacheKey(folderId, depth = 0) {
+        return `driveCache_mba-2nd_${CACHE_VERSION}_${folderId}_${depth}`;
+      }
+
+      // Get global cache metadata key
+      function getGlobalCacheKey() {
+        return `driveCacheMetadata_mba-2nd_${CACHE_VERSION}`;
+      }
+
+      // Save data to persistent cache with timestamp
+      function saveToPersistentCache(folderId, data, depth = 0) {
+        try {
+          const cacheKey = getCacheKey(folderId, depth);
+          const cacheData = {
+            data: data,
+            timestamp: Date.now(),
+            version: CACHE_VERSION,
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+          // Update metadata
+          updateCacheMetadata(cacheKey);
+        } catch (error) {
+          console.warn("Failed to save to persistent cache:", error);
+        }
+      }
+
+      // Load data from persistent cache
+      function loadFromPersistentCache(folderId, depth = 0) {
+        try {
+          const cacheKey = getCacheKey(folderId, depth);
+          const cached = localStorage.getItem(cacheKey);
+
+          if (!cached) return null;
+
+          const cacheData = JSON.parse(cached);
+          const age = Date.now() - cacheData.timestamp;
+
+          // Check if cache is expired or version mismatch
+          if (age > CACHE_DURATION || cacheData.version !== CACHE_VERSION) {
+            localStorage.removeItem(cacheKey);
+            removeCacheFromMetadata(cacheKey);
+            return null;
+          }
+
+          return cacheData.data;
+        } catch (error) {
+          console.warn("Failed to load from persistent cache:", error);
+          return null;
+        }
+      }
+
+      // Update cache metadata for cleanup
+      function updateCacheMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          if (!metadata.keys.includes(cacheKey)) {
+            metadata.keys.push(cacheKey);
+          }
+          metadata.lastUpdated = Date.now();
+
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to update cache metadata:", error);
+        }
+      }
+
+      // Remove cache key from metadata
+      function removeCacheFromMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+          metadata.keys = metadata.keys.filter((key) => key !== cacheKey);
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to remove from cache metadata:", error);
+        }
+      }
+
+      // Global memory cache for faster subsequent access
+      let memoryCache = new Map();
+
+      // === DRIVE API FUNCTIONS ===
+
+      // Toggle TOC functionality
+      function toggleTOC() {
+        const content = document.getElementById("table-of-contents");
+        const toggle = document.getElementById("toc-toggle");
+
+        if (content.style.display === "none" || !content.style.display) {
+          content.style.display = "block";
+          toggle.textContent = "▲";
+        } else {
+          content.style.display = "none";
+          toggle.textContent = "▼";
+        }
+      }
+
+      // Initialize when DOM is loaded
+      document.addEventListener("DOMContentLoaded", async function () {
+        console.log("Loading mba-2nd semester resources...");
+
+        try {
+          // Load drive mapping configuration
+          const response = await fetch("../assets/drive-mapping.json");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const mapping = await response.json();
+          console.log("Drive mapping loaded:", mapping);
+
+          // Extract mba-2nd semester data
+          if (mapping["mba-2nd"] && mapping["mba-2nd"].batches) {
+            batches = mapping["mba-2nd"].batches;
+            console.log("mba-2nd semester batches:", batches);
+
+            // Build table of contents
+            buildTableOfContents();
+
+            // Start loading batches with controlled concurrency
+            await loadAllBatches();
+          } else {
+            console.error("No mba-2nd semester data found in mapping");
+            showError("Configuration not found for mba-2nd semester");
+          }
+        } catch (error) {
+          console.error("Error loading drive mapping:", error);
+          showError(`Failed to load configuration: ${error.message}`);
+        }
+      });
+
+      function buildTableOfContents() {
+        const toc = document.getElementById("table-of-contents");
+        if (!toc) return;
+
+        toc.innerHTML = "";
+
+        Object.entries(batches).forEach(([batchNumber, batchData]) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="#batch-${batchNumber}" onclick="scrollToBatch('${batchNumber}')">${batchData.label || `${batchNumber} Batch`}</a>`;
+          toc.appendChild(li);
+        });
+      }
+
+      function scrollToBatch(batchNumber) {
+        const element = document.getElementById(`batch-${batchNumber}`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+
+      async function loadAllBatches() {
+        const batchEntries = Object.entries(batches);
+        console.log(`Starting to load ${batchEntries.length} batches...`);
+
+        // Load batches with controlled concurrency
+        for (const [batchNumber, batchData] of batchEntries) {
+          try {
+            await loadBatchContent(batchNumber, batchData.folderId);
+            // Small delay to prevent overwhelming the API
+            await new Promise((resolve) => setTimeout(resolve, 100));
+          } catch (error) {
+            console.error(`Error loading batch ${batchNumber}:`, error);
+          }
+        }
+
+        console.log("All batches loading initiated");
+      }
+
+      async function loadBatchContent(batchNumber, folderId) {
+        const listContainer = document.getElementById(`drive-list-${batchNumber}`);
+        const spinner = document.getElementById(`spinner-${batchNumber}`);
+        const rootBtn = document.getElementById(`root-btn-${batchNumber}`);
+
+        if (!listContainer) {
+          console.warn(`Container not found for batch ${batchNumber}`);
+          return;
+        }
+
+        // Set up root folder button
+        if (rootBtn && folderId) {
+          rootBtn.onclick = () =>
+            window.open(`https://drive.google.com/drive/folders/${folderId}`, "_blank");
+        }
+
+        try {
+          // Check persistent cache first
+          const cachedData = loadFromPersistentCache(folderId);
+          if (cachedData) {
+            console.log(`Loading batch ${batchNumber} from cache`);
+            listContainer.innerHTML = cachedData;
+            if (spinner) spinner.style.display = "none";
+            return;
+          }
+
+          // Show loading spinner
+          if (spinner) {
+            spinner.style.display = "block";
+            spinner.innerHTML = "🔄 Loading...";
+          }
+
+          console.log(`Fetching batch ${batchNumber} from API...`);
+
+          // Fetch from Google Drive API
+          const apiUrl = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink,size,modifiedTime)&pageSize=1000`;
+
+          const response = await fetch(apiUrl);
+
+          if (!response.ok) {
+            throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          console.log(`Batch ${batchNumber} API response:`, data);
+
+          if (!data.files || data.files.length === 0) {
+            const emptyMessage = '<li class="drive-item"><span class="item-name">No files found in this batch</span></li>';
+            listContainer.innerHTML = emptyMessage;
+            saveToPersistentCache(folderId, emptyMessage);
+          } else {
+            // Sort files: folders first, then by name
+            const sortedFiles = data.files.sort((a, b) => {
+              const aIsFolder = a.mimeType === "application/vnd.google-apps.folder";
+              const bIsFolder = b.mimeType === "application/vnd.google-apps.folder";
+
+              if (aIsFolder && !bIsFolder) return -1;
+              if (!aIsFolder && bIsFolder) return 1;
+              return a.name.localeCompare(b.name);
+            });
+
+            // Create HTML for files
+            const html = sortedFiles
+              .map((file) => {
+                const isFolder = file.mimeType === "application/vnd.google-apps.folder";
+                const icon = isFolder ? "📁" : getFileIcon(file.mimeType);
+                const sizeText = file.size && !isFolder ? formatFileSize(file.size) : "";
+
+                return `
+                  <li class="drive-item ${isFolder ? "folder" : "file"}">
+                    <a href="${file.webViewLink}" target="_blank" class="item-link">
+                      <span class="item-icon">${icon}</span>
+                      <span class="item-name">${file.name}</span>
+                      ${sizeText ? `<span class="item-size">${sizeText}</span>` : ""}
+                    </a>
+                  </li>
+                `;
+              })
+              .join("");
+
+            listContainer.innerHTML = html;
+
+            // Cache the result
+            saveToPersistentCache(folderId, html);
+          }
+        } catch (error) {
+          console.error(`Error loading batch ${batchNumber}:`, error);
+          const errorMessage = `<li class="drive-item error"><span class="item-name">Error loading files: ${error.message}</span></li>`;
+          listContainer.innerHTML = errorMessage;
+        } finally {
+          // Hide spinner
+          if (spinner) {
+            spinner.style.display = "none";
+          }
+        }
+      }
+
+      function getFileIcon(mimeType) {
+        const iconMap = {
+          "application/pdf": "📄",
+          "application/vnd.google-apps.document": "📝",
+          "application/vnd.google-apps.spreadsheet": "📊",
+          "application/vnd.google-apps.presentation": "📽️",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "📝",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "📊",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation": "📽️",
+          "image/jpeg": "🖼️",
+          "image/png": "🖼️",
+          "image/gif": "🖼️",
+          "video/mp4": "🎥",
+          "video/mpeg": "🎥",
+          "audio/mpeg": "🎵",
+          "audio/wav": "🎵",
+          "text/plain": "📄",
+          "application/zip": "🗜️",
+          "application/x-zip-compressed": "🗜️",
+        };
+
+        return iconMap[mimeType] || "📄";
+      }
+
+      function formatFileSize(bytes) {
+        if (!bytes) return "";
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + " " + sizes[i];
+      }
+
+      function showError(message) {
+        console.error(message);
+        const containers = document.querySelectorAll('[id^="drive-list-"]');
+        containers.forEach((container) => {
+          container.innerHTML = `<li class="drive-item error"><span class="item-name">${message}</span></li>`;
+        });
+
+        // Hide all spinners
+        const spinners = document.querySelectorAll('[id^="spinner-"]');
+        spinners.forEach((spinner) => {
+          spinner.style.display = "none";
+        });
+      }
+    </script>
   </body>
 </html>
