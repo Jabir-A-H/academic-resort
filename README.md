@@ -30,7 +30,7 @@ academic-resort/
 │   ├── script.js           # Core JavaScript functionality
 │   ├── drive-mapping.json  # Google Drive folder mappings
 │   └── includes/
-│       ├── sidebar.html    # Reusable navigation component
+│       ├── header.html     # Reusable navigation component
 │       └── footer.html     # Reusable footer component
 └── pages/
     ├── browse.html         # Global search and filter page
@@ -188,7 +188,7 @@ This page contains resources for MBA 1st Semester courses: Advanced Financial Ac
 #### MBA 2nd Semester - 
 This page contains resources for MBA 2nd Semester courses: Stuffs (9909).
 
-## Courses
+## BBA Courses
 
 ### Semester 1
 *   1101 - Introduction to Financial Accounting
@@ -238,3 +238,39 @@ This page contains resources for MBA 2nd Semester courses: Stuffs (9909).
 *   4203 - Data Analytics
 *   4204 - Strategic Management
 *   4205 - Research Methodology
+
+## MBA Courses
+
+### Core Courses [Six (06) compulsory courses for all]
+
+#### Semester 1
+
+*   6101 - Advanced Financial Accounting
+*   6102 - Corporate Governance and Accountability
+*   6103 - Advanced Research Methodology
+
+#### Semester 2
+
+*   6201 - Contemporary Issues in Accounting
+*   6202 - Advanced Cost & Management Accounting
+*   7203 - Corporate Tax Planning
+
+### Elective Courses [Any four (04) courses]
+
+#### Semester 1
+
+*   7101 - Corporate Reporting
+*   7102 - Project Management
+*   7103 - Government Accounting
+*   7104 - Financial Statement Analysis & Security Valuation
+*   7112 - Strategic Management
+
+#### Semester 2
+
+*   7201 - International Financial Management
+*   7204 - Accounting for Managerial Control
+*   7205 - Forensic Accounting
+*   7206 - Applied Econometrics
+*   7207 - Money, Market & Institutions
+*   7208 - Accounting System Design
+*   7209 - Advanced Auditing & Assurance Services

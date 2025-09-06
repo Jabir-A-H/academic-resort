@@ -236,7 +236,7 @@ function resetFilters() { ... }
 pages/course-teachers.html     // Main page with embedded JavaScript
 assets/faculty-mapping.json   // External faculty data
 assets/styles.css             // Shared styles across the site
-assets/includes/sidebar.html  // Reusable navigation component
+assets/includes/header.html  // Reusable navigation component
 ```
 
 ### File Structure I Organized
@@ -244,7 +244,7 @@ assets/includes/sidebar.html  // Reusable navigation component
 pages/course-teachers.html     // Main page with embedded JavaScript
 assets/faculty-mapping.json   // External faculty data
 assets/styles.css             // Shared styles across the site
-assets/includes/sidebar.html  // Reusable navigation component
+assets/includes/header.html  // Reusable navigation component
 ```
 
 ### Performance Metrics I Achieved
@@ -259,7 +259,7 @@ assets/includes/sidebar.html  // Reusable navigation component
 - `course-teachers.html` — Main page, UI, and logic
 - `assets/faculty-mapping.json` — Official faculty data
 - `assets/styles.css` — Shared styles
-- `assets/includes/sidebar.html` — Sidebar navigation
+- `assets/includes/header.html` — Sidebar navigation
 
 ---
 

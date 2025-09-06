@@ -30,7 +30,7 @@ function fixRelativePaths(html) {
 
 /**
  * Simple HTML include loader
- * Usage: <div data-include="/assets/includes/sidebar.html"></div>
+ * Usage: <div data-include="/assets/includes/header.html"></div>
  */
 
 // Global flag to prevent multiple sidebar initializations

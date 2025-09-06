@@ -1,87 +1,87 @@
 <!-- Subject Page Template -->
 <script>
   // Global subject page functions
-  window.toggleTOC = function() {
+  window.toggleTOC = function () {
     try {
-      const content = document.getElementById('table-of-contents');
-      const toggle = document.getElementById('toc-toggle');
+      const content = document.getElementById("table-of-contents");
+      const toggle = document.getElementById("toc-toggle");
       if (content && toggle) {
-        const isExpanded = content.style.display !== 'none';
-        content.style.display = isExpanded ? 'none' : 'block';
-        toggle.textContent = isExpanded ? '▼' : '▲';
+        const isExpanded = content.style.display !== "none";
+        content.style.display = isExpanded ? "none" : "block";
+        toggle.textContent = isExpanded ? "▼" : "▲";
       }
     } catch (error) {
-      console.error('Error in toggleTOC:', error);
+      console.error("Error in toggleTOC:", error);
     }
   };
 
-  window.toggleSection = function(sectionId) {
+  window.toggleSection = function (sectionId) {
     try {
       const section = document.getElementById(sectionId);
       if (!section) return;
-      
-      const content = section.querySelector('.section-content');
-      const toggle = section.querySelector('.toggle-icon');
-      
+
+      const content = section.querySelector(".section-content");
+      const toggle = section.querySelector(".toggle-icon");
+
       if (content && toggle) {
-        const isExpanded = content.style.display !== 'none';
-        content.style.display = isExpanded ? 'none' : 'block';
-        toggle.textContent = isExpanded ? '▼' : '▲';
-        section.classList.toggle('collapsed', isExpanded);
+        const isExpanded = content.style.display !== "none";
+        content.style.display = isExpanded ? "none" : "block";
+        toggle.textContent = isExpanded ? "▼" : "▲";
+        section.classList.toggle("collapsed", isExpanded);
       }
     } catch (error) {
-      console.error('Error in toggleSection:', error);
+      console.error("Error in toggleSection:", error);
     }
   };
 
-  window.toggleSubsection = function(subsectionId) {
+  window.toggleSubsection = function (subsectionId) {
     try {
       const subsection = document.getElementById(subsectionId);
       if (!subsection) return;
-      
-      const content = subsection.querySelector('.subsection-content');
-      const toggle = subsection.querySelector('.toggle-icon');
-      
+
+      const content = subsection.querySelector(".subsection-content");
+      const toggle = subsection.querySelector(".toggle-icon");
+
       if (content && toggle) {
-        const isExpanded = content.style.display !== 'none';
-        content.style.display = isExpanded ? 'none' : 'block';
-        toggle.textContent = isExpanded ? '▼' : '▲';
-        subsection.classList.toggle('collapsed', isExpanded);
+        const isExpanded = content.style.display !== "none";
+        content.style.display = isExpanded ? "none" : "block";
+        toggle.textContent = isExpanded ? "▼" : "▲";
+        subsection.classList.toggle("collapsed", isExpanded);
       }
     } catch (error) {
-      console.error('Error in toggleSubsection:', error);
+      console.error("Error in toggleSubsection:", error);
     }
   };
 
   // Subject page configuration that will be set by each page
   window.subjectConfig = window.subjectConfig || {};
-  
+
   function initializeSubjectPage() {
     try {
       const config = window.subjectConfig;
       if (!config) {
-        console.error('Subject configuration not found');
+        console.error("Subject configuration not found");
         return;
       }
-      
+
       // Update breadcrumb
       updateBreadcrumb(config);
-      
-      // Update page title and description  
+
+      // Update page title and description
       updatePageHeader(config);
-      
+
       // Create standardized sections
       createStandardizedSections(config);
-      
+
       // Initialize collapsible sections
       initializeCollapsibleSections();
-      
+
       // Load drive content
       loadDriveContent(config);
-      
-      console.log('Subject page initialized successfully for:', config.title);
+
+      console.log("Subject page initialized successfully for:", config.title);
     } catch (error) {
-      console.error('Error initializing subject page:', error);
+      console.error("Error initializing subject page:", error);
     }
   }
 
@@ -90,29 +90,30 @@
       // Load subject-specific JSON mapping
       const response = await fetch(`../../assets/subjects/${config.code}.json`);
       if (!response.ok) {
-        console.warn('Could not load subject mapping for:', config.code);
+        console.warn("Could not load subject mapping for:", config.code);
         return;
       }
-      
+
       const subjectData = await response.json();
-      
+
       // Populate sections with subject-specific drive links
       populateSubjectLinks(subjectData);
-      
     } catch (error) {
-      console.error('Error loading subject content:', error);
+      console.error("Error loading subject content:", error);
     }
   }
 
   function populateSubjectLinks(subjectData) {
     if (!subjectData.links) return;
-    
+
     const links = subjectData.links;
-    
+
     // Class Updates - Simple document link
-    const classUpdatesContent = document.getElementById('class-updates-content');
+    const classUpdatesContent = document.getElementById(
+      "class-updates-content"
+    );
     if (classUpdatesContent && links.class_updates) {
-      if (links.class_updates && links.class_updates !== '') {
+      if (links.class_updates && links.class_updates !== "") {
         classUpdatesContent.innerHTML = `
           <a href="${links.class_updates}" target="_blank" rel="noopener" class="document-link">
             <span class="doc-icon">📄</span>
@@ -127,49 +128,68 @@
         `;
       }
     }
-    
+
     // Personal Notes
-    const personalNotesContent = document.getElementById('personal-notes-content');
+    const personalNotesContent = document.getElementById(
+      "personal-notes-content"
+    );
     if (personalNotesContent && links.notes) {
-      personalNotesContent.innerHTML = createLinksFromArray(links.notes) || 'No notes available yet.';
+      personalNotesContent.innerHTML =
+        createLinksFromArray(links.notes) || "No notes available yet.";
     }
-    
+
     // Slides and Lectures
-    const slidesContent = document.getElementById('slides-content');
+    const slidesContent = document.getElementById("slides-content");
     if (slidesContent && links.slides_lectures) {
-      slidesContent.innerHTML = createLinksFromArray(links.slides_lectures) || 'No slide materials available yet.';
+      slidesContent.innerHTML =
+        createLinksFromArray(links.slides_lectures) ||
+        "No slide materials available yet.";
     }
-    
+
     // Books and Manuals
-    const booksContent = document.getElementById('books-content');
+    const booksContent = document.getElementById("books-content");
     if (booksContent && links.books_manuals) {
-      booksContent.innerHTML = createLinksFromArray(links.books_manuals) || 'No books/manuals available yet.';
+      booksContent.innerHTML =
+        createLinksFromArray(links.books_manuals) ||
+        "No books/manuals available yet.";
     }
-    
+
     // Previous Materials
-    const previousContent = document.getElementById('previous-materials-content');
+    const previousContent = document.getElementById(
+      "previous-materials-content"
+    );
     if (previousContent && links.previous_materials) {
-      previousContent.innerHTML = createLinksFromArray(links.previous_materials) || 'No previous materials available yet.';
+      previousContent.innerHTML =
+        createLinksFromArray(links.previous_materials) ||
+        "No previous materials available yet.";
     }
-    
+
     // Current Questions
-    const currentQuestionsContent = document.getElementById('current-questions-content');
+    const currentQuestionsContent = document.getElementById(
+      "current-questions-content"
+    );
     if (currentQuestionsContent && links.current_questions) {
-      currentQuestionsContent.innerHTML = createLinksFromArray(links.current_questions) || 'No current questions available yet.';
+      currentQuestionsContent.innerHTML =
+        createLinksFromArray(links.current_questions) ||
+        "No current questions available yet.";
     }
-    
+
     // Previous Questions
-    const previousQuestionsContent = document.getElementById('previous-questions-content');
+    const previousQuestionsContent = document.getElementById(
+      "previous-questions-content"
+    );
     if (previousQuestionsContent && links.previous_questions) {
-      previousQuestionsContent.innerHTML = createLinksFromArray(links.previous_questions) || 'No previous questions available yet.';
+      previousQuestionsContent.innerHTML =
+        createLinksFromArray(links.previous_questions) ||
+        "No previous questions available yet.";
     }
-    
+
     // Update course details with current batch and teacher
     updateCourseDetails(subjectData);
   }
 
   function updateCourseDetails(subjectData) {
-    const courseInfoGrid = document.querySelector('.course-info-grid');
+    const courseInfoGrid = document.querySelector(".course-info-grid");
     if (courseInfoGrid && subjectData) {
       courseInfoGrid.innerHTML = `
         <div class="info-card">
@@ -182,56 +202,61 @@
         </div>
         <div class="info-card">
           <h4>Current Batch:</h4>
-          <p>${subjectData.current_batch || 'To be announced'}</p>
+          <p>${subjectData.current_batch || "To be announced"}</p>
         </div>
         <div class="info-card">
           <h4>Current Teacher:</h4>
-          <p>${subjectData.current_teacher || 'To be announced'}</p>
+          <p>${subjectData.current_teacher || "To be announced"}</p>
         </div>
       `;
     }
   }
 
   function createLinksFromArray(linkArray) {
-    if (!linkArray || linkArray.length === 0) return '';
-    
-    return linkArray.map(url => {
-      if (!url || url === '') return '<div class="placeholder-link">Link coming soon</div>';
-      
-      // Parse the URL to determine type
-      if (url.includes('docs.google.com/document')) {
-        return createDocumentLink(url, 'Document');
-      } else if (url.includes('drive.google.com/drive/folders')) {
-        // Extract folder ID from URL
-        const match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
-        const folderId = match ? match[1] : null;
-        if (folderId) {
-          return createDriveLink(folderId, 'Drive Folder');
+    if (!linkArray || linkArray.length === 0) return "";
+
+    return linkArray
+      .map((url) => {
+        if (!url || url === "")
+          return '<div class="placeholder-link">Link coming soon</div>';
+
+        // Parse the URL to determine type
+        if (url.includes("docs.google.com/document")) {
+          return createDocumentLink(url, "Document");
+        } else if (url.includes("drive.google.com/drive/folders")) {
+          // Extract folder ID from URL
+          const match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+          const folderId = match ? match[1] : null;
+          if (folderId) {
+            return createDriveLink(folderId, "Drive Folder");
+          }
+        } else if (url.includes("drive.google.com/file")) {
+          return createDocumentLink(url, "Drive File");
         }
-      } else if (url.includes('drive.google.com/file')) {
-        return createDocumentLink(url, 'Drive File');
-      }
-      
-      // Fallback for other URLs
-      return `<a href="${url}" target="_blank" rel="noopener" class="drive-link">
+
+        // Fallback for other URLs
+        return `<a href="${url}" target="_blank" rel="noopener" class="drive-link">
         <span class="drive-icon">🔗</span>
         Link
       </a>`;
-    }).join('<br>');
+      })
+      .join("<br>");
   }
 
   function createContentLinks(links) {
-    if (!links || links.length === 0) return 'No content available yet.';
-    
-    return links.map(link => {
-      if (link.folderId) {
-        return createDriveLink(link.folderId, link.label);
-      } else if (link.url) {
-        return createDocumentLink(link.url, link.label);
-      } else {
-        return `<div class="placeholder-link">${link.label} (Coming soon)</div>`;
-      }
-    }).join('<br>');
+    if (!links || links.length === 0) return "No content available yet.";
+
+    return links
+      .map((link) => {
+        if (link.folderId) {
+          return createDriveLink(link.folderId, link.label);
+        } else if (link.url) {
+          return createDocumentLink(link.url, link.label);
+        } else {
+          return `<div class="placeholder-link">${link.label} (Coming soon)</div>`;
+        }
+      })
+      .join("<br>");
   }
 
   function createDocumentLink(url, label) {
@@ -250,9 +275,9 @@
       ${label}
     </a>`;
   }
-  
+
   function updateBreadcrumb(config) {
-    const breadcrumb = document.querySelector('.breadcrumb');
+    const breadcrumb = document.querySelector(".breadcrumb");
     if (breadcrumb) {
       breadcrumb.innerHTML = `
         <a href="../../index.html">Home</a> >
@@ -261,244 +286,489 @@
       `;
     }
   }
-  
+
   function updatePageHeader(config) {
-    const pageTitle = document.querySelector('.page-title');
-    const pageDescription = document.querySelector('.page-description');
-    const quickActions = document.querySelector('.quick-actions');
-    
+    const pageTitle = document.querySelector(".page-title");
+    const pageDescription = document.querySelector(".page-description");
+    const quickActions = document.querySelector(".quick-actions");
+
     if (pageTitle) {
-      pageTitle.textContent = `${config.title} (${config.code})`;
+      pageTitle.textContent = `${config.title}`;
     }
-    
+
     if (pageDescription) {
-      pageDescription.innerHTML = `<b>${config.description}</b>`;
+      pageDescription.innerHTML = `<span class="course-code">${config.code}</span> ${config.description}`;
     }
-    
+
     if (quickActions) {
       quickActions.innerHTML = `
-        <a href="../course-teachers.html?course=${config.code}" class="action-btn">
-          <span class="icon">👨‍🏫</span>
+        <button onclick="window.location.href='../course-teachers.html?course=${config.code}'" class="google-btn secondary">
+          <span class="btn-icon">👨‍🏫</span>
           View Teachers
-        </a>
-        <a href="../browse.html?search=${config.code}" class="action-btn">
-          <span class="icon">🔍</span>
+        </button>
+        <button onclick="window.location.href='../../index.html?search=${config.code}'" class="google-btn secondary">
+          <span class="btn-icon">🔍</span>
           Search Resources
-        </a>
-        <a href="../${config.semesterPage}" class="action-btn">
-          <span class="icon">↩️</span>
-          All ${config.semesterName}
-        </a>
+        </button>
+        <button onclick="window.location.href='../${config.semesterPage}'" class="google-btn primary">
+          <span class="btn-icon">↩️</span>
+          Back to ${config.semesterName}
+        </button>
       `;
     }
   }
-  
+
   function createStandardizedSections(config) {
-    const container = document.querySelector('.subject-content');
+    const container = document.querySelector(".subject-content");
     if (!container) return;
-    
+
     container.innerHTML = `
       <!-- Course Overview -->
-      <section class="card collapsible-section" id="overview">
+      <div class="google-card collapsible-section" id="overview">
         <div class="section-header" onclick="toggleSection('overview')">
-          <h2>Course Overview</h2>
-          <span class="toggle-icon">▼</span>
+          <h2 class="section-title">Course Overview</h2>
+          <span class="toggle-icon google-toggle">▼</span>
         </div>
         <div class="section-content">
           <div class="course-info-grid">
             <div class="info-card">
-              <h4>Course Code:</h4>
-              <p>${config.code}</p>
+              <h4 class="info-label">Course Code</h4>
+              <p class="info-value">${config.code}</p>
             </div>
             <div class="info-card">
-              <h4>Course Title:</h4>
-              <p>${config.title}</p>
+              <h4 class="info-label">Course Title</h4>
+              <p class="info-value">${config.title}</p>
             </div>
           </div>
           <div class="course-description">
             <p>${config.description}</p>
           </div>
         </div>
-      </section>
+      </div>
 
       <!-- Study Materials Section -->
-      <section class="card collapsible-section" id="study">
+      <div class="google-card collapsible-section" id="study">
         <div class="section-header" onclick="toggleSection('study')">
-          <h2>Study Materials</h2>
-          <span class="toggle-icon">▲</span>
+          <h2 class="section-title">Study Materials</h2>
+          <span class="toggle-icon google-toggle">▲</span>
         </div>
         <div class="section-content">
           <div class="subsection collapsible-subsection" id="class-updates">
             <div class="subsection-header" onclick="toggleSubsection('class-updates')">
-              <h3>Class Updates</h3>
-              <span class="toggle-icon">▲</span>
+              <h3 class="subsection-title">📢 Class Updates</h3>
+              <span class="toggle-icon google-toggle-small">▲</span>
             </div>
             <div class="subsection-content">
-              <p>Latest class updates and announcements</p>
-              <div class="resource-placeholder" id="class-updates-content">Loading content...</div>
+              <div class="subsection-description">Latest class updates and announcements</div>
+              <div class="resource-content" id="class-updates-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
             </div>
           </div>
           
           <div class="subsection collapsible-subsection" id="personal-notes">
             <div class="subsection-header" onclick="toggleSubsection('personal-notes')">
-              <h3>Personal Notes</h3>
-              <span class="toggle-icon">▲</span>
+              <h3 class="subsection-title">📝 Personal Notes</h3>
+              <span class="toggle-icon google-toggle-small">▲</span>
             </div>
             <div class="subsection-content">
-              <p>Student-created study notes and summaries</p>
-              <div class="resource-placeholder" id="personal-notes-content">Loading content...</div>
+              <div class="subsection-description">Student-created study notes and summaries</div>
+              <div class="resource-content" id="personal-notes-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
             </div>
           </div>
           
           <div class="subsection collapsible-subsection" id="slides-lectures">
             <div class="subsection-header" onclick="toggleSubsection('slides-lectures')">
-              <h3>Slides and Lecture Materials</h3>
-              <span class="toggle-icon">▲</span>
+              <h3 class="subsection-title">📊 Slides and Lecture Materials</h3>
+              <span class="toggle-icon google-toggle-small">▲</span>
             </div>
             <div class="subsection-content">
-              <p>Official lecture slides and presentation materials</p>
-              <div class="resource-placeholder" id="slides-content">Loading content...</div>
+              <div class="subsection-description">Official lecture slides and presentation materials</div>
+              <div class="resource-content" id="slides-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
             </div>
           </div>
           
           <div class="subsection collapsible-subsection" id="books-manuals">
             <div class="subsection-header" onclick="toggleSubsection('books-manuals')">
-              <h3>Books and Manuals</h3>
-              <span class="toggle-icon">▲</span>
+              <h3 class="subsection-title">📚 Books and Manuals</h3>
+              <span class="toggle-icon google-toggle-small">▲</span>
             </div>
             <div class="subsection-content">
-              <p>Textbooks, reference materials, and official manuals</p>
-              <div class="resource-placeholder" id="books-content">Loading content...</div>
+              <div class="subsection-description">Textbooks, reference materials, and official manuals</div>
+              <div class="resource-content" id="books-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
             </div>
           </div>
           
           <div class="subsection collapsible-subsection" id="previous-materials">
             <div class="subsection-header" onclick="toggleSubsection('previous-materials')">
-              <h3>Previous Materials</h3>
-              <span class="toggle-icon">▼</span>
+              <h3 class="subsection-title">📁 Previous Materials</h3>
+              <span class="toggle-icon google-toggle-small">▼</span>
             </div>
             <div class="subsection-content">
-              <p>Materials from previous batches and semesters</p>
-              <div class="resource-placeholder" id="previous-materials-content">Loading content...</div>
+              <div class="subsection-description">Materials from previous batches and semesters</div>
+              <div class="resource-content" id="previous-materials-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <!-- Questions Section -->
-      <section class="card collapsible-section" id="questions">
+      <div class="google-card collapsible-section" id="questions">
         <div class="section-header" onclick="toggleSection('questions')">
-          <h2>Questions & Examinations</h2>
-          <span class="toggle-icon">▲</span>
+          <h2 class="section-title">Questions & Examinations</h2>
+          <span class="toggle-icon google-toggle">▲</span>
         </div>
         <div class="section-content">
           <div class="subsection collapsible-subsection" id="current-questions">
+          <div class="subsection collapsible-subsection" id="current-questions">
             <div class="subsection-header" onclick="toggleSubsection('current-questions')">
-              <h3>Current Questions</h3>
-              <span class="toggle-icon">▲</span>
+              <h3 class="subsection-title">📝 Current Questions</h3>
+              <span class="toggle-icon google-toggle-small">▲</span>
             </div>
             <div class="subsection-content">
-              <div class="resource-placeholder" id="current-questions-content">Loading content...</div>
+              <div class="subsection-description">Recent exam questions and practice materials</div>
+              <div class="resource-content" id="current-questions-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
             </div>
           </div>
           
           <div class="subsection collapsible-subsection" id="previous-questions">
             <div class="subsection-header" onclick="toggleSubsection('previous-questions')">
-              <h3>Previous Questions</h3>
-              <span class="toggle-icon">▼</span>
+              <h3 class="subsection-title">📋 Previous Questions</h3>
+              <span class="toggle-icon google-toggle-small">▼</span>
             </div>
             <div class="subsection-content">
-              <div class="resource-placeholder" id="previous-questions-content">Loading content...</div>
+              <div class="subsection-description">Historical exam questions and answer keys</div>
+              <div class="resource-content" id="previous-questions-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
             </div>
           </div>
         </div>
-      </section>
-
+      </div>
 
     `;
   }
-  
+
   function initializeCollapsibleSections() {
     try {
       // Main sections: Course Overview, Study Materials, Questions, and Previous Teachers all expanded
-      const sections = document.querySelectorAll('.collapsible-section');
-      sections.forEach(section => {
-        const content = section.querySelector('.section-content');
-        const icon = section.querySelector('.toggle-icon');
-        
+      const sections = document.querySelectorAll(".collapsible-section");
+      sections.forEach((section) => {
+        const content = section.querySelector(".section-content");
+        const icon = section.querySelector(".toggle-icon");
+
         if (content && icon) {
-          content.style.display = 'block';
-          icon.textContent = '▲';
+          content.style.display = "block";
+          icon.textContent = "▲";
         }
       });
-      
+
       // Subsections: All expanded except "Previous" ones
-      const subsections = document.querySelectorAll('.collapsible-subsection');
-      subsections.forEach(subsection => {
-        const content = subsection.querySelector('.subsection-content');
-        const icon = subsection.querySelector('.toggle-icon');
-        const isPreviousSection = subsection.id.includes('previous');
-        
+      const subsections = document.querySelectorAll(".collapsible-subsection");
+      subsections.forEach((subsection) => {
+        const content = subsection.querySelector(".subsection-content");
+        const icon = subsection.querySelector(".toggle-icon");
+        const isPreviousSection = subsection.id.includes("previous");
+
         if (content && icon) {
           if (isPreviousSection) {
             // Keep previous sections collapsed
-            content.style.display = 'none';
-            icon.textContent = '▼';
+            content.style.display = "none";
+            icon.textContent = "▼";
           } else {
             // All other subsections expanded
-            content.style.display = 'block';
-            icon.textContent = '▲';
+            content.style.display = "block";
+            icon.textContent = "▲";
           }
         }
       });
-      
-
     } catch (error) {
-      console.error('Error initializing collapsible sections:', error);
+      console.error("Error initializing collapsible sections:", error);
     }
   }
 
-  
-  // Add CSS for drive links
-  if (!document.querySelector('#drive-links-css')) {
-    const styleElement = document.createElement('style');
-    styleElement.id = 'drive-links-css';
+  // Add CSS for Google-style subject pages
+  if (!document.querySelector("#google-subject-css")) {
+    const styleElement = document.createElement("style");
+    styleElement.id = "google-subject-css";
     styleElement.textContent = `
+      /* Google-style Page Layout */
+      .page-intro {
+        background: transparent;
+        padding: 20px 0;
+        margin-bottom: 24px;
+        text-align: center;
+      }
+      
+      .page-title {
+        font-size: 2.5rem;
+        font-weight: 400;
+        color: #202124;
+        margin: 0 0 8px 0;
+        line-height: 1.2;
+      }
+      
+      .page-description {
+        font-size: 16px;
+        color: #5f6368;
+        margin: 0 0 24px 0;
+        line-height: 1.5;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .course-code {
+        display: inline-block;
+        background: #1a73e8;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        margin-right: 8px;
+      }
+
+      /* Google-style Buttons */
+      .quick-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 24px 0;
+      }
+
+      .google-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        background: white;
+        color: #3c4043;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        font-family: inherit;
+        outline: none;
+      }
+
+      .google-btn:hover {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        border-color: #dadce0;
+      }
+
+      .google-btn.primary {
+        background: #1a73e8;
+        color: white;
+        border-color: #1a73e8;
+      }
+
+      .google-btn.primary:hover {
+        background: #1557b0;
+        border-color: #1557b0;
+      }
+
+      .google-btn.secondary:hover {
+        background: #f8f9fa;
+      }
+
+      .btn-icon {
+        font-size: 16px;
+      }
+
+      /* Google-style Cards */
+      .google-card {
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: box-shadow 0.2s ease;
+      }
+
+      .google-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Section Headers */
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dadce0;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .section-header:hover {
+        background: #f1f3f4;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #202124;
+        margin: 0;
+      }
+
+      .google-toggle {
+        font-size: 14px;
+        color: #5f6368;
+        transition: transform 0.2s ease;
+        font-weight: bold;
+      }
+
+      .section-content {
+        padding: 20px;
+      }
+
+      /* Subsections */
+      .subsection {
+        margin-bottom: 20px;
+        border: 1px solid #e8eaed;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .subsection:last-child {
+        margin-bottom: 0;
+      }
+
+      .subsection-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #fafbfc;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .subsection-header:hover {
+        background: #f1f3f4;
+      }
+
+      .subsection-title {
+        font-size: 15px;
+        font-weight: 500;
+        color: #202124;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .google-toggle-small {
+        font-size: 12px;
+        color: #5f6368;
+        transition: transform 0.2s ease;
+        font-weight: bold;
+      }
+
+      .subsection-content {
+        padding: 16px;
+        background: white;
+      }
+
+      .subsection-description {
+        font-size: 14px;
+        color: #5f6368;
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+
+      .resource-content {
+        min-height: 40px;
+      }
+
+      .loading-state {
+        color: #5f6368;
+        font-style: italic;
+        font-size: 14px;
+        padding: 8px 0;
+      }
+
+      /* Course Info Grid */
+      .course-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .info-card {
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border: 1px solid #e8eaed;
+      }
+
+      .info-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #5f6368;
+        margin: 0 0 8px 0;
+      }
+
+      .info-value {
+        font-size: 16px;
+        font-weight: 400;
+        color: #202124;
+        margin: 0;
+      }
+
+      .course-description {
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #3c4043;
+      }
+
+      /* Drive Links */
       .drive-link {
         display: inline-flex;
         align-items: center;
         gap: 8px;
         padding: 8px 12px;
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        border: 1px solid #dee2e6;
+        background: white;
+        border: 1px solid #dadce0;
         border-radius: 6px;
         text-decoration: none;
-        color: #495057;
+        color: #1a73e8;
         font-size: 14px;
         transition: all 0.2s ease;
-        margin-bottom: 8px;
+        margin: 4px 8px 4px 0;
+        font-weight: 500;
       }
 
       .drive-link:hover {
-        background: linear-gradient(135deg, #e9ecef, #dee2e6);
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background: #f8f9fa;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        text-decoration: none;
+        color: #1557b0;
       }
 
       .drive-icon {
         font-size: 16px;
-      }
-
-      .placeholder-link {
-        display: inline-block;
-        padding: 8px 12px;
-        background: #f8f9fa;
-        border: 1px dashed #ced4da;
-        border-radius: 6px;
-        color: #6c757d;
-        font-size: 14px;
-        font-style: italic;
-        margin-bottom: 8px;
       }
 
       .document-link {
@@ -506,35 +776,142 @@
         align-items: center;
         gap: 8px;
         padding: 12px 16px;
-        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-        border: 1px solid #2196f3;
-        border-radius: 8px;
+        background: #e8f0fe;
+        border: 1px solid #1a73e8;
+        border-radius: 6px;
         text-decoration: none;
-        color: #1565c0;
-        font-size: 15px;
+        color: #1a73e8;
+        font-size: 14px;
         font-weight: 500;
         transition: all 0.2s ease;
-        margin-bottom: 8px;
+        margin: 4px 8px 4px 0;
       }
 
       .document-link:hover {
-        background: linear-gradient(135deg, #bbdefb, #90caf9);
-        transform: translateY(-1px);
-        box-shadow: 0 3px 6px rgba(33, 150, 243, 0.2);
+        background: #d2e3fc;
+        text-decoration: none;
+        color: #1557b0;
+        box-shadow: 0 1px 3px rgba(26, 115, 232, 0.2);
       }
 
       .doc-icon {
         font-size: 18px;
       }
 
+      .placeholder-link {
+        display: inline-block;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border: 1px dashed #dadce0;
+        border-radius: 6px;
+        color: #5f6368;
+        font-size: 14px;
+        font-style: italic;
+        margin: 4px 8px 4px 0;
+      }
+
+      /* Breadcrumb */
+      .breadcrumb {
+        font-size: 14px;
+        color: #5f6368;
+        margin-bottom: 16px;
+        padding: 0 20px;
+      }
+
+      .breadcrumb a {
+        color: #1a73e8;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* Table of Contents */
+      .toc-accordion {
+        margin: 20px auto;
+        max-width: 600px;
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .toc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .toc-header:hover {
+        background: #f1f3f4;
+      }
+
+      .toc-content {
+        padding: 16px;
+        list-style: none;
+        margin: 0;
+      }
+
+      .toc-content li {
+        margin-bottom: 8px;
+      }
+
+      .toc-content a {
+        color: #1a73e8;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      .toc-content a:hover {
+        text-decoration: underline;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .page-title {
+          font-size: 2rem;
+        }
+
+        .quick-actions {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .google-btn {
+          width: 100%;
+          max-width: 300px;
+          justify-content: center;
+        }
+
+        .course-info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section-content {
+          padding: 16px;
+        }
+
+        .subsection-content {
+          padding: 12px;
+        }
+
+        .breadcrumb {
+          padding: 0 16px;
+        }
+      }
 
     `;
     document.head.appendChild(styleElement);
   }
-  
+
   // Auto-initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeSubjectPage);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeSubjectPage);
   } else {
     // DOM already loaded
     setTimeout(initializeSubjectPage, 100);
