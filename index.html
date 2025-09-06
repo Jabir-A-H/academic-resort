@@ -15,16 +15,14 @@
     <link rel="stylesheet" href="./assets/styles.css" />
     <script src="./assets/script.js" defer></script>
     <style>
-      /* Google-style Header */
+      /* Google-style Header - Seamless */
       .google-header {
-        position: fixed;
+        position: absolute;
         top: 0;
         right: 0;
         left: 0;
         z-index: 1000;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #e5e7eb;
+        background: transparent;
         padding: 8px 20px;
       }
       
@@ -129,7 +127,7 @@
       /* Search Engine Style Overrides */
       .main-search-section {
         text-align: center;
-        padding: 120px 20px 60px; /* Increased top padding for fixed header */
+        padding: 60px 20px 60px; /* Reduced top padding since header is not fixed */
         max-width: 600px;
         margin: 0 auto;
       }
@@ -199,6 +197,87 @@
         color: #6b7280;
       }
       
+      /* Advanced Options Toggle */
+      .options-toggle {
+        margin-top: 15px;
+      }
+      
+      .options-toggle-btn {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: underline;
+        padding: 5px 10px;
+        border-radius: 4px;
+        transition: color 0.2s ease;
+      }
+      
+      .options-toggle-btn:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      
+      .advanced-options {
+        margin-top: 15px;
+        display: none;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 15px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .advanced-options.show {
+        display: block;
+      }
+      
+      .options-section {
+        margin-bottom: 15px;
+      }
+      
+      .options-section:last-child {
+        margin-bottom: 0;
+      }
+      
+      .search-stats-subtle {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      
+      .cache-reset-link {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        font-size: 14px;
+        margin-left: 5px;
+        transition: color 0.2s ease;
+      }
+      
+      .cache-reset-link:hover {
+        color: rgba(255, 255, 255, 0.9);
+      }
+      
+      .apply-filters-btn-subtle {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s ease;
+        margin-top: 10px;
+      }
+      
+      .apply-filters-btn-subtle:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+      
       .search-stats {
         flex: 1;
       }
@@ -228,13 +307,19 @@
       }
       
       .filter-select {
-        padding: 8px 15px;
-        border: 1px solid #d1d5db;
-        border-radius: 12px;
-        font-size: 14px;
-        background: white;
-        color: #374151;
-        min-width: 120px;
+        padding: 6px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 6px;
+        font-size: 13px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        min-width: 100px;
+        margin: 0 5px;
+      }
+      
+      .filter-select option {
+        background: #374151;
+        color: white;
       }
       
       .search-results-container {
@@ -316,7 +401,7 @@
       /* Mobile responsive fixes */
       @media (max-width: 768px) {
         .main-search-section {
-          padding: 100px 15px 40px; /* Adjusted for mobile */
+          padding: 50px 15px 40px; /* Adjusted for mobile with less top padding */
         }
         
         .search-engine-title {
@@ -348,6 +433,25 @@
         .home-link {
           padding: 6px 8px;
           font-size: 13px;
+        }
+        
+        .advanced-options {
+          padding: 10px;
+        }
+        
+        .search-filters {
+          flex-direction: column;
+          gap: 8px;
+        }
+        
+        .filter-select {
+          margin: 0;
+          width: 100%;
+        }
+        
+        .apply-filters-btn-subtle {
+          width: 100%;
+          margin-top: 8px;
         }
       }
       
@@ -469,42 +573,51 @@
         </div>
       </div>
       
-      <!-- Search Filters -->
-      <div class="search-filters">
-        <select id="semesterFilter" class="filter-select" onchange="handleFilterChange()">
-          <option value="">All Semesters</option>
-          <option value="1st">1st Semester</option>
-          <option value="2nd">2nd Semester</option>
-          <option value="3rd">3rd Semester</option>
-          <option value="4th">4th Semester</option>
-          <option value="5th">5th Semester</option>
-          <option value="6th">6th Semester</option>
-          <option value="7th">7th Semester</option>
-          <option value="8th">8th Semester</option>
-        </select>
-
-        <select id="batchFilter" class="filter-select" onchange="handleFilterChange()">
-          <option value="">All Batches</option>
-          <option value="30">30th Batch</option>
-          <option value="29">29th Batch</option>
-          <option value="28">28th Batch</option>
-          <option value="27">27th Batch</option>
-          <option value="26">26th Batch</option>
-        </select>
-
-        <button id="applyFiltersBtn" class="apply-filters-btn" onclick="applyFiltersOnly()" title="Show all resources for selected filters">
-          Apply Filters
+      <!-- Advanced Options Toggle -->
+      <div class="options-toggle">
+        <button class="options-toggle-btn" onclick="toggleAdvancedOptions()">
+          Advanced Search
         </button>
       </div>
+      
+      <!-- Advanced Options (Initially Hidden) -->
+      <div class="advanced-options" id="advancedOptions">
+        <!-- Search Filters -->
+        <div class="options-section">
+          <div class="search-filters">
+            <select id="semesterFilter" class="filter-select" onchange="handleFilterChange()">
+              <option value="">All Semesters</option>
+              <option value="1st">1st Semester</option>
+              <option value="2nd">2nd Semester</option>
+              <option value="3rd">3rd Semester</option>
+              <option value="4th">4th Semester</option>
+              <option value="5th">5th Semester</option>
+              <option value="6th">6th Semester</option>
+              <option value="7th">7th Semester</option>
+              <option value="8th">8th Semester</option>
+            </select>
 
-      <!-- Search Options and Cache Management -->
-      <div class="search-options">
-        <div class="search-stats" id="searchStats">
-          Ready! Enter search terms to find resources.
+            <select id="batchFilter" class="filter-select" onchange="handleFilterChange()">
+              <option value="">All Batches</option>
+              <option value="30">30th Batch</option>
+              <option value="29">29th Batch</option>
+              <option value="28">28th Batch</option>
+              <option value="27">27th Batch</option>
+              <option value="26">26th Batch</option>
+            </select>
+
+            <button id="applyFiltersBtn" class="apply-filters-btn-subtle" onclick="applyFiltersOnly()" title="Show all resources for selected filters">
+              Apply Filters
+            </button>
+          </div>
         </div>
-        <button id="rebuildCacheBtn" class="cache-btn" onclick="rebuildCache()" title="Clear cache and rebuild on next search">
-          🔄 Rebuild Cache
-        </button>
+        
+        <!-- Cache Stats and Reset (Subtle) -->
+        <div class="options-section">
+          <div class="search-stats-subtle" id="searchStatsSubtle">
+            Ready! Enter search terms to find resources.
+          </div>
+        </div>
       </div>
     </main>
 
@@ -593,6 +706,20 @@
           dropdown.classList.remove('show');
         }
       });
+      
+      // Toggle advanced options
+      function toggleAdvancedOptions() {
+        const advancedOptions = document.getElementById('advancedOptions');
+        const toggleBtn = document.querySelector('.options-toggle-btn');
+        
+        if (advancedOptions.classList.contains('show')) {
+          advancedOptions.classList.remove('show');
+          toggleBtn.textContent = 'Advanced Search';
+        } else {
+          advancedOptions.classList.add('show');
+          toggleBtn.textContent = 'Hide Options';
+        }
+      }
 
       // Show/hide search results and quick access sections
       function toggleSections(showResults) {
@@ -946,11 +1073,12 @@
         }
       }
 
-      // Rebuild cache function
+      // Rebuild cache function (still needed for compatibility)
       function rebuildCache() {
         const success = clearAllCache();
         if (success) {
           updateSearchStats("Cache cleared! Next search will rebuild the cache.");
+          updateCacheStats();
           displayResults([]);
           toggleSections(false);
         } else {
@@ -964,10 +1092,46 @@
         if (statsElement) {
           statsElement.textContent = message;
         }
+        
+        // Update subtle stats in advanced options
+        const subtleStatsElement = document.getElementById("searchStatsSubtle");
+        if (subtleStatsElement) {
+          subtleStatsElement.innerHTML = message;
+        }
+        
         // Also update the results stats for backward compatibility
         if (DOM_CACHE.resultsStats) {
           DOM_CACHE.resultsStats.textContent = message;
         }
+      }
+      
+      // Update cache stats with subtle display like old browse page
+      function updateCacheStats() {
+        const cacheStats = getCacheStats();
+        const subtleStatsElement = document.getElementById("searchStatsSubtle");
+        
+        if (cacheStats.entries > 0) {
+          if (subtleStatsElement) {
+            subtleStatsElement.innerHTML = `Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" class="cache-reset-link" title="Clear cache and reload fresh data">⟳</a>`;
+          }
+          if (DOM_CACHE.resultsStats) {
+            DOM_CACHE.resultsStats.innerHTML = `Ready! ${cacheStats.entries} folders available. Enter search terms to find resources.`;
+          }
+        } else {
+          if (subtleStatsElement) {
+            subtleStatsElement.innerHTML = `Ready! Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" class="cache-reset-link" title="Clear cache and reload fresh data">⟳</a>`;
+          }
+          if (DOM_CACHE.resultsStats) {
+            DOM_CACHE.resultsStats.textContent = "Ready to search! Enter terms above. First search will build cache and may take a moment.";
+          }
+        }
+      }
+      
+      // Clear cache and reload function
+      function clearCacheAndReload() {
+        localStorage.removeItem('driveCache');
+        localStorage.removeItem('driveCacheTimestamp');
+        location.reload();
       }
 
       // Optimized search - only load data when user searches
@@ -1804,29 +1968,19 @@
         cleanExpiredCache();
 
         // Get cache statistics
-        const cacheStats = getCacheStats();
-
-        if (cacheStats.entries > 0) {
-          DOM_CACHE.resultsStats.innerHTML = `Ready! ${cacheStats.entries} folders available. Enter search terms to find resources.`;
-        } else {
-          DOM_CACHE.resultsStats.textContent =
-            "Ready to search! Enter terms above. First search will build cache and may take a moment.";
-        }
+        updateCacheStats();
 
         try {
           await loadDriveMapping();
-
-          const updatedCacheStats = getCacheStats();
-
-          if (updatedCacheStats.entries > 0) {
-            DOM_CACHE.resultsStats.innerHTML = `Ready! ${updatedCacheStats.entries} folders available. Enter search terms to find resources.`;
-          } else {
-            DOM_CACHE.resultsStats.textContent =
-              "Ready! Enter search terms or select filters to find resources. First search will build cache.";
-          }
+          updateCacheStats(); // Update again after loading mapping
         } catch (error) {
-          DOM_CACHE.resultsStats.textContent =
-            "Ready with basic setup. Some features may be limited.";
+          const subtleStatsElement = document.getElementById("searchStatsSubtle");
+          if (subtleStatsElement) {
+            subtleStatsElement.innerHTML = `Ready with basic setup. Some features may be limited. <a href="#" onclick="clearCacheAndReload()" class="cache-reset-link" title="Clear cache and reload fresh data">⟳</a>`;
+          }
+          if (DOM_CACHE.resultsStats) {
+            DOM_CACHE.resultsStats.textContent = "Ready with basic setup. Some features may be limited.";
+          }
         }
 
         // Show empty state initially
