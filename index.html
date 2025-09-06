@@ -205,18 +205,18 @@
       .options-toggle-btn {
         background: none;
         border: none;
-        color: rgba(255, 255, 255, 0.8);
+        color: #3b82f6;
         font-size: 14px;
         cursor: pointer;
         text-decoration: underline;
         padding: 5px 10px;
         border-radius: 4px;
-        transition: color 0.2s ease;
+        transition: all 0.2s ease;
       }
       
       .options-toggle-btn:hover {
-        color: white;
-        background: rgba(255, 255, 255, 0.1);
+        color: #2563eb;
+        background: rgba(59, 130, 246, 0.1);
       }
       
       .advanced-options {
@@ -1062,12 +1062,13 @@
             "", // Empty search term to get all results
             semesterFilter,
             batchFilter,
-            document.getElementById("searchStats"),
+            DOM_CACHE.resultsStats, // Use correct DOM element
             true // Flag to indicate this is a filter-only search
           );
           displayResults(results);
           updateSearchStats(`Showing ${results.length} resources${semesterFilter || batchFilter ? ' for selected filters' : ' (all)'}`);
         } catch (error) {
+          console.error("Apply filters error:", error);
           updateSearchStats("Failed to load resources. Please try again.");
           toggleSections(false);
         }
@@ -1129,9 +1130,15 @@
       
       // Clear cache and reload function
       function clearCacheAndReload() {
-        localStorage.removeItem('driveCache');
-        localStorage.removeItem('driveCacheTimestamp');
-        location.reload();
+        const success = clearAllCache();
+        if (success) {
+          updateSearchStats("Cache cleared! Reloading page...");
+          setTimeout(() => {
+            location.reload();
+          }, 1000);
+        } else {
+          updateSearchStats("Failed to clear cache. Please try again.");
+        }
       }
 
       // Optimized search - only load data when user searches
@@ -1610,6 +1617,7 @@
             );
           });
 
+          console.log("Drive mapping loaded successfully", Object.keys(ALL_DRIVE_RESOURCES));
           return ALL_DRIVE_RESOURCES;
         } catch (error) {
           console.error("Error loading drive mapping:", error);
@@ -1623,6 +1631,12 @@
               29: {
                 folderId: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
                 label: "29th Batch",
+              },
+            },
+            "2nd": {
+              30: {
+                folderId: "1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
+                label: "30th Batch",
               },
             },
           };
