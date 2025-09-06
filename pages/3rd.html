@@ -218,167 +218,336 @@
     </main>
 
     <script>
-      // Drive Integration with 24-hour cache
-      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-      const API_KEY = "AIzaSyAMPnGgGkw8ZFPhPWJp8CKj1MUlPTXEqYA";
+      // Batch folders - loaded from JSON
+      let batches = {};
 
-      // Drive folder mappings for 3rd semester
-      const driveMapping = {
-        "29": "1o9uDgU26nEf2cY-gGJQPCQJC5XjAyLMN", // 29th batch folder
-        "28": "1o9uDgU26nEf2cY-gGJQPCQJC5XjAyLMN", // 28th batch folder  
-        "27": "1o9uDgU26nEf2cY-gGJQPCQJC5XjAyLMN", // 27th batch folder
-        "26": "1o9uDgU26nEf2cY-gGJQPCQJC5XjAyLMN"  // 26th batch folder
-      };
+      // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
+      const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
 
-      // Initialize batch content on page load
-      document.addEventListener('DOMContentLoaded', function() {
-        // Load current batch content
-        loadDriveContent('29');
-        
-        // Batch button handlers
-        document.querySelectorAll('.batch-btn').forEach(btn => {
-          btn.addEventListener('click', function() {
-            const batchId = this.dataset.batch;
-            
-            // Update active states
-            document.querySelectorAll('.batch-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.batch-content').forEach(c => c.classList.remove('active'));
-            
-            this.classList.add('active');
-            document.getElementById(`batch-${batchId}`).classList.add('active');
-            
-            // Load content if not already loaded
-            loadDriveContent(batchId);
-          });
-        });
+      // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
+
+      // Cache configuration
+      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const CACHE_VERSION = "v1"; // Increment this to force cache refresh on updates
+
+      // Get cache key for a folder
+      function getCacheKey(folderId, depth = 0) {
+        return `driveCache_3rd_${CACHE_VERSION}_${folderId}_${depth}`;
+      }
+
+      // Get global cache metadata key
+      function getGlobalCacheKey() {
+        return `driveCacheMetadata_3rd_${CACHE_VERSION}`;
+      }
+
+      // Save data to persistent cache with timestamp
+      function saveToPersistentCache(folderId, data, depth = 0) {
+        try {
+          const cacheKey = getCacheKey(folderId, depth);
+          const cacheData = {
+            data: data,
+            timestamp: Date.now(),
+            version: CACHE_VERSION,
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+          // Update metadata
+          updateCacheMetadata(cacheKey);
+        } catch (error) {
+          console.warn("Failed to save to persistent cache:", error);
+        }
+      }
+
+      // Load data from persistent cache
+      function loadFromPersistentCache(folderId, depth = 0) {
+        try {
+          const cacheKey = getCacheKey(folderId, depth);
+          const cached = localStorage.getItem(cacheKey);
+
+          if (!cached) return null;
+
+          const cacheData = JSON.parse(cached);
+          const age = Date.now() - cacheData.timestamp;
+
+          // Check if cache is expired or version mismatch
+          if (age > CACHE_DURATION || cacheData.version !== CACHE_VERSION) {
+            localStorage.removeItem(cacheKey);
+            removeCacheFromMetadata(cacheKey);
+            return null;
+          }
+
+          return cacheData.data;
+        } catch (error) {
+          console.warn("Failed to load from persistent cache:", error);
+          return null;
+        }
+      }
+
+      // Update cache metadata for cleanup
+      function updateCacheMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          if (!metadata.keys.includes(cacheKey)) {
+            metadata.keys.push(cacheKey);
+          }
+          metadata.lastUpdated = Date.now();
+
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to update cache metadata:", error);
+        }
+      }
+
+      // Remove cache key from metadata
+      function removeCacheFromMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+          metadata.keys = metadata.keys.filter((key) => key !== cacheKey);
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to remove from cache metadata:", error);
+        }
+      }
+
+      // Global memory cache for faster subsequent access
+      let memoryCache = new Map();
+
+      // === DRIVE API FUNCTIONS ===
+
+      // Toggle TOC functionality
+      function toggleTOC() {
+        const content = document.getElementById("table-of-contents");
+        const toggle = document.getElementById("toc-toggle");
+
+        if (content.style.display === "none" || !content.style.display) {
+          content.style.display = "block";
+          toggle.textContent = "▲";
+        } else {
+          content.style.display = "none";
+          toggle.textContent = "▼";
+        }
+      }
+
+      // Initialize when DOM is loaded
+      document.addEventListener("DOMContentLoaded", async function () {
+        console.log("Loading 3rd semester resources...");
+
+        try {
+          // Load drive mapping configuration
+          const response = await fetch("../assets/drive-mapping.json");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const mapping = await response.json();
+          console.log("Drive mapping loaded:", mapping);
+
+          // Extract 3rd semester data
+          if (mapping.3rd && mapping.3rd.batches) {
+            batches = mapping.3rd.batches;
+            console.log("3rd semester batches:", batches);
+
+            // Build table of contents
+            buildTableOfContents();
+
+            // Start loading batches with controlled concurrency
+            await loadAllBatches();
+          } else {
+            console.error("No 3rd semester data found in mapping");
+            showError("Configuration not found for 3rd semester");
+          }
+        } catch (error) {
+          console.error("Error loading drive mapping:", error);
+          showError(`Failed to load configuration: ${error.message}`);
+        }
       });
 
-      async function loadDriveContent(batchId) {
-        const containerId = `drive-content-${batchId}`;
-        const container = document.getElementById(containerId);
-        const folderId = driveMapping[batchId];
-        
-        if (!container || !folderId) return;
-        
-        // Check if already loaded
-        if (container.dataset.loaded === 'true') return;
-        
-        try {
-          const cacheKey = `drive_${batchId}_${folderId}`;
-          const cached = localStorage.getItem(cacheKey);
-          const cacheTime = localStorage.getItem(`${cacheKey}_time`);
-          
-          if (cached && cacheTime && (Date.now() - parseInt(cacheTime)) < CACHE_DURATION) {
-            container.innerHTML = cached;
-            container.dataset.loaded = 'true';
-            return;
-          }
-          
-          container.innerHTML = '<div class="loading">📁 Loading resources...</div>';
-          
-          const response = await fetch(
-            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink)`
-          );
-          
-          if (!response.ok) throw new Error('Failed to fetch');
-          
-          const data = await response.json();
-          const html = formatDriveContent(data.files || []);
-          
-          container.innerHTML = html;
-          container.dataset.loaded = 'true';
-          
-          // Cache the result
-          localStorage.setItem(cacheKey, html);
-          localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
-          
-        } catch (error) {
-          console.error('Error loading drive content:', error);
-          container.innerHTML = '<div class="error">Failed to load resources</div>';
+      function buildTableOfContents() {
+        const toc = document.getElementById("table-of-contents");
+        if (!toc) return;
+
+        toc.innerHTML = "";
+
+        Object.entries(batches).forEach(([batchNumber, batchData]) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="#batch-${batchNumber}" onclick="scrollToBatch('${batchNumber}')">${batchData.label || `${batchNumber} Batch`}</a>`;
+          toc.appendChild(li);
+        });
+      }
+
+      function scrollToBatch(batchNumber) {
+        const element = document.getElementById(`batch-${batchNumber}`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
         }
       }
 
-      function formatDriveContent(files) {
-        if (!files || files.length === 0) {
-          return '<div class="no-content">No resources available</div>';
+      async function loadAllBatches() {
+        const batchEntries = Object.entries(batches);
+        console.log(`Starting to load ${batchEntries.length} batches...`);
+
+        // Load batches with controlled concurrency
+        for (const [batchNumber, batchData] of batchEntries) {
+          try {
+            await loadBatchContent(batchNumber, batchData.folderId);
+            // Small delay to prevent overwhelming the API
+            await new Promise((resolve) => setTimeout(resolve, 100));
+          } catch (error) {
+            console.error(`Error loading batch ${batchNumber}:`, error);
+          }
         }
-        
-        const folders = files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
-        const documents = files.filter(f => f.mimeType !== 'application/vnd.google-apps.folder');
-        
-        let html = '';
-        
-        if (folders.length > 0) {
-          html += '<div class="folders-section"><h5>📁 Folders</h5>';
-          folders.forEach(folder => {
-            html += `<div class="resource-item folder">
-              <a href="${folder.webViewLink}" target="_blank">${folder.name}</a>
-            </div>`;
-          });
-          html += '</div>';
+
+        console.log("All batches loading initiated");
+      }
+
+      async function loadBatchContent(batchNumber, folderId) {
+        const listContainer = document.getElementById(`drive-list-${batchNumber}`);
+        const spinner = document.getElementById(`spinner-${batchNumber}`);
+        const rootBtn = document.getElementById(`root-btn-${batchNumber}`);
+
+        if (!listContainer) {
+          console.warn(`Container not found for batch ${batchNumber}`);
+          return;
         }
-        
-        if (documents.length > 0) {
-          html += '<div class="documents-section"><h5>📄 Documents</h5>';
-          documents.forEach(doc => {
-            html += `<div class="resource-item document">
-              <a href="${doc.webViewLink}" target="_blank">${doc.name}</a>
-            </div>`;
-          });
-          html += '</div>';
+
+        // Set up root folder button
+        if (rootBtn && folderId) {
+          rootBtn.onclick = () =>
+            window.open(`https://drive.google.com/drive/folders/${folderId}`, "_blank");
         }
-        
-        return html;
+
+        try {
+          // Check persistent cache first
+          const cachedData = loadFromPersistentCache(folderId);
+          if (cachedData) {
+            console.log(`Loading batch ${batchNumber} from cache`);
+            listContainer.innerHTML = cachedData;
+            if (spinner) spinner.style.display = "none";
+            return;
+          }
+
+          // Show loading spinner
+          if (spinner) {
+            spinner.style.display = "block";
+            spinner.innerHTML = "🔄 Loading...";
+          }
+
+          console.log(`Fetching batch ${batchNumber} from API...`);
+
+          // Fetch from Google Drive API
+          const apiUrl = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink,size,modifiedTime)&pageSize=1000`;
+
+          const response = await fetch(apiUrl);
+
+          if (!response.ok) {
+            throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          console.log(`Batch ${batchNumber} API response:`, data);
+
+          if (!data.files || data.files.length === 0) {
+            const emptyMessage = '<li class="drive-item"><span class="item-name">No files found in this batch</span></li>';
+            listContainer.innerHTML = emptyMessage;
+            saveToPersistentCache(folderId, emptyMessage);
+          } else {
+            // Sort files: folders first, then by name
+            const sortedFiles = data.files.sort((a, b) => {
+              const aIsFolder = a.mimeType === "application/vnd.google-apps.folder";
+              const bIsFolder = b.mimeType === "application/vnd.google-apps.folder";
+
+              if (aIsFolder && !bIsFolder) return -1;
+              if (!aIsFolder && bIsFolder) return 1;
+              return a.name.localeCompare(b.name);
+            });
+
+            // Create HTML for files
+            const html = sortedFiles
+              .map((file) => {
+                const isFolder = file.mimeType === "application/vnd.google-apps.folder";
+                const icon = isFolder ? "📁" : getFileIcon(file.mimeType);
+                const sizeText = file.size && !isFolder ? formatFileSize(file.size) : "";
+
+                return `
+                  <li class="drive-item ${isFolder ? "folder" : "file"}">
+                    <a href="${file.webViewLink}" target="_blank" class="item-link">
+                      <span class="item-icon">${icon}</span>
+                      <span class="item-name">${file.name}</span>
+                      ${sizeText ? `<span class="item-size">${sizeText}</span>` : ""}
+                    </a>
+                  </li>
+                `;
+              })
+              .join("");
+
+            listContainer.innerHTML = html;
+
+            // Cache the result
+            saveToPersistentCache(folderId, html);
+          }
+        } catch (error) {
+          console.error(`Error loading batch ${batchNumber}:`, error);
+          const errorMessage = `<li class="drive-item error"><span class="item-name">Error loading files: ${error.message}</span></li>`;
+          listContainer.innerHTML = errorMessage;
+        } finally {
+          // Hide spinner
+          if (spinner) {
+            spinner.style.display = "none";
+          }
+        }
+      }
+
+      function getFileIcon(mimeType) {
+        const iconMap = {
+          "application/pdf": "📄",
+          "application/vnd.google-apps.document": "📝",
+          "application/vnd.google-apps.spreadsheet": "📊",
+          "application/vnd.google-apps.presentation": "📽️",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "📝",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "📊",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation": "📽️",
+          "image/jpeg": "🖼️",
+          "image/png": "🖼️",
+          "image/gif": "🖼️",
+          "video/mp4": "🎥",
+          "video/mpeg": "🎥",
+          "audio/mpeg": "🎵",
+          "audio/wav": "🎵",
+          "text/plain": "📄",
+          "application/zip": "🗜️",
+          "application/x-zip-compressed": "🗜️",
+        };
+
+        return iconMap[mimeType] || "📄";
+      }
+
+      function formatFileSize(bytes) {
+        if (!bytes) return "";
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + " " + sizes[i];
+      }
+
+      function showError(message) {
+        console.error(message);
+        const containers = document.querySelectorAll('[id^="drive-list-"]');
+        containers.forEach((container) => {
+          container.innerHTML = `<li class="drive-item error"><span class="item-name">${message}</span></li>`;
+        });
+
+        // Hide all spinners
+        const spinners = document.querySelectorAll('[id^="spinner-"]');
+        spinners.forEach((spinner) => {
+          spinner.style.display = "none";
+        });
       }
     </script>
-  </body>
-</html>
-          src="https://docs.google.com/embeddedfolderview?id=1cD9UZpwr4F4u79N6iI4rJk_J6jVocnGX#grid"
-          frameborder="0"
-          style="width: 100%; height: 600px"
-        ></iframe>
-      </section>
-      <section class="card">
-        <h2 id="batch-28">28th Batch</h2>
-        <iframe
-          src="https://docs.google.com/embeddedfolderview?id=11X8KpIfn1Jkh8_sy96xNbg8a1Z8EWy-I#grid"
-          frameborder="0"
-          style="width: 100%; height: 600px"
-        ></iframe>
-      </section>
-      <section class="card">
-        <h2 id="batch-27">27th Batch</h2>
-        <iframe
-          src="https://docs.google.com/embeddedfolderview?id=1fZuFo3qsPUtaN53ZvKOrwgb-fVIr8B4N#grid"
-          frameborder="0"
-          style="width: 100%; height: 600px"
-        ></iframe>
-      </section>
-      <section class="card">
-        <h2 id="batch-26">26th Batch</h2>
-        <iframe
-          src="https://docs.google.com/embeddedfolderview?id=1-rpP6GshMYj7QoCRRSGWBmRsren-tfWZ#grid"
-          frameborder="0"
-          style="width: 100%; height: 600px"
-        ></iframe>
-      </section>
-      <section class="card">
-        <h2>Personal Notes</h2>
-        <iframe
-          src="https://docs.google.com/embeddedfolderview?id=15d1gjiKGXu_FixNjxdVVwyny4cFVAwMV#grid"
-          frameborder="0"
-          style="width: 100%; height: 600px"
-        ></iframe>
-      </section>
-      <section class="card">
-        <h2>26th Class Updates</h2>
-        <iframe
-          src="https://docs.google.com/embeddedfolderview?id=10MaWyjpRPbdrTfxxEWiXw2c3xor9gZnA#grid"
-          frameborder="0"
-          style="width: 100%; height: 600px"
-        ></iframe>
-      </section>
-    </main>
-    <div data-include="../assets/includes/footer.html"></div>
   </body>
 </html>
