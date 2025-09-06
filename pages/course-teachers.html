@@ -2,13 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Teachers' Profiles — Academic Resort</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
     <script src="../assets/script.js" defer></script>
   </head>
   <body>
-    <div data-include="../assets/includes/sidebar.html"></div>
+    <div data-include="../assets/includes/header.html"></div>
     <!-- App Header -->
     <header class="app-header">
       <h1>Academic Resort</h1>
@@ -19,6 +21,7 @@
         <!-- Page Header -->
         <div class="teachers-page-header">
           <h2>Teachers' Profiles</h2>
+          <p>Find teachers by course, batch, or semester</p>
         </div>
 
         <!-- Filter Controls -->
@@ -1009,7 +1012,18 @@
 
         // Populate course dropdown
         const courseSelect = document.getElementById("courseSelect");
-        const sortedCourses = Array.from(allCourses.keys()).sort();
+        // Sort courses by course code numerically
+        const sortedCourses = Array.from(allCourses.keys()).sort((a, b) => {
+          // Extract course codes from format "Course Name (CODE)"
+          const codeA = a.match(/\((\d+)\)$/)?.[1];
+          const codeB = b.match(/\((\d+)\)$/)?.[1];
+
+          if (codeA && codeB) {
+            return parseInt(codeA) - parseInt(codeB);
+          }
+          // Fallback to alphabetical if no code found
+          return a.localeCompare(b);
+        });
 
         courseSelect.innerHTML = '<option value="all">All Courses</option>';
         sortedCourses.forEach((course) => {
@@ -1639,7 +1653,27 @@
 
         // Set initial reset button state
         updateResetButtonVisibility();
+
+        // Check for URL parameters for automatic filtering
+        checkUrlParameters();
       });
+
+      // Check URL parameters for automatic course filtering
+      function checkUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseParam = urlParams.get("course");
+
+        if (courseParam) {
+          // Set the course filter
+          const courseSelect = document.getElementById("courseSelect");
+          courseSelect.value = courseParam;
+
+          // Trigger filter change
+          setTimeout(() => {
+            handleFilterChange();
+          }, 100);
+        }
+      }
     </script>
   </body>
 </html>
