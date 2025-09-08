@@ -177,11 +177,39 @@
 
       .search-filters {
         display: flex;
+        flex-direction: column;
         gap: 12px;
         justify-content: center;
         margin-bottom: 16px;
-        flex-wrap: wrap;
         align-items: center;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Individual filter rows */
+      .filter-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        width: 100%;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        max-height: 0;
+        overflow: hidden;
+      }
+
+      .filter-row.show {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 60px;
+      }
+
+      .filter-row:first-child {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 60px;
       }
 
       .search-options {
@@ -227,13 +255,19 @@
       }
 
       .options-toggle-btn::after {
-        content: "▼";
+        content: "";
+        margin-left: 0;
+        font-size: 12px;
+        transition: transform 0.2s ease;
+      }
+
+      .options-toggle-btn .accordion-icon {
         margin-left: 8px;
         font-size: 12px;
         transition: transform 0.2s ease;
       }
 
-      .options-toggle-btn.active::after {
+      .options-toggle-btn.active .accordion-icon {
         transform: rotate(180deg);
       }
 
@@ -316,9 +350,10 @@
         font-size: 14px;
         font-weight: 500;
         transition: all 0.2s ease;
-        margin-left: 8px;
+        margin-top: 8px;
         outline: none;
         font-family: inherit;
+        width: 100%;
       }
 
       .apply-filters-btn-subtle:hover {
@@ -373,6 +408,7 @@
         background: #ffffff;
         color: #3c4043;
         min-width: 140px;
+        width: 100%;
         margin: 0;
         outline: none;
         transition: all 0.2s ease;
@@ -518,6 +554,12 @@
           flex-direction: column;
           gap: 12px;
           align-items: center;
+          max-width: none;
+          width: 100%;
+        }
+
+        .filter-row {
+          width: 100%;
         }
 
         .filter-select {
@@ -530,7 +572,7 @@
           width: 100%;
           max-width: 300px;
           margin-left: 0;
-          margin-top: 4px;
+          margin-top: 8px;
         }
 
         .options-toggle-btn {
@@ -677,7 +719,7 @@
       <!-- Advanced Options Toggle -->
       <div class="options-toggle">
         <button class="options-toggle-btn" onclick="toggleAdvancedOptions()">
-          Advanced Search
+          Search Globally <span class="accordion-icon">▼</span>
         </button>
       </div>
 
@@ -685,37 +727,47 @@
       <div class="advanced-options" id="advancedOptions">
         <!-- Search Filters -->
         <div class="search-filters">
-          <select
-            id="batchFilter"
-            class="filter-select"
-            onchange="updateSemesterOptions()"
-          >
-            <option value="">Select Batch</option>
-            <option value="30">30th Batch</option>
-            <option value="29">29th Batch</option>
-            <option value="28">28th Batch</option>
-            <option value="27">27th Batch</option>
-            <option value="26">26th Batch</option>
-          </select>
+          <!-- Batch Filter Row (Always visible) -->
+          <div class="filter-row">
+            <select
+              id="batchFilter"
+              class="filter-select"
+              onchange="updateSemesterOptions()"
+            >
+              <option value="">Select Batch</option>
+              <option value="30">30th Batch</option>
+              <option value="29">29th Batch</option>
+              <option value="28">28th Batch</option>
+              <option value="27">27th Batch</option>
+              <option value="26">26th Batch</option>
+            </select>
+          </div>
 
-          <select
-            id="semesterFilter"
-            class="filter-select"
-            onchange="updateCourseOptions()"
-            disabled
-          >
-            <option value="">Select Semester</option>
-          </select>
+          <!-- Semester Filter Row (Hidden until batch selected) -->
+          <div class="filter-row" id="semesterRow">
+            <select
+              id="semesterFilter"
+              class="filter-select"
+              onchange="updateCourseOptions()"
+              disabled
+            >
+              <option value="">Select Semester</option>
+            </select>
+          </div>
 
-          <select
-            id="courseFilter"
-            class="filter-select"
-            onchange="handleFilterChange()"
-            disabled
-          >
-            <option value="">Select Course</option>
-          </select>
+          <!-- Course Filter Row (Hidden until semester selected) -->
+          <div class="filter-row" id="courseRow">
+            <select
+              id="courseFilter"
+              class="filter-select"
+              onchange="handleFilterChange()"
+              disabled
+            >
+              <option value="">Select Course</option>
+            </select>
+          </div>
 
+          <!-- Apply Filters Button -->
           <button
             id="applyFiltersBtn"
             class="apply-filters-btn-subtle"
@@ -853,6 +905,8 @@
         const batchSelect = document.getElementById('batchFilter');
         const semesterSelect = document.getElementById('semesterFilter');
         const courseSelect = document.getElementById('courseFilter');
+        const semesterRow = document.getElementById('semesterRow');
+        const courseRow = document.getElementById('courseRow');
         
         const selectedBatch = batchSelect.value;
         
@@ -862,9 +916,17 @@
         semesterSelect.disabled = !selectedBatch;
         courseSelect.disabled = true;
         
+        // Hide/show semester row based on batch selection
         if (!selectedBatch) {
+          semesterRow.classList.remove('show');
+          courseRow.classList.remove('show');
           return;
         }
+        
+        // Show semester row with smooth transition
+        setTimeout(() => {
+          semesterRow.classList.add('show');
+        }, 100);
         
         // Find available semesters for the selected batch
         const availableSemesters = new Set();
@@ -900,6 +962,7 @@
       function updateCourseOptions() {
         const semesterSelect = document.getElementById('semesterFilter');
         const courseSelect = document.getElementById('courseFilter');
+        const courseRow = document.getElementById('courseRow');
         
         const selectedSemester = semesterSelect.value;
         
@@ -907,9 +970,16 @@
         courseSelect.innerHTML = '<option value="">Select Course</option>';
         courseSelect.disabled = !selectedSemester;
         
+        // Hide/show course row based on semester selection
         if (!selectedSemester || !COURSE_MAPPING[selectedSemester]) {
+          courseRow.classList.remove('show');
           return;
         }
+        
+        // Show course row with smooth transition
+        setTimeout(() => {
+          courseRow.classList.add('show');
+        }, 100);
         
         // Populate course dropdown
         const courses = COURSE_MAPPING[selectedSemester];
@@ -981,15 +1051,22 @@
       function toggleAdvancedOptions() {
         const advancedOptions = document.getElementById("advancedOptions");
         const toggleBtn = document.querySelector(".options-toggle-btn");
+        const btnIcon = toggleBtn.querySelector(".accordion-icon") || 
+          (() => {
+            const icon = document.createElement("span");
+            icon.className = "accordion-icon";
+            toggleBtn.appendChild(icon);
+            return icon;
+          })();
 
         if (advancedOptions.classList.contains("show")) {
           advancedOptions.classList.remove("show");
           toggleBtn.classList.remove("active");
-          toggleBtn.textContent = "Advanced Search";
+          toggleBtn.innerHTML = 'Search Globally <span class="accordion-icon">▼</span>';
         } else {
           advancedOptions.classList.add("show");
           toggleBtn.classList.add("active");
-          toggleBtn.textContent = "Hide Advanced Search";
+          toggleBtn.innerHTML = 'Search Specifically <span class="accordion-icon">▲</span>';
         }
       }
 
