@@ -686,32 +686,34 @@
         <!-- Search Filters -->
         <div class="search-filters">
           <select
-            id="semesterFilter"
-            class="filter-select"
-            onchange="handleFilterChange()"
-          >
-            <option value="">All Semesters</option>
-            <option value="1st">1st Semester</option>
-            <option value="2nd">2nd Semester</option>
-            <option value="3rd">3rd Semester</option>
-            <option value="4th">4th Semester</option>
-            <option value="5th">5th Semester</option>
-            <option value="6th">6th Semester</option>
-            <option value="7th">7th Semester</option>
-            <option value="8th">8th Semester</option>
-          </select>
-
-          <select
             id="batchFilter"
             class="filter-select"
-            onchange="handleFilterChange()"
+            onchange="updateSemesterOptions()"
           >
-            <option value="">All Batches</option>
+            <option value="">Select Batch</option>
             <option value="30">30th Batch</option>
             <option value="29">29th Batch</option>
             <option value="28">28th Batch</option>
             <option value="27">27th Batch</option>
             <option value="26">26th Batch</option>
+          </select>
+
+          <select
+            id="semesterFilter"
+            class="filter-select"
+            onchange="updateCourseOptions()"
+            disabled
+          >
+            <option value="">Select Semester</option>
+          </select>
+
+          <select
+            id="courseFilter"
+            class="filter-select"
+            onchange="handleFilterChange()"
+            disabled
+          >
+            <option value="">Select Course</option>
           </select>
 
           <button
@@ -775,6 +777,152 @@
     <div data-include="./assets/includes/footer.html"></div>
 
     <script>
+      // Course mapping data structure
+      const COURSE_MAPPING = {
+        "1st": {
+          "1101": "Introduction to Financial Accounting",
+          "1102": "Introduction to Business", 
+          "1103": "Computer Concepts and Applications",
+          "1104": "Mathematics for Business Decisions-I",
+          "1105": "Business Communication"
+        },
+        "2nd": {
+          "1201": "Intermediate Accounting",
+          "1202": "Microeconomics",
+          "1203": "Management and Organizational Behavior", 
+          "1204": "Mathematics for Business Decisions-II",
+          "1205": "Bangladesh Studies"
+        },
+        "3rd": {
+          "2101": "Advanced Financial Accounting-I",
+          "2102": "Macroeconomics",
+          "2103": "Programming and Database Management",
+          "2104": "General Science and Environment",
+          "2105": "Business Statistics-I"
+        },
+        "4th": {
+          "2201": "Advanced Financial Accounting-II",
+          "2202": "Financial Management",
+          "2203": "Cost Accounting",
+          "2204": "Marketing",
+          "2205": "Business Statistics-II"
+        },
+        "5th": {
+          "3101": "Management Accounting",
+          "3102": "Banking and Insurance",
+          "3103": "Audit and Assurance",
+          "3104": "Income Tax: Laws and Practice",
+          "3105": "Business Laws"
+        },
+        "6th": {
+          "3201": "Forensic Accounting and Fraud Investigation",
+          "3202": "Corporate Finance",
+          "3203": "Accounting Information Systems",
+          "3204": "VAT and Cross-border Taxation",
+          "3205": "Corporate Laws, Governance and Secretarial Practices"
+        },
+        "7th": {
+          "4101": "Advanced Management Accounting",
+          "4102": "Financial Market and Investment Analysis",
+          "4103": "IT Governance and Information System Audit",
+          "4104": "Supply Chain and Operation Management",
+          "4105": "Public Sector Accounting and Financial Management"
+        },
+        "8th": {
+          "4201": "Accounting Theory",
+          "4202": "Business Analysis and Valuation",
+          "4203": "Data Analytics",
+          "4204": "Strategic Management",
+          "4205": "Research Methodology"
+        },
+        "mba-1st": {
+          "6101": "Advanced Financial Accounting",
+          "6102": "Corporate Governance and Accountability",
+          "6103": "Advanced Research Methodology",
+          "7101": "Corporate Reporting"
+        },
+        "mba-2nd": {
+          "6201": "Contemporary Issues in Accounting", 
+          "6202": "Advanced Cost & Management Accounting",
+          "7203": "Corporate Tax Planning"
+        }
+      };
+
+      // Function to update semester options based on selected batch
+      function updateSemesterOptions() {
+        const batchSelect = document.getElementById('batchFilter');
+        const semesterSelect = document.getElementById('semesterFilter');
+        const courseSelect = document.getElementById('courseFilter');
+        
+        const selectedBatch = batchSelect.value;
+        
+        // Clear and disable semester and course dropdowns
+        semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+        courseSelect.innerHTML = '<option value="">Select Course</option>';
+        semesterSelect.disabled = !selectedBatch;
+        courseSelect.disabled = true;
+        
+        if (!selectedBatch) {
+          return;
+        }
+        
+        // Find available semesters for the selected batch
+        const availableSemesters = new Set();
+        
+        if (ALL_DRIVE_RESOURCES) {
+          Object.keys(ALL_DRIVE_RESOURCES).forEach(semester => {
+            if (ALL_DRIVE_RESOURCES[semester][selectedBatch]) {
+              availableSemesters.add(semester);
+            }
+          });
+        }
+        
+        // Sort semesters in logical order
+        const semesterOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', 'mba-1st', 'mba-2nd'];
+        const sortedSemesters = Array.from(availableSemesters).sort((a, b) => {
+          return semesterOrder.indexOf(a) - semesterOrder.indexOf(b);
+        });
+        
+        // Populate semester dropdown
+        sortedSemesters.forEach(semester => {
+          const option = document.createElement('option');
+          option.value = semester;
+          option.textContent = semester.includes('mba') 
+            ? semester.replace('mba-', 'MBA ').replace(/\b\w/g, l => l.toUpperCase()) + ' Semester'
+            : semester.replace(/\b\w/g, l => l.toUpperCase()) + ' Semester';
+          semesterSelect.appendChild(option);
+        });
+        
+        semesterSelect.disabled = false;
+      }
+      
+      // Function to update course options based on selected semester
+      function updateCourseOptions() {
+        const semesterSelect = document.getElementById('semesterFilter');
+        const courseSelect = document.getElementById('courseFilter');
+        
+        const selectedSemester = semesterSelect.value;
+        
+        // Clear and disable course dropdown
+        courseSelect.innerHTML = '<option value="">Select Course</option>';
+        courseSelect.disabled = !selectedSemester;
+        
+        if (!selectedSemester || !COURSE_MAPPING[selectedSemester]) {
+          return;
+        }
+        
+        // Populate course dropdown
+        const courses = COURSE_MAPPING[selectedSemester];
+        Object.entries(courses).forEach(([code, name]) => {
+          const option = document.createElement('option');
+          option.value = code;
+          option.textContent = `${code} - ${name}`;
+          courseSelect.appendChild(option);
+        });
+        
+        courseSelect.disabled = false;
+      }
+
       // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
       const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
       let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
@@ -787,8 +935,9 @@
       const DOM_CACHE = {
         globalSearch: null,
         resultsStats: null,
-        semesterFilter: null,
         batchFilter: null,
+        semesterFilter: null,
+        courseFilter: null,
         allResources: null,
         accordionControls: null,
         searchResultsContainer: null,
@@ -797,8 +946,9 @@
         init() {
           this.globalSearch = document.getElementById("globalSearch");
           this.resultsStats = document.getElementById("resultsStats");
-          this.semesterFilter = document.getElementById("semesterFilter");
           this.batchFilter = document.getElementById("batchFilter");
+          this.semesterFilter = document.getElementById("semesterFilter");
+          this.courseFilter = document.getElementById("courseFilter");
           this.allResources = document.getElementById("all-resources");
           this.accordionControls = document.getElementById("accordionControls");
           this.searchResultsContainer = document.getElementById(
@@ -1172,8 +1322,9 @@
 
       // Apply filters without requiring search term - shows all resources for selected filters
       async function applyFiltersOnly() {
-        const semesterFilter = DOM_CACHE.semesterFilter.value;
         const batchFilter = DOM_CACHE.batchFilter.value;
+        const semesterFilter = DOM_CACHE.semesterFilter.value;
+        const courseFilter = DOM_CACHE.courseFilter.value;
 
         // Show all resources for the selected filters (no search term required)
         updateSearchStats("Loading all resources for selected filters...");
@@ -1184,13 +1335,14 @@
             "", // Empty search term to get all results
             semesterFilter,
             batchFilter,
+            courseFilter,
             DOM_CACHE.resultsStats, // Use correct DOM element
             true // Flag to indicate this is a filter-only search
           );
           displayResults(results);
           updateSearchStats(
             `Showing ${results.length} resources${
-              semesterFilter || batchFilter ? " for selected filters" : " (all)"
+              semesterFilter || batchFilter || courseFilter ? " for selected filters" : " (all)"
             }`
           );
         } catch (error) {
@@ -1273,8 +1425,9 @@
       // Optimized search - only load data when user searches
       async function optimizedSearch() {
         const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
-        const semesterFilter = DOM_CACHE.semesterFilter.value;
         const batchFilter = DOM_CACHE.batchFilter.value;
+        const semesterFilter = DOM_CACHE.semesterFilter.value;
+        const courseFilter = DOM_CACHE.courseFilter.value;
 
         // Always require a search term for manual search
         if (!searchTerm) {
@@ -1300,6 +1453,7 @@
             searchTerm,
             semesterFilter,
             batchFilter,
+            courseFilter,
             DOM_CACHE.resultsStats
           );
           displayResults(results);
@@ -1317,6 +1471,7 @@
         searchTerm,
         semesterFilter,
         batchFilter,
+        courseFilter,
         statsElement,
         isFilterOnly = false
       ) {
@@ -1399,7 +1554,8 @@
                     semester,
                     batchKey,
                     batchInfo.label,
-                    statsElement
+                    statsElement,
+                    courseFilter // Pass course filter to folder search
                   );
                   return folderResults;
                 } catch (error) {
@@ -1572,6 +1728,7 @@
         batchKey,
         batchLabel,
         statsElement,
+        courseFilter = null,
         currentDepth = 0
       ) {
         if (maxDepth >= 0 && currentDepth >= maxDepth) return [];
@@ -1592,6 +1749,7 @@
             batchKey,
             batchLabel,
             statsElement,
+            courseFilter,
             currentDepth
           );
         }
@@ -1609,6 +1767,7 @@
             batchKey,
             batchLabel,
             statsElement,
+            courseFilter,
             currentDepth
           );
         }
@@ -1632,6 +1791,7 @@
             batchKey,
             batchLabel,
             statsElement,
+            courseFilter,
             currentDepth
           );
         } catch (error) {
@@ -1650,6 +1810,7 @@
         batchKey,
         batchLabel,
         statsElement,
+        courseFilter,
         currentDepth
       ) {
         const results = [];
@@ -1664,7 +1825,13 @@
           const matchesSearch =
             !searchTerm || smartMatch(searchTerm, file.name, filePath);
 
-          if (matchesSearch) {
+          // Course filter logic - if course filter is selected, only include files/folders related to that course
+          const matchesCourse = !courseFilter || 
+            smartMatch(courseFilter, file.name, filePath) ||
+            (COURSE_MAPPING[semester] && COURSE_MAPPING[semester][courseFilter] && 
+             smartMatch(COURSE_MAPPING[semester][courseFilter], file.name, filePath));
+
+          if (matchesSearch && matchesCourse) {
             results.push({
               ...file,
               path: filePath,
@@ -1697,6 +1864,7 @@
                 batchKey,
                 batchLabel,
                 statsElement,
+                courseFilter,
                 currentDepth + 1
               )
             );
