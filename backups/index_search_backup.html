@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Academic Resort</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="preconnect" href="https://www.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/styles.css" />
+    <script src="./assets/script.js" defer></script>
+    <style>
+      /* Google-style Header - Seamless */
+      .google-header {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        z-index: 1000;
+        background: transparent;
+        padding: 8px 20px;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 15px;
+      }
+
+      .home-link {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 12px;
+        color: #374151;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s ease;
+      }
+
+      .home-link:hover {
+        background: #f3f4f6;
+      }
+
+      .apps-dropdown {
+        position: relative;
+      }
+
+      .apps-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: none;
+        border-radius: 50%;
+        cursor: pointer;
+        color: #5f6368;
+        transition: background 0.2s ease;
+      }
+
+      .apps-btn:hover {
+        background: #f1f3f4;
+      }
+
+      .apps-dropdown-content {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 8px;
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+        min-width: 320px;
+        display: none;
+        z-index: 1001;
+      }
+
+      .apps-dropdown-content.show {
+        display: block;
+      }
+
+      .apps-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .app-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 12px 8px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #3c4043;
+        transition: background 0.2s ease;
+      }
+
+      .app-item:hover {
+        background: #f8f9fa;
+      }
+
+      .app-icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+
+      .app-label {
+        font-size: 12px;
+        text-align: center;
+        font-weight: 400;
+        line-height: 1.2;
+      }
+
+      /* Search Engine Style Overrides */
+      .main-search-section {
+        text-align: center;
+        padding: 60px 20px 60px; /* Reduced top padding since header is not fixed */
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .search-engine-logo {
+        font-size: 4rem;
+        margin-bottom: 10px;
+      }
+
+      .search-engine-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 40px;
+      }
+
+      .main-search-box {
+        position: relative;
+        max-width: 500px;
+        margin: 0 auto 30px;
+      }
+
+      .main-search-input {
+        width: 100%;
+        padding: 15px 50px 15px 20px;
+        font-size: 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 24px;
+        outline: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .main-search-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+      }
+
+      .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-size: 18px;
+      }
+
+      .search-filters {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .search-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 15px auto 30px;
+        max-width: 500px;
+        padding: 10px 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      /* Advanced Options Toggle - Google-like */
+      .options-toggle {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .options-toggle-btn {
+        background: none;
+        border: none;
+        color: #1a73e8;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 8px 16px;
+        border-radius: 20px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        position: relative;
+        outline: none;
+      }
+
+      .options-toggle-btn:hover {
+        background: rgba(26, 115, 232, 0.08);
+        text-decoration: none;
+      }
+
+      .options-toggle-btn:focus {
+        background: rgba(26, 115, 232, 0.12);
+      }
+
+      .options-toggle-btn::after {
+        content: "▼";
+        margin-left: 8px;
+        font-size: 12px;
+        transition: transform 0.2s ease;
+      }
+
+      .options-toggle-btn.active::after {
+        transform: rotate(180deg);
+      }
+
+      .advanced-options {
+        margin-top: 20px;
+        display: none;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: none;
+        animation: slideDown 0.2s ease-out;
+      }
+
+      .advanced-options.show {
+        display: block;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .options-section {
+        margin-bottom: 20px;
+      }
+
+      .options-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .options-section-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #3c4043;
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      .search-stats-subtle {
+        font-size: 13px;
+        color: #5f6368;
+        margin-bottom: 0;
+        text-align: center;
+        padding: 8px 0;
+        background: transparent;
+        border-radius: 0;
+      }
+
+      .cache-reset-link {
+        color: #1a73e8;
+        text-decoration: none;
+        font-size: 13px;
+        margin-left: 8px;
+        transition: color 0.2s ease;
+        font-weight: 500;
+      }
+
+      .cache-reset-link:hover {
+        color: #1557b0;
+        text-decoration: underline;
+      }
+
+      .apply-filters-btn-subtle {
+        background: #1a73e8;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        margin-left: 8px;
+        outline: none;
+        font-family: inherit;
+      }
+
+      .apply-filters-btn-subtle:hover {
+        background: #1557b0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+      }
+
+      .apply-filters-btn-subtle:focus {
+        background: #1557b0;
+        box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+      }
+
+      .apply-filters-btn-subtle:active {
+        background: #1347a0;
+      }
+
+      .search-stats {
+        flex: 1;
+      }
+
+      .cache-btn,
+      .apply-filters-btn {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s ease;
+      }
+
+      .cache-btn:hover,
+      .apply-filters-btn:hover {
+        background: #2563eb;
+      }
+
+      .apply-filters-btn {
+        background: #059669;
+        margin-left: 10px;
+      }
+
+      .apply-filters-btn:hover {
+        background: #047857;
+      }
+
+      .filter-select {
+        padding: 8px 12px;
+        border: 1px solid #dadce0;
+        border-radius: 6px;
+        font-size: 14px;
+        background: #ffffff;
+        color: #3c4043;
+        min-width: 140px;
+        margin: 0;
+        outline: none;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+
+      .filter-select:hover {
+        border-color: #1a73e8;
+        box-shadow: 0 1px 6px rgba(32, 33, 36, 0.1);
+      }
+
+      .filter-select:focus {
+        border-color: #1a73e8;
+        box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
+      }
+
+      .filter-select option {
+        background: #ffffff;
+        color: #3c4043;
+        padding: 8px;
+      }
+
+      .search-results-container {
+        margin: 40px auto;
+        max-width: 800px;
+        display: none;
+      }
+
+      .search-results-container.visible {
+        display: block;
+      }
+
+      .quick-access-section {
+        margin: 60px auto;
+        max-width: 1000px;
+        padding: 0 20px;
+      }
+
+      .quick-access-title {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 30px;
+      }
+
+      .quick-access-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .quick-access-card {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #374151;
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .quick-access-card:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        transform: translateY(-2px);
+      }
+
+      .quick-access-icon {
+        font-size: 2rem;
+        margin-right: 15px;
+      }
+
+      .quick-access-text {
+        font-weight: 500;
+      }
+
+      .results-status {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      /* Hide sidebar on index page */
+      .sidebar {
+        display: none !important;
+      }
+
+      /* Adjust main content when sidebar is hidden */
+      body {
+        margin-left: 0 !important;
+      }
+
+      /* Mobile responsive fixes */
+      @media (max-width: 768px) {
+        .main-search-section {
+          padding: 50px 15px 40px; /* Adjusted for mobile with less top padding */
+        }
+
+        .search-engine-title {
+          font-size: 2rem;
+        }
+
+        .main-search-input {
+          font-size: 16px;
+          padding: 12px 45px 12px 15px;
+        }
+
+        .main-search-input::placeholder {
+          font-size: 14px;
+        }
+
+        .apps-dropdown-content {
+          min-width: 280px;
+          right: -10px;
+        }
+
+        .apps-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .header-right {
+          gap: 10px;
+        }
+
+        .home-link {
+          padding: 6px 8px;
+          font-size: 13px;
+        }
+
+        .advanced-options {
+          margin: 20px 0 0;
+          padding: 0;
+          max-width: none;
+        }
+
+        .search-filters {
+          flex-direction: column;
+          gap: 12px;
+          align-items: center;
+        }
+
+        .filter-select {
+          width: 100%;
+          max-width: 300px;
+          min-width: auto;
+        }
+
+        .apply-filters-btn-subtle {
+          width: 100%;
+          max-width: 300px;
+          margin-left: 0;
+          margin-top: 4px;
+        }
+
+        .options-toggle-btn {
+          padding: 10px 20px;
+          font-size: 15px;
+        }
+      }
+
+      /* Results section styling */
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f9fafb;
+        border-radius: 8px;
+      }
+
+      .accordion-controls {
+        display: flex;
+        gap: 10px;
+      }
+
+      .control-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: white;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .control-btn:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Google-style Header with Home Link and Apps Dropdown -->
+    <div class="google-header">
+      <div class="header-right">
+        <a href="./" class="home-link" title="Academic Resort Home"
+          >🏠 Home</a
+        >
+        <div class="apps-dropdown">
+          <button
+            class="apps-btn"
+            onclick="toggleAppsDropdown()"
+            title="Quick Access"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M6,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM16,6c0,1.1 0.9,2 2,2s2,-0.9 2,-2 -0.9,-2 -2,-2 -2,0.9 -2,2zM12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2z"
+              />
+            </svg>
+          </button>
+          <div class="apps-dropdown-content" id="appsDropdown">
+            <div class="apps-grid">
+              <a class="app-item" href="./pages/1st.html">
+                <div class="app-icon">1️⃣</div>
+                <span class="app-label">1st Semester</span>
+              </a>
+              <a class="app-item" href="./pages/2nd.html">
+                <div class="app-icon">2️⃣</div>
+                <span class="app-label">2nd Semester</span>
+              </a>
+              <a class="app-item" href="./pages/3rd.html">
+                <div class="app-icon">3️⃣</div>
+                <span class="app-label">3rd Semester</span>
+              </a>
+              <a class="app-item" href="./pages/4th.html">
+                <div class="app-icon">4️⃣</div>
+                <span class="app-label">4th Semester</span>
+              </a>
+              <a class="app-item" href="./pages/5th.html">
+                <div class="app-icon">5️⃣</div>
+                <span class="app-label">5th Semester</span>
+              </a>
+              <a class="app-item" href="./pages/6th.html">
+                <div class="app-icon">6️⃣</div>
+                <span class="app-label">6th Semester</span>
+              </a>
+              <a class="app-item" href="./pages/7th.html">
+                <div class="app-icon">7️⃣</div>
+                <span class="app-label">7th Semester</span>
+              </a>
+              <a class="app-item" href="./pages/8th.html">
+                <div class="app-icon">8️⃣</div>
+                <span class="app-label">8th Semester</span>
+              </a>
+              <a class="app-item" href="./pages/mba-1st.html">
+                <div class="app-icon">🎯</div>
+                <span class="app-label">MBA 1st</span>
+              </a>
+              <a class="app-item" href="./pages/mba-2nd.html">
+                <div class="app-icon">🎓</div>
+                <span class="app-label">MBA 2nd</span>
+              </a>
+              <a class="app-item" href="./pages/course-teachers.html">
+                <div class="app-icon">👨‍🏫</div>
+                <span class="app-label">Teachers</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Main Search Section (Search Engine Style) -->
+    <main class="main-search-section">
+      <div class="search-engine-logo">🎓</div>
+      <h1 class="search-engine-title">Academic Resort</h1>
+
+      <!-- Search Box -->
+      <div class="main-search-box">
+        <input
+          type="text"
+          id="globalSearch"
+          class="main-search-input"
+          placeholder="Search academic resources..."
+          oninput="debounce(optimizedSearch, 500)()"
+        />
+        <div class="search-icon">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Advanced Options Toggle -->
+      <div class="options-toggle">
+        <button class="options-toggle-btn" onclick="toggleAdvancedOptions()">
+          Advanced Search
+        </button>
+      </div>
+
+      <!-- Advanced Options (Initially Hidden) -->
+      <div class="advanced-options" id="advancedOptions">
+        <!-- Search Filters -->
+        <div class="search-filters">
+          <select
+            id="semesterFilter"
+            class="filter-select"
+            onchange="handleFilterChange()"
+          >
+            <option value="">All Semesters</option>
+            <option value="1st">1st Semester</option>
+            <option value="2nd">2nd Semester</option>
+            <option value="3rd">3rd Semester</option>
+            <option value="4th">4th Semester</option>
+            <option value="5th">5th Semester</option>
+            <option value="6th">6th Semester</option>
+            <option value="7th">7th Semester</option>
+            <option value="8th">8th Semester</option>
+          </select>
+
+          <select
+            id="batchFilter"
+            class="filter-select"
+            onchange="handleFilterChange()"
+          >
+            <option value="">All Batches</option>
+            <option value="30">30th Batch</option>
+            <option value="29">29th Batch</option>
+            <option value="28">28th Batch</option>
+            <option value="27">27th Batch</option>
+            <option value="26">26th Batch</option>
+          </select>
+
+          <button
+            id="applyFiltersBtn"
+            class="apply-filters-btn-subtle"
+            onclick="applyFiltersOnly()"
+            title="Show all resources for selected filters"
+          >
+            Apply Filters
+          </button>
+        </div>
+
+        <!-- Cache Stats and Reset -->
+        <div class="search-stats-subtle" id="searchStatsSubtle">
+          Ready! Enter search terms to find resources.
+        </div>
+      </div>
+    </main>
+
+    <!-- Search Results Container -->
+    <div class="search-results-container" id="searchResultsContainer">
+      <div class="results-header">
+        <div class="results-status" id="resultsStats">
+          Ready! Enter search terms to find resources.
+        </div>
+
+        <!-- Accordion Controls -->
+        <div
+          class="accordion-controls"
+          id="accordionControls"
+          style="display: none"
+        >
+          <button
+            class="control-btn"
+            onclick="expandAllSemesters()"
+            title="Expand all semesters"
+          >
+            📂 Expand All
+          </button>
+          <button
+            class="control-btn"
+            onclick="collapseAllSemesters()"
+            title="Collapse all semesters"
+          >
+            📁 Collapse All
+          </button>
+          <button
+            class="control-btn"
+            onclick="collapseAllBatches()"
+            title="Collapse all batches"
+          >
+            🗂️ Minimize Batches
+          </button>
+        </div>
+      </div>
+
+      <!-- All Drive Resources will be loaded here -->
+      <div id="all-resources"></div>
+    </div>
+
+    <div data-include="./assets/includes/footer.html"></div>
+
+    <script>
+      // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
+      const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
+      let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
+      let allFiles = []; // Store all loaded files for searching
+      let isLoading = false;
+      let fileCache = new Map(); // Cache for API responses
+      let loadedFolders = new Set(); // Track which folders we've already loaded
+
+      // DOM element cache for performance optimization
+      const DOM_CACHE = {
+        globalSearch: null,
+        resultsStats: null,
+        semesterFilter: null,
+        batchFilter: null,
+        allResources: null,
+        accordionControls: null,
+        searchResultsContainer: null,
+
+        // Initialize cache
+        init() {
+          this.globalSearch = document.getElementById("globalSearch");
+          this.resultsStats = document.getElementById("resultsStats");
+          this.semesterFilter = document.getElementById("semesterFilter");
+          this.batchFilter = document.getElementById("batchFilter");
+          this.allResources = document.getElementById("all-resources");
+          this.accordionControls = document.getElementById("accordionControls");
+          this.searchResultsContainer = document.getElementById(
+            "searchResultsContainer"
+          );
+        },
+      };
+
+      // Toggle apps dropdown
+      function toggleAppsDropdown() {
+        const dropdown = document.getElementById("appsDropdown");
+        dropdown.classList.toggle("show");
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("appsDropdown");
+        const appsBtn = document.querySelector(".apps-btn");
+
+        if (
+          dropdown &&
+          !dropdown.contains(event.target) &&
+          !appsBtn.contains(event.target)
+        ) {
+          dropdown.classList.remove("show");
+        }
+      });
+
+      // Toggle advanced options
+      function toggleAdvancedOptions() {
+        const advancedOptions = document.getElementById("advancedOptions");
+        const toggleBtn = document.querySelector(".options-toggle-btn");
+
+        if (advancedOptions.classList.contains("show")) {
+          advancedOptions.classList.remove("show");
+          toggleBtn.classList.remove("active");
+          toggleBtn.textContent = "Advanced Search";
+        } else {
+          advancedOptions.classList.add("show");
+          toggleBtn.classList.add("active");
+          toggleBtn.textContent = "Hide Advanced Search";
+        }
+      }
+
+      // Show/hide search results and quick access sections
+      function toggleSections(showResults) {
+        if (showResults) {
+          DOM_CACHE.searchResultsContainer.classList.add("visible");
+        } else {
+          DOM_CACHE.searchResultsContainer.classList.remove("visible");
+        }
+      }
+
+      // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
+
+      // Cache configuration
+      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const CACHE_VERSION = "v1"; // Increment this to force cache refresh on updates
+
+      // === RATE LIMITING SYSTEM ===
+
+      class APIRateLimiter {
+        constructor(maxConcurrent = 3, delayBetween = 100) {
+          this.maxConcurrent = maxConcurrent;
+          this.delayBetween = delayBetween;
+          this.activeRequests = 0;
+          this.requestQueue = [];
+          this.isProcessing = false;
+        }
+
+        async makeRequest(url) {
+          return new Promise((resolve, reject) => {
+            this.requestQueue.push({ url, resolve, reject });
+            this.processQueue();
+          });
+        }
+
+        async processQueue() {
+          if (this.isProcessing || this.requestQueue.length === 0) return;
+
+          this.isProcessing = true;
+
+          while (
+            this.requestQueue.length > 0 &&
+            this.activeRequests < this.maxConcurrent
+          ) {
+            const { url, resolve, reject } = this.requestQueue.shift();
+            this.activeRequests++;
+
+            this.executeRequest(url, resolve, reject);
+
+            // Small delay between starting requests
+            if (this.requestQueue.length > 0) {
+              await new Promise((resolve) =>
+                setTimeout(resolve, this.delayBetween)
+              );
+            }
+          }
+
+          this.isProcessing = false;
+        }
+
+        async executeRequest(url, resolve, reject) {
+          try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+              // Extract folder ID for better debugging
+              const folderIdMatch = url.match(/'([^']+)'\+in\+parents/);
+              const folderId = folderIdMatch ? folderIdMatch[1] : "unknown";
+
+              // Handle different error types
+              if (response.status === 500) {
+                resolve({ files: [] });
+                return;
+              } else if (response.status === 403) {
+                resolve({ files: [] });
+                return;
+              } else if (response.status === 404) {
+                resolve({ files: [] });
+                return;
+              } else if (response.status === 429) {
+                resolve({ files: [] });
+                return;
+              } else if (response.status === 401) {
+                resolve({ files: [] });
+                return;
+              } else {
+                throw new Error(
+                  `API Error: ${response.status} - ${response.statusText}`
+                );
+              }
+            }
+
+            const data = await response.json();
+            resolve(data);
+          } catch (error) {
+            const folderIdMatch = url.match(/'([^']+)'\+in\+parents/);
+            const folderId = folderIdMatch ? folderIdMatch[1] : "unknown";
+            console.warn(`Error: ${folderId}`);
+            resolve({ files: [] }); // Return empty result to continue search
+          } finally {
+            // Always decrement counter, whether success or error
+            this.activeRequests = Math.max(0, this.activeRequests - 1);
+
+            // Continue processing queue
+            setTimeout(() => this.processQueue(), this.delayBetween);
+          }
+        }
+
+        getStats() {
+          return {
+            activeRequests: this.activeRequests,
+            queueLength: this.requestQueue.length,
+            maxConcurrent: this.maxConcurrent,
+          };
+        }
+      }
+
+      // Create global rate limiter instance
+      const apiLimiter = new APIRateLimiter(300, 3);
+
+      // Get cache key for a folder
+      function getCacheKey(folderId, currentDepth) {
+        return `driveCache_${CACHE_VERSION}_${folderId}_${currentDepth}`;
+      }
+
+      // Get global cache metadata key
+      function getGlobalCacheKey() {
+        return `driveCacheMetadata_${CACHE_VERSION}`;
+      }
+
+      // Save data to persistent cache with timestamp
+      function saveToPersistentCache(folderId, currentDepth, data) {
+        try {
+          const cacheKey = getCacheKey(folderId, currentDepth);
+          const cacheData = {
+            data: data,
+            timestamp: Date.now(),
+            version: CACHE_VERSION,
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+          // Update metadata
+          updateCacheMetadata(cacheKey);
+        } catch (error) {
+          console.warn("Failed to save to persistent cache:", error);
+        }
+      }
+
+      // Load data from persistent cache
+      function loadFromPersistentCache(folderId, currentDepth) {
+        try {
+          const cacheKey = getCacheKey(folderId, currentDepth);
+          const cached = localStorage.getItem(cacheKey);
+
+          if (!cached) return null;
+
+          const cacheData = JSON.parse(cached);
+          const age = Date.now() - cacheData.timestamp;
+
+          // Check if cache is expired or version mismatch
+          if (age > CACHE_DURATION || cacheData.version !== CACHE_VERSION) {
+            localStorage.removeItem(cacheKey);
+            removeCacheFromMetadata(cacheKey);
+            return null;
+          }
+
+          return cacheData.data;
+        } catch (error) {
+          console.warn("Failed to load from persistent cache:", error);
+          return null;
+        }
+      }
+
+      // Update cache metadata for cleanup
+      function updateCacheMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          if (!metadata.keys.includes(cacheKey)) {
+            metadata.keys.push(cacheKey);
+          }
+          metadata.lastUpdated = Date.now();
+
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to update cache metadata:", error);
+        }
+      }
+
+      // Remove cache key from metadata
+      function removeCacheFromMetadata(cacheKey) {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+          metadata.keys = metadata.keys.filter((key) => key !== cacheKey);
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Failed to remove from cache metadata:", error);
+        }
+      }
+
+      // Clean expired cache entries
+      function cleanExpiredCache() {
+        try {
+          const metaKey = getGlobalCacheKey();
+          let metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          // Only run cleanup once per hour
+          if (Date.now() - metadata.lastCleanup < 60 * 60 * 1000) return;
+
+          const validKeys = [];
+
+          metadata.keys.forEach((cacheKey) => {
+            try {
+              const cached = localStorage.getItem(cacheKey);
+              if (cached) {
+                const cacheData = JSON.parse(cached);
+                const age = Date.now() - cacheData.timestamp;
+
+                if (
+                  age <= CACHE_DURATION &&
+                  cacheData.version === CACHE_VERSION
+                ) {
+                  validKeys.push(cacheKey);
+                } else {
+                  localStorage.removeItem(cacheKey);
+                }
+              }
+            } catch (error) {
+              // Remove invalid cache entries
+              localStorage.removeItem(cacheKey);
+            }
+          });
+
+          metadata.keys = validKeys;
+          metadata.lastCleanup = Date.now();
+          localStorage.setItem(metaKey, JSON.stringify(metadata));
+        } catch (error) {
+          console.warn("Cache cleanup failed:", error);
+        }
+      }
+
+      // Get cache statistics
+      function getCacheStats() {
+        try {
+          const metaKey = getGlobalCacheKey();
+          const metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          let totalSize = 0;
+          let validEntries = 0;
+
+          metadata.keys.forEach((cacheKey) => {
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+              totalSize += cached.length;
+              validEntries++;
+            }
+          });
+
+          return {
+            entries: validEntries,
+            sizeKB: Math.round(totalSize / 1024),
+            lastUpdated: metadata.lastUpdated
+              ? new Date(metadata.lastUpdated).toLocaleString()
+              : "Never",
+          };
+        } catch (error) {
+          return { entries: 0, sizeKB: 0, lastUpdated: "Error" };
+        }
+      }
+
+      // Clear all cache data
+      function clearAllCache() {
+        try {
+          const metaKey = getGlobalCacheKey();
+          const metadata = JSON.parse(
+            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+          );
+
+          // Remove all cache entries
+          metadata.keys.forEach((cacheKey) => {
+            localStorage.removeItem(cacheKey);
+          });
+
+          // Clear metadata
+          localStorage.removeItem(metaKey);
+
+          // Clear folder link cache from localStorage
+          localStorage.removeItem("resolvedFolderCache_v1");
+
+          // Clear in-memory caches
+          fileCache.clear();
+
+          // Clear resolved folder cache from memory
+          if (window.resolvedFolderCache) {
+            window.resolvedFolderCache.clear();
+          }
+
+          return true;
+        } catch (error) {
+          console.error("Failed to clear cache:", error);
+          return false;
+        }
+      }
+
+      // Smart filter change handler - only search if there's text in search bar
+      function handleFilterChange() {
+        const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
+
+        // Only trigger search if there's already text in the search bar
+        if (searchTerm && searchTerm.length >= 2) {
+          optimizedSearch();
+        } else {
+          // Clear results if no search term
+          displayResults([]);
+          updateSearchStats("Enter a search term to find resources.");
+          toggleSections(false);
+        }
+      }
+
+      // Apply filters without requiring search term - shows all resources for selected filters
+      async function applyFiltersOnly() {
+        const semesterFilter = DOM_CACHE.semesterFilter.value;
+        const batchFilter = DOM_CACHE.batchFilter.value;
+
+        // Show all resources for the selected filters (no search term required)
+        updateSearchStats("Loading all resources for selected filters...");
+        toggleSections(true);
+
+        try {
+          const results = await smartSearch(
+            "", // Empty search term to get all results
+            semesterFilter,
+            batchFilter,
+            DOM_CACHE.resultsStats, // Use correct DOM element
+            true // Flag to indicate this is a filter-only search
+          );
+          displayResults(results);
+          updateSearchStats(
+            `Showing ${results.length} resources${
+              semesterFilter || batchFilter ? " for selected filters" : " (all)"
+            }`
+          );
+        } catch (error) {
+          console.error("Apply filters error:", error);
+          updateSearchStats("Failed to load resources. Please try again.");
+          toggleSections(false);
+        }
+      }
+
+      // Rebuild cache function (still needed for compatibility)
+      function rebuildCache() {
+        const success = clearAllCache();
+        if (success) {
+          updateSearchStats(
+            "Cache cleared! Next search will rebuild the cache."
+          );
+          updateCacheStats();
+          displayResults([]);
+          toggleSections(false);
+        } else {
+          updateSearchStats("Failed to clear cache. Please try again.");
+        }
+      }
+
+      // Update search stats helper
+      function updateSearchStats(message) {
+        const statsElement = document.getElementById("searchStats");
+        if (statsElement) {
+          statsElement.textContent = message;
+        }
+
+        // Update subtle stats in advanced options
+        const subtleStatsElement = document.getElementById("searchStatsSubtle");
+        if (subtleStatsElement) {
+          subtleStatsElement.innerHTML = message;
+        }
+
+        // Also update the results stats for backward compatibility
+        if (DOM_CACHE.resultsStats) {
+          DOM_CACHE.resultsStats.textContent = message;
+        }
+      }
+
+      // Update cache stats with subtle display like old browse page
+      function updateCacheStats() {
+        const cacheStats = getCacheStats();
+        const subtleStatsElement = document.getElementById("searchStatsSubtle");
+
+        if (cacheStats.entries > 0) {
+          if (subtleStatsElement) {
+            subtleStatsElement.innerHTML = `Ready! ${cacheStats.entries} folders available. Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" class="cache-reset-link" title="Clear cache and reload fresh data">⟳</a>`;
+          }
+          if (DOM_CACHE.resultsStats) {
+            DOM_CACHE.resultsStats.innerHTML = `Ready! ${cacheStats.entries} folders available. Enter search terms to find resources.`;
+          }
+        } else {
+          if (subtleStatsElement) {
+            subtleStatsElement.innerHTML = `Ready! Enter search terms to find resources. <a href="#" onclick="clearCacheAndReload()" class="cache-reset-link" title="Clear cache and reload fresh data">⟳</a>`;
+          }
+          if (DOM_CACHE.resultsStats) {
+            DOM_CACHE.resultsStats.textContent =
+              "Ready to search! Enter terms above. First search will build cache and may take a moment.";
+          }
+        }
+      }
+
+      // Clear cache and reload function
+      function clearCacheAndReload() {
+        const success = clearAllCache();
+        if (success) {
+          updateSearchStats("Cache cleared! Reloading page...");
+          setTimeout(() => {
+            location.reload();
+          }, 1000);
+        } else {
+          updateSearchStats("Failed to clear cache. Please try again.");
+        }
+      }
+
+      // Optimized search - only load data when user searches
+      async function optimizedSearch() {
+        const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
+        const semesterFilter = DOM_CACHE.semesterFilter.value;
+        const batchFilter = DOM_CACHE.batchFilter.value;
+
+        // Always require a search term for manual search
+        if (!searchTerm) {
+          displayResults([]);
+          DOM_CACHE.resultsStats.textContent =
+            "Enter a search term to find resources.";
+          toggleSections(false);
+          return;
+        }
+
+        if (searchTerm.length < 2) {
+          DOM_CACHE.resultsStats.textContent =
+            "Type at least 2 characters to search...";
+          toggleSections(false);
+          return;
+        }
+
+        DOM_CACHE.resultsStats.textContent = "Searching...";
+        toggleSections(true);
+
+        try {
+          const results = await smartSearch(
+            searchTerm,
+            semesterFilter,
+            batchFilter,
+            DOM_CACHE.resultsStats
+          );
+          displayResults(results);
+          updateStats(results.length, "∞", ` (search results)`);
+          DOM_CACHE.resultsStats.innerHTML = `Found ${results.length} results`;
+        } catch (error) {
+          DOM_CACHE.resultsStats.textContent =
+            "Search failed. Please try again.";
+          toggleSections(false);
+        }
+      }
+
+      // Smart search implementation
+      async function smartSearch(
+        searchTerm,
+        semesterFilter,
+        batchFilter,
+        statsElement,
+        isFilterOnly = false
+      ) {
+        const results = [];
+
+        // For filter-only searches, don't require a search term
+        if (!isFilterOnly && !searchTerm) {
+          return [];
+        }
+
+        // Smart folder organization: Group by semester, then distribute evenly
+        const semesterBatches = {};
+        for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
+          if (semesterFilter && semester !== semesterFilter) continue;
+          semesterBatches[semester] = [];
+          for (const [batchKey, batchInfo] of Object.entries(batches)) {
+            if (batchFilter && batchKey !== batchFilter) continue;
+            semesterBatches[semester].push({
+              semester,
+              batchKey,
+              batchInfo,
+            });
+          }
+        }
+
+        // Create round-robin batches
+        const smartBatches = [];
+        const maxBatchesPerSemester = Math.max(
+          ...Object.values(semesterBatches).map((batches) => batches.length)
+        );
+
+        for (
+          let batchIndex = 0;
+          batchIndex < maxBatchesPerSemester;
+          batchIndex++
+        ) {
+          const roundRobinBatch = [];
+          for (const semester of Object.keys(semesterBatches)) {
+            if (semesterBatches[semester][batchIndex]) {
+              roundRobinBatch.push(semesterBatches[semester][batchIndex]);
+            }
+          }
+          if (roundRobinBatch.length > 0) {
+            smartBatches.push(roundRobinBatch);
+          }
+        }
+
+        // Search folders in parallel batches
+        const PARALLEL_BATCH_SIZE = 40;
+        const MAX_SEARCH_DEPTH = 8; // Increased depth for more comprehensive results
+
+        // Clear results container at start
+        const container = document.getElementById("all-resources");
+        container.innerHTML = '<div class="live-results">Searching...</div>';
+
+        let totalFolders = 0;
+        let completedFolders = 0;
+
+        // Count total folders
+        smartBatches.forEach((batch) => (totalFolders += batch.length));
+
+        // Process each round-robin batch
+        for (const roundRobinBatch of smartBatches) {
+          for (
+            let i = 0;
+            i < roundRobinBatch.length;
+            i += PARALLEL_BATCH_SIZE
+          ) {
+            const batch = roundRobinBatch.slice(i, i + PARALLEL_BATCH_SIZE);
+
+            // Process this batch of folders in parallel
+            const batchPromises = batch.map(
+              async ({ semester, batchKey, batchInfo }) => {
+                try {
+                  const folderResults = await searchInFolderRecursive(
+                    batchInfo.folderId,
+                    "",
+                    MAX_SEARCH_DEPTH,
+                    searchTerm,
+                    semester,
+                    batchKey,
+                    batchInfo.label,
+                    statsElement
+                  );
+                  return folderResults;
+                } catch (error) {
+                  console.warn(`Failed to search ${batchInfo.label}:`, error);
+                  return [];
+                }
+              }
+            );
+
+            // Wait for this batch to complete
+            const batchResults = await Promise.all(batchPromises);
+
+            // Add results and update progress
+            for (const folderResults of batchResults) {
+              results.push(...folderResults);
+            }
+
+            completedFolders += batch.length;
+            const limiterStats = apiLimiter.getStats();
+
+            // Update results display in real-time after each batch
+            const currentResults = removeDuplicatesOptimized(results);
+            if (currentResults.length > 0) {
+              displayResults(currentResults);
+              statsElement.innerHTML = `Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+            } else {
+              statsElement.textContent = `Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
+            }
+
+            // Early termination if we have many results
+            if (currentResults.length > 500) {
+              statsElement.innerHTML = `✅ Found ${currentResults.length} results <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+              return removeDuplicatesOptimized(results);
+            }
+
+            if (
+              searchTerm &&
+              searchTerm.length > 6 &&
+              currentResults.length > 100
+            ) {
+              statsElement.innerHTML = `✅ Found ${currentResults.length} results <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+              return removeDuplicatesOptimized(results);
+            }
+          }
+        }
+
+        const flatResults = removeDuplicatesOptimized(results);
+
+        // Save captured folder IDs to persistent cache
+        saveResolvedFolderCache();
+
+        // Final update
+        statsElement.innerHTML = `Search complete <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
+
+        return flatResults;
+      }
+
+      // Load resolved folder cache from localStorage
+      function loadResolvedFolderCache() {
+        try {
+          const cached = localStorage.getItem("resolvedFolderCache_v1");
+          if (cached) {
+            const cacheData = JSON.parse(cached);
+            const age = Date.now() - cacheData.timestamp;
+
+            if (age <= CACHE_DURATION && cacheData.version === CACHE_VERSION) {
+              window.resolvedFolderCache = new Map(
+                Object.entries(cacheData.data)
+              );
+            } else {
+              localStorage.removeItem("resolvedFolderCache_v1");
+            }
+          }
+        } catch (error) {
+          console.warn("Failed to load resolved folder cache:", error);
+        }
+
+        if (!window.resolvedFolderCache) {
+          window.resolvedFolderCache = new Map();
+        }
+      }
+
+      // Save resolved folder cache to localStorage for persistence
+      function saveResolvedFolderCache() {
+        if (
+          !window.resolvedFolderCache ||
+          window.resolvedFolderCache.size === 0
+        ) {
+          return;
+        }
+
+        try {
+          const cacheData = {
+            data: Object.fromEntries(window.resolvedFolderCache),
+            timestamp: Date.now(),
+            version: CACHE_VERSION,
+          };
+          localStorage.setItem(
+            "resolvedFolderCache_v1",
+            JSON.stringify(cacheData)
+          );
+        } catch (error) {
+          console.warn("Failed to save resolved folder cache:", error);
+        }
+      }
+
+      // Advanced search matching
+      function smartMatch(searchTerm, fileName, filePath) {
+        const search = searchTerm.toLowerCase().trim();
+        const name = fileName.toLowerCase();
+        const path = filePath.toLowerCase();
+
+        if (!search) return false;
+
+        // Exact phrase match
+        if (name.includes(search) || path.includes(search)) {
+          return true;
+        }
+
+        // Complete word boundaries
+        const searchWords = search
+          .split(/\s+/)
+          .filter((word) => word.length > 0);
+
+        // For single word searches, use word boundaries
+        if (searchWords.length === 1) {
+          const word = searchWords[0];
+          const wordBoundaryRegex = new RegExp(
+            `\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+            "i"
+          );
+          return wordBoundaryRegex.test(name) || wordBoundaryRegex.test(path);
+        }
+
+        // All words must be present
+        const allWordsPresent = searchWords.every((word) => {
+          const wordBoundaryRegex = new RegExp(
+            `\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+            "i"
+          );
+          return wordBoundaryRegex.test(name) || wordBoundaryRegex.test(path);
+        });
+
+        if (allWordsPresent) {
+          return true;
+        }
+
+        // Flexible spacing
+        const searchNoSpaces = search.replace(/\s+/g, "");
+        const nameNoSpaces = name.replace(/\s+/g, "");
+        const pathNoSpaces = path.replace(/\s+/g, "");
+
+        if (
+          nameNoSpaces.includes(searchNoSpaces) ||
+          pathNoSpaces.includes(searchNoSpaces)
+        ) {
+          return true;
+        }
+
+        return false;
+      }
+
+      // Recursive folder search
+      async function searchInFolderRecursive(
+        folderId,
+        path,
+        maxDepth,
+        searchTerm,
+        semester,
+        batchKey,
+        batchLabel,
+        statsElement,
+        currentDepth = 0
+      ) {
+        if (maxDepth >= 0 && currentDepth >= maxDepth) return [];
+
+        // Check persistent cache first
+        let cachedFiles = loadFromPersistentCache(folderId, currentDepth);
+
+        if (cachedFiles) {
+          const cacheKey = `${folderId}_${currentDepth}`;
+          fileCache.set(cacheKey, cachedFiles);
+
+          return await processFilesRecursively(
+            cachedFiles,
+            path,
+            maxDepth,
+            searchTerm,
+            semester,
+            batchKey,
+            batchLabel,
+            statsElement,
+            currentDepth
+          );
+        }
+
+        // Check in-memory cache
+        const cacheKey = `${folderId}_${currentDepth}`;
+        if (fileCache.has(cacheKey)) {
+          const memCachedFiles = fileCache.get(cacheKey);
+          return await processFilesRecursively(
+            memCachedFiles,
+            path,
+            maxDepth,
+            searchTerm,
+            semester,
+            batchKey,
+            batchLabel,
+            statsElement,
+            currentDepth
+          );
+        }
+
+        try {
+          const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
+
+          const data = await apiLimiter.makeRequest(url);
+
+          // Cache the raw response
+          const files = data.files || [];
+          fileCache.set(cacheKey, files);
+          saveToPersistentCache(folderId, currentDepth, files);
+
+          return await processFilesRecursively(
+            files,
+            path,
+            maxDepth,
+            searchTerm,
+            semester,
+            batchKey,
+            batchLabel,
+            statsElement,
+            currentDepth
+          );
+        } catch (error) {
+          console.error(`Error searching folder ${folderId}:`, error);
+          return [];
+        }
+      }
+
+      // Process files and recursively search subfolders
+      async function processFilesRecursively(
+        files,
+        path,
+        maxDepth,
+        searchTerm,
+        semester,
+        batchKey,
+        batchLabel,
+        statsElement,
+        currentDepth
+      ) {
+        const results = [];
+        const subfolderPromises = [];
+
+        files.forEach((file) => {
+          const filePath = path ? `${path}/${file.name}` : file.name;
+          const isFolder =
+            file.mimeType === "application/vnd.google-apps.folder";
+
+          // Enhanced fuzzy search - if no search term, include all files
+          const matchesSearch =
+            !searchTerm || smartMatch(searchTerm, file.name, filePath);
+
+          if (matchesSearch) {
+            results.push({
+              ...file,
+              path: filePath,
+              depth: currentDepth,
+              isFolder: isFolder,
+              semester: semester,
+              batch: batchKey,
+              batchLabel: batchLabel,
+              parentPath: path,
+            });
+          }
+
+          // Store folder IDs during initial search
+          if (isFolder) {
+            const exactKey = `${semester}_${batchKey}_${filePath}`;
+            if (window.resolvedFolderCache) {
+              window.resolvedFolderCache.set(exactKey, file.id);
+            }
+          }
+
+          // If it's a folder, search it recursively
+          if (isFolder && (maxDepth < 0 || currentDepth < maxDepth - 1)) {
+            subfolderPromises.push(
+              searchInFolderRecursive(
+                file.id,
+                filePath,
+                maxDepth,
+                searchTerm,
+                semester,
+                batchKey,
+                batchLabel,
+                statsElement,
+                currentDepth + 1
+              )
+            );
+          }
+        });
+
+        // Wait for all subfolder searches to complete
+        if (subfolderPromises.length > 0) {
+          const subfolderResults = await Promise.all(subfolderPromises);
+          results.push(...subfolderResults.flat());
+        }
+
+        return results;
+      }
+
+      // Optimized duplicate removal
+      function removeDuplicatesOptimized(files) {
+        if (files.length === 0) return [];
+
+        const uniqueResults = new Map();
+
+        files.forEach((file) => {
+          const key = `${file.semester}_${file.batch}_${file.path}`;
+          if (!uniqueResults.has(key)) {
+            uniqueResults.set(key, file);
+          }
+        });
+
+        return Array.from(uniqueResults.values());
+      }
+
+      // Load mapping from JSON file
+      async function loadDriveMapping() {
+        try {
+          const response = await fetch("./assets/drive-mapping.json");
+          if (!response.ok)
+            throw new Error(`Failed to load mapping: ${response.status}`);
+          const mapping = await response.json();
+
+          // Convert to the format expected by the rest of the code
+          ALL_DRIVE_RESOURCES = {};
+          Object.entries(mapping).forEach(([semester, semesterData]) => {
+            ALL_DRIVE_RESOURCES[semester] = {};
+            Object.entries(semesterData.batches).forEach(
+              ([batchKey, batchData]) => {
+                ALL_DRIVE_RESOURCES[semester][batchKey] = {
+                  folderId: batchData.folderId,
+                  label: batchData.label,
+                };
+              }
+            );
+          });
+
+          console.log(
+            "Drive mapping loaded successfully",
+            Object.keys(ALL_DRIVE_RESOURCES)
+          );
+          return ALL_DRIVE_RESOURCES;
+        } catch (error) {
+          console.error("Error loading drive mapping:", error);
+          // Fallback to basic structure if JSON fails
+          ALL_DRIVE_RESOURCES = {
+            "1st": {
+              30: {
+                folderId: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+                label: "30th Batch",
+              },
+              29: {
+                folderId: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
+                label: "29th Batch",
+              },
+            },
+            "2nd": {
+              30: {
+                folderId: "1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
+                label: "30th Batch",
+              },
+            },
+          };
+          return ALL_DRIVE_RESOURCES;
+        }
+      }
+
+      // Display search results
+      function displayResults(files) {
+        DOM_CACHE.allResources.innerHTML = "";
+
+        if (files.length === 0) {
+          DOM_CACHE.allResources.innerHTML =
+            '<div class="no-results">No files found. Try different search terms.</div>';
+          DOM_CACHE.accordionControls.style.display = "none";
+          return;
+        }
+
+        // Show accordion controls when there are results
+        DOM_CACHE.accordionControls.style.display = "flex";
+
+        // Build hierarchical tree structure
+        const treeStructure = buildTreeStructure(files);
+
+        // Group by semester and batch
+        const grouped = {};
+        Object.entries(treeStructure).forEach(([key, tree]) => {
+          const [semester, batch] = key.split("_");
+          if (!grouped[semester]) grouped[semester] = {};
+          grouped[semester][batch] = tree;
+        });
+
+        // Sort semesters (highest first: 8th, 7th, 6th, etc.)
+        const sortedSemesters = Object.entries(grouped).sort(([a], [b]) => {
+          const numA = parseInt(a.replace(/\D/g, "")) || 0;
+          const numB = parseInt(b.replace(/\D/g, "")) || 0;
+          return numB - numA;
+        });
+
+        sortedSemesters.forEach(([semester, batches]) => {
+          const semesterDiv = document.createElement("div");
+          semesterDiv.className = "semester-group";
+
+          // Create collapsible semester header
+          const semesterHeader = document.createElement("div");
+          semesterHeader.className = "semester-header";
+          semesterHeader.innerHTML = `
+            <h2>
+              <button class="accordion-btn" onclick="toggleSemesterCollapse('${semester}', this)">
+                <span class="accordion-icon">▼</span>
+                ${semester.toUpperCase()} Semester
+              </button>
+            </h2>
+          `;
+
+          const semesterContent = document.createElement("div");
+          semesterContent.className = "semester-content";
+          semesterContent.id = `semester-${semester}`;
+
+          // Sort batches (most recent first: 30th, 29th, 28th, etc.)
+          const sortedBatches = Object.entries(batches).sort(([a], [b]) => {
+            const numA = parseInt(a.replace(/\D/g, "")) || 0;
+            const numB = parseInt(b.replace(/\D/g, "")) || 0;
+            return numB - numA;
+          });
+
+          sortedBatches.forEach(([batch, tree]) => {
+            const batchDiv = document.createElement("div");
+            batchDiv.className = "batch-group";
+
+            // Get batch label from any file in the tree
+            const batchLabel = getBatchLabelFromTree(tree);
+
+            // Create collapsible batch header
+            const batchHeader = document.createElement("div");
+            batchHeader.className = "batch-header";
+            batchHeader.innerHTML = `
+              <h3>
+                <button class="accordion-btn" onclick="toggleBatchCollapse('${semester}', '${batch}', this)">
+                  <span class="accordion-icon">▼</span>
+                  ${batchLabel}
+                </button>
+              </h3>
+            `;
+
+            const batchContent = document.createElement("div");
+            batchContent.className = "batch-content";
+            batchContent.id = `batch-${semester}-${batch}`;
+
+            const resultsList = document.createElement("div");
+            resultsList.className = "tree-results";
+
+            // Render the tree structure with path context
+            renderTreeNode(tree, resultsList, 0, "", semester, batch);
+
+            batchContent.appendChild(resultsList);
+            batchDiv.appendChild(batchHeader);
+            batchDiv.appendChild(batchContent);
+            semesterContent.appendChild(batchDiv);
+          });
+
+          semesterDiv.appendChild(semesterHeader);
+          semesterDiv.appendChild(semesterContent);
+          DOM_CACHE.allResources.appendChild(semesterDiv);
+        });
+      }
+
+      // Build hierarchical tree from flat file list
+      function buildTreeStructure(files) {
+        const trees = {};
+        const folderLookup = new Map();
+        const foldersByName = new Map();
+        const processedFolders = new Set(); // Track folders already added to prevent duplicates
+
+        // First pass: build lookup table of all folders
+        files.forEach((file) => {
+          if (file.isFolder) {
+            folderLookup.set(file.path, file);
+            const folderKey = `${file.semester}_${file.batch}_${file.name}`;
+            if (!foldersByName.has(folderKey)) {
+              foldersByName.set(folderKey, []);
+            }
+            foldersByName.get(folderKey).push(file);
+          }
+        });
+
+        files.forEach((file) => {
+          const treeKey = `${file.semester}_${file.batch}`;
+          if (!trees[treeKey]) {
+            trees[treeKey] = {
+              name: "root",
+              children: {},
+              files: [],
+              isFolder: true,
+            };
+          }
+
+          const pathParts = file.path.split("/");
+          let currentNode = trees[treeKey];
+          let currentPath = "";
+
+          // Build path to the file, creating parent folders as needed
+          for (let i = 0; i < pathParts.length - 1; i++) {
+            const folderName = pathParts[i];
+            currentPath = currentPath
+              ? `${currentPath}/${folderName}`
+              : folderName;
+
+            if (!currentNode.children[folderName]) {
+              let folderFile = folderLookup.get(currentPath);
+
+              if (!folderFile) {
+                const folderKey = `${file.semester}_${file.batch}_${folderName}`;
+                const matchingFolders = foldersByName.get(folderKey);
+                if (matchingFolders && matchingFolders.length > 0) {
+                  folderFile =
+                    matchingFolders.find((f) => f.path.endsWith(currentPath)) ||
+                    matchingFolders[0];
+                }
+              }
+
+              currentNode.children[folderName] = {
+                name: folderName,
+                children: {},
+                files: [],
+                isFolder: true,
+                hasMatchingContent: false,
+                folderFile: folderFile,
+                allMatchingFolders:
+                  foldersByName.get(
+                    `${file.semester}_${file.batch}_${folderName}`
+                  ) || [],
+              };
+            }
+            currentNode.children[folderName].hasMatchingContent = true;
+            currentNode = currentNode.children[folderName];
+          }
+
+          // Only add the file if it's not a folder already represented in the tree structure
+          const isDuplicateFolder =
+            file.isFolder && processedFolders.has(`${treeKey}_${file.path}`);
+
+          if (!isDuplicateFolder) {
+            currentNode.files.push(file);
+
+            // Mark folders as processed to prevent duplicates
+            if (file.isFolder) {
+              processedFolders.add(`${treeKey}_${file.path}`);
+            }
+          }
+        });
+
+        return trees;
+      }
+
+      // Get batch label from tree structure
+      function getBatchLabelFromTree(tree) {
+        function findFirstFile(node) {
+          if (node.files && node.files.length > 0) {
+            return node.files[0].batchLabel;
+          }
+          for (const child of Object.values(node.children)) {
+            const result = findFirstFile(child);
+            if (result) return result;
+          }
+          return null;
+        }
+        return findFirstFile(tree) || "Unknown Batch";
+      }
+
+      // Render tree node recursively
+      function renderTreeNode(
+        node,
+        container,
+        depth,
+        currentPath = "",
+        semester = "",
+        batch = ""
+      ) {
+        // Render folders first (sorted alphabetically)
+        const sortedFolders = Object.entries(node.children).sort(([a], [b]) =>
+          a.localeCompare(b)
+        );
+
+        sortedFolders.forEach(([folderName, folderNode]) => {
+          const folderDiv = document.createElement("div");
+          folderDiv.className = "tree-file";
+          folderDiv.style.paddingLeft = `${depth * 20}px`;
+
+          const folderPath = currentPath
+            ? `${currentPath}/${folderName}`
+            : folderName;
+
+          const isParentFolder = !folderNode.hasMatchingContent;
+          if (isParentFolder) {
+            folderDiv.style.opacity = "0.7";
+          }
+
+          // Create folder link
+          let folderLink = "#";
+          let clickHandler = "";
+          let linkTitle = "";
+
+          if (folderNode.folderFile && folderNode.folderFile.id) {
+            folderLink = `https://drive.google.com/drive/folders/${folderNode.folderFile.id}`;
+            linkTitle = isParentFolder
+              ? `Open parent folder: ${folderName}`
+              : `Open folder: ${folderName}`;
+          } else {
+            clickHandler = `onclick="alert('This folder (${folderName}) doesn\\'t have directly accessible content, but may contain files in subfolders.'); return false;"`;
+            linkTitle = `Folder: ${folderName} (content in subfolders)`;
+          }
+
+          const folderClass = isParentFolder
+            ? "parent-folder"
+            : "matching-folder";
+          const folderIcon = isParentFolder ? "📂" : "📁";
+
+          folderDiv.innerHTML = `
+            <div class="file-item ${folderClass}">
+              <a href="${folderLink}" target="_blank" class="result-link" ${clickHandler} title="${linkTitle}">
+                <span class="file-icon">${folderIcon}</span>
+                <span class="file-name">${folderName}${
+            isParentFolder ? " (parent)" : ""
+          }</span>
+              </a>
+            </div>
+          `;
+          container.appendChild(folderDiv);
+
+          // Recursively render children
+          renderTreeNode(
+            folderNode,
+            container,
+            depth + 1,
+            folderPath,
+            semester,
+            batch
+          );
+        });
+
+        // Render files (sorted alphabetically)
+        const sortedFiles = node.files.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        sortedFiles.forEach((file) => {
+          const fileDiv = document.createElement("div");
+          fileDiv.className = "tree-file";
+          fileDiv.style.paddingLeft = `${depth * 20}px`;
+
+          const icon = file.isFolder ? "📁" : "📄";
+          const link = file.isFolder
+            ? `https://drive.google.com/drive/folders/${file.id}`
+            : file.webViewLink ||
+              `https://drive.google.com/file/d/${file.id}/view`;
+
+          fileDiv.innerHTML = `
+            <div class="file-item">
+              <a href="${link}" target="_blank" class="result-link" title="Open: ${file.name}">
+                <span class="file-icon">${icon}</span>
+                <span class="file-name">${file.name}</span>
+              </a>
+            </div>
+          `;
+
+          container.appendChild(fileDiv);
+        });
+      }
+
+      // Update results statistics
+      function updateStats(shown, total, extraMessage = "") {
+        if (shown === 0 && total === 0) {
+          DOM_CACHE.resultsStats.textContent = "No resources loaded yet.";
+        } else if (shown === 0) {
+          DOM_CACHE.resultsStats.textContent = `No matches found in ${total} total resources.`;
+        } else {
+          DOM_CACHE.resultsStats.textContent = `Showing ${shown} of ${total} resources${extraMessage}`;
+        }
+      }
+
+      // Debounce function
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Page initialization
+      window.addEventListener("DOMContentLoaded", async () => {
+        // Initialize DOM cache
+        DOM_CACHE.init();
+
+        // Load resolved folder cache
+        loadResolvedFolderCache();
+
+        // Run cache cleanup
+        cleanExpiredCache();
+
+        // Get cache statistics
+        updateCacheStats();
+
+        try {
+          await loadDriveMapping();
+          updateCacheStats(); // Update again after loading mapping
+        } catch (error) {
+          const subtleStatsElement =
+            document.getElementById("searchStatsSubtle");
+          if (subtleStatsElement) {
+            subtleStatsElement.innerHTML = `Ready with basic setup. Some features may be limited. <a href="#" onclick="clearCacheAndReload()" class="cache-reset-link" title="Clear cache and reload fresh data">⟳</a>`;
+          }
+          if (DOM_CACHE.resultsStats) {
+            DOM_CACHE.resultsStats.textContent =
+              "Ready with basic setup. Some features may be limited.";
+          }
+        }
+
+        // Show empty state initially
+        displayResults([]);
+
+        // Check for URL parameters and auto-search
+        checkUrlParameters();
+      });
+
+      // Check URL parameters for automatic search
+      function checkUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get("search");
+
+        if (searchParam) {
+          DOM_CACHE.globalSearch.value = searchParam;
+
+          setTimeout(() => {
+            optimizedSearch();
+          }, 100);
+        }
+      }
+
+      // === ACCORDION FUNCTIONALITY ===
+
+      // Toggle semester collapse/expand
+      function toggleSemesterCollapse(semester, button) {
+        const content = document.getElementById(`semester-${semester}`);
+        const icon = button.querySelector(".accordion-icon");
+
+        if (content.style.display === "none") {
+          content.style.display = "block";
+          icon.textContent = "▼";
+          button.title = "Collapse semester";
+        } else {
+          content.style.display = "none";
+          icon.textContent = "▶";
+          button.title = "Expand semester";
+        }
+      }
+
+      // Toggle batch collapse/expand
+      function toggleBatchCollapse(semester, batch, button) {
+        const content = document.getElementById(`batch-${semester}-${batch}`);
+        const icon = button.querySelector(".accordion-icon");
+
+        if (content.style.display === "none") {
+          content.style.display = "block";
+          icon.textContent = "▼";
+          button.title = "Collapse batch";
+        } else {
+          content.style.display = "none";
+          icon.textContent = "▶";
+          button.title = "Expand batch";
+        }
+      }
+
+      // Utility functions for accordion control
+      function collapseAllSemesters() {
+        document.querySelectorAll(".semester-content").forEach((content) => {
+          content.style.display = "none";
+        });
+        document
+          .querySelectorAll(".semester-header .accordion-icon")
+          .forEach((icon) => {
+            icon.textContent = "▶";
+          });
+      }
+
+      function expandAllSemesters() {
+        document.querySelectorAll(".semester-content").forEach((content) => {
+          content.style.display = "block";
+        });
+        document
+          .querySelectorAll(".semester-header .accordion-icon")
+          .forEach((icon) => {
+            icon.textContent = "▼";
+          });
+
+        document.querySelectorAll(".batch-content").forEach((content) => {
+          content.style.display = "block";
+        });
+        document
+          .querySelectorAll(".batch-header .accordion-icon")
+          .forEach((icon) => {
+            icon.textContent = "▼";
+          });
+      }
+
+      function collapseAllBatches() {
+        document.querySelectorAll(".batch-content").forEach((content) => {
+          content.style.display = "none";
+        });
+        document
+          .querySelectorAll(".batch-header .accordion-icon")
+          .forEach((icon) => {
+            icon.textContent = "▶";
+          });
+      }
+    </script>
+  </body>
+</html>
