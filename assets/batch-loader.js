@@ -61,9 +61,9 @@ async function loadAllBatchData() {
  */
 function getBasePath() {
   const currentPath = window.location.pathname;
-  if (currentPath.includes('/pages/subjects/')) {
-    return '../../';
-  } else if (currentPath.includes('/pages/')) {
+  if (currentPath.includes('/courses/')) {
+    return '../';
+  } else if (currentPath.includes('/semester/')) {
     return '../';
   } else {
     return './';
@@ -134,7 +134,8 @@ async function getSubjectDataByCode(courseCode) {
           subjectData.batches.push({
             batch: batchNumber,
             batchName: batchData.batch_name,
-            semester: semesterKey
+            semester: semesterKey,
+            teacher: subjectInfo.teacher || ""
           });
         }
       }

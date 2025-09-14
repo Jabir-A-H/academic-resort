@@ -1,5 +1,5 @@
 <!-- Subject Page Template -->
-<script src="../../assets/batch-loader.js"></script>
+<script src="../assets/batch-loader.js"></script>
 <script>
   // Global subject page functions
   window.toggleTOC = function () {
@@ -213,10 +213,19 @@
   function updateCourseDetails(subjectData) {
     const courseInfoGrid = document.querySelector(".course-info-grid");
     if (courseInfoGrid && subjectData) {
-      // Show batch information if available
-      const batchInfo = subjectData.batches && subjectData.batches.length > 0 
-        ? subjectData.batches.map(b => b.batchName || `${b.batch}th Batch`).join(", ")
-        : "Multiple batches";
+      // Create course teachers section showing all batches and their teachers
+      let courseTeachersContent = '';
+      if (subjectData.batches && subjectData.batches.length > 0) {
+        courseTeachersContent = subjectData.batches.map(batch => {
+          const teacherName = batch.teacher || "To be announced";
+          return `<div class="teacher-batch-item">
+            <span class="batch-name">${batch.batchName || `${batch.batch}th Batch`}</span>: 
+            <span class="teacher-name">${teacherName}</span>
+          </div>`;
+        }).join('');
+      } else {
+        courseTeachersContent = '<div class="teacher-batch-item">No teacher assignments available</div>';
+      }
         
       courseInfoGrid.innerHTML = `
         <div class="info-card">
@@ -227,13 +236,11 @@
           <h4>Course Title:</h4>
           <p>${subjectData.title}</p>
         </div>
-        <div class="info-card">
-          <h4>Available in Batches:</h4>
-          <p>${batchInfo}</p>
-        </div>
-        <div class="info-card">
-          <h4>Current Teacher:</h4>
-          <p>${subjectData.current_teacher || "To be announced"}</p>
+        <div class="info-card course-teachers-card">
+          <h4>Course Teachers:</h4>
+          <div class="course-teachers-list">
+            ${courseTeachersContent}
+          </div>
         </div>
       `;
     }
@@ -323,8 +330,9 @@
       pageTitle.textContent = `${config.title}`;
     }
 
+    // Remove description - keep only course code
     if (pageDescription) {
-      pageDescription.innerHTML = `<span class="course-code">${config.code}</span> ${config.description}`;
+      pageDescription.innerHTML = `<span class="course-code">${config.code}</span>`;
     }
 
     if (quickActions) {
@@ -366,9 +374,6 @@
               <h4 class="info-label">Course Title</h4>
               <p class="info-value">${config.title}</p>
             </div>
-          </div>
-          <div class="course-description">
-            <p>${config.description}</p>
           </div>
         </div>
       </div>
@@ -746,6 +751,10 @@
         border-radius: 6px;
         border: 1px solid #e8eaed;
       }
+      
+      .course-teachers-card {
+        grid-column: 1 / -1; /* Make the course teachers card span the full width */
+      }
 
       .info-label {
         font-size: 14px;
@@ -759,6 +768,29 @@
         font-weight: 400;
         color: #202124;
         margin: 0;
+      }
+      
+      .course-teachers-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .teacher-batch-item {
+        padding: 8px 12px;
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      
+      .batch-name {
+        font-weight: 500;
+        color: #1a73e8;
+      }
+      
+      .teacher-name {
+        color: #202124;
       }
 
       .course-description {
