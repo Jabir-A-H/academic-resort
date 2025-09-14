@@ -253,10 +253,73 @@ function clearBatchDataCache() {
   console.log('Batch data cache cleared');
 }
 
-// Export functions for global use
-window.loadAllBatchData = loadAllBatchData;
-window.getSubjectDataByCode = getSubjectDataByCode;
-window.getSubjectsBySemester = getSubjectsBySemester;
-window.getDriveFolderMapping = getDriveFolderMapping;
-window.getBatchInfo = getBatchInfo;
-window.clearBatchDataCache = clearBatchDataCache;
+/**
+ * Extract Google Drive folder ID from drive URL
+ */
+function extractFolderId(driveUrl) {
+  if (!driveUrl || typeof driveUrl !== 'string') return null;
+  
+  const match = driveUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : null;
+}
+
+/**
+ * Get drive folder data for a specific course
+ */
+async function getCourseDriverFolders(courseCode) {
+  try {
+    const subjectData = await getSubjectDataByCode(courseCode);
+    if (!subjectData || !subjectData.links) return [];
+    
+    const driveFolders = [];
+    const links = subjectData.links;
+    
+    // Map each link type to drive folders
+    const linkTypes = [
+      { key: 'class_updates', name: 'Class Updates', icon: '📢' },
+      { key: 'notes', name: 'Personal Notes', icon: '📝' },
+      { key: 'slides_lectures', name: 'Slides & Lectures', icon: '📊' },
+      { key: 'books_manuals', name: 'Books & Manuals', icon: '📚' },
+      { key: 'previous_materials', name: 'Previous Materials', icon: '📁' },
+      { key: 'question_papers', name: 'Question Papers', icon: '📝' },
+      { key: 'assignments', name: 'Assignments', icon: '📋' }
+    ];
+    
+    linkTypes.forEach(linkType => {
+      const linkData = links[linkType.key];
+      if (linkData) {
+        if (Array.isArray(linkData)) {
+          linkData.forEach((url, index) => {
+            const folderId = extractFolderId(url);
+            if (folderId) {
+              driveFolders.push({
+                id: folderId,
+                name: `${linkType.name} ${index + 1}`,
+                icon: linkType.icon,
+                category: linkType.key
+              });
+            }
+          });
+        } else if (typeof linkData === 'string') {
+          const folderId = extractFolderId(linkData);
+          if (folderId) {
+            driveFolders.push({
+              id: folderId,
+              name: linkType.name,
+              icon: linkType.icon,
+              category: linkType.key
+            });
+          }
+        }
+      }
+    });
+    
+    return driveFolders;
+  } catch (error) {
+    console.error('Error getting course drive folders:', error);
+    return [];
+  }
+}
+
+// Export the new function
+window.getCourseDriverFolders = getCourseDriverFolders;
