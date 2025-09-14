@@ -3034,9 +3034,9 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
   font-size: var(--font-size-sm);
   color: var(--muted);
   margin-bottom: var(--space-lg);
-  margin-top: 60px; /* Ensure it's below the fixed header */
+  margin-top: 80px; /* Ensure it's below the fixed header */
   position: relative;
-  z-index: 100; /* Ensure breadcrumb is above other elements but below header */
+  z-index: 1050; /* Ensure breadcrumb is above header elements */
 }
 
 .breadcrumb a {

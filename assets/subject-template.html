@@ -400,7 +400,8 @@
       if (subjectData.batches && subjectData.batches.length > 0) {
         const teachersContent = subjectData.batches.map(batch => {
           const teacherName = batch.teacher || "To be announced";
-          return `<span class="teacher-tag">${batch.batchName || `${batch.batch}th Batch`}: ${teacherName}</span>`;
+          const batchId = `batch-${batch.batch}`;
+          return `<span class="teacher-tag" data-batch="${batch.batch}" onclick="toggleBatchFilter('${batch.batch}')" id="${batchId}">${batch.batchName || `${batch.batch}th Batch`}: ${teacherName}</span>`;
         }).join('');
         
         compactTeachers.innerHTML = teachersContent;
@@ -408,6 +409,73 @@
         compactTeachers.innerHTML = '<span class="teacher-tag">No teacher assignments available</span>';
       }
     }
+  }
+
+  // Global state for batch filtering
+  window.currentBatchFilter = null;
+
+  // Batch filtering functionality
+  window.toggleBatchFilter = function(batchNumber) {
+    const teacherTags = document.querySelectorAll('.teacher-tag[data-batch]');
+    const currentTag = document.getElementById(`batch-${batchNumber}`);
+    
+    if (window.currentBatchFilter === batchNumber) {
+      // Deactivate filter - show all
+      window.currentBatchFilter = null;
+      teacherTags.forEach(tag => tag.classList.remove('active'));
+      showAllBatchContent();
+    } else {
+      // Activate filter for this batch
+      window.currentBatchFilter = batchNumber;
+      teacherTags.forEach(tag => tag.classList.remove('active'));
+      if (currentTag) currentTag.classList.add('active');
+      filterContentByBatch(batchNumber);
+    }
+  };
+
+  function showAllBatchContent() {
+    // Show all drive folders and content
+    const driveItems = document.querySelectorAll('.drive-folder-item, .folder-file-item');
+    driveItems.forEach(item => {
+      item.style.display = 'block';
+    });
+    
+    // Update status
+    updateFilterStatus('Showing content from all batches');
+  }
+
+  function filterContentByBatch(batchNumber) {
+    // This is a placeholder for batch-specific filtering
+    // In a full implementation, this would filter drive folders based on batch
+    updateFilterStatus(`Filtered to show ${batchNumber}th Batch content only`);
+  }
+
+  function updateFilterStatus(message) {
+    // Add a status indicator
+    let statusElement = document.getElementById('filter-status');
+    if (!statusElement) {
+      statusElement = document.createElement('div');
+      statusElement.id = 'filter-status';
+      statusElement.style.cssText = `
+        padding: 8px 12px;
+        background: #e8f0fe;
+        border: 1px solid #1a73e8;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #1a73e8;
+        margin-top: 8px;
+        text-align: center;
+      `;
+      document.getElementById('course-teachers-compact').parentNode.appendChild(statusElement);
+    }
+    statusElement.textContent = message;
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      if (statusElement && !window.currentBatchFilter) {
+        statusElement.remove();
+      }
+    }, 3000);
   }
 
   function createLinksFromArray(linkArray) {
@@ -475,14 +543,8 @@
   }
 
   function updateBreadcrumb(config) {
-    const breadcrumb = document.querySelector(".breadcrumb");
-    if (breadcrumb) {
-      breadcrumb.innerHTML = `
-        <a href="../../index.html">Home</a> >
-        <a href="../${config.semesterPage}">${config.semesterName}</a> >
-        <span>${config.title}</span>
-      `;
-    }
+    // Don't update breadcrumb as it's already correctly set in the HTML
+    // The HTML already has the correct relative paths for courses in /courses/ folder
   }
 
   function updatePageHeader(config) {
@@ -755,37 +817,42 @@
 
       /* Compact Course Overview - Forum Style */
       .compact-overview {
-        margin-bottom: 16px;
+        margin-bottom: 20px;
         background: #f8f9fa;
         border: 1px solid #e8eaed;
+        border-radius: 8px;
       }
       
       .compact-header {
-        padding: 12px 16px;
+        padding: 16px 20px;
         background: white;
         border-bottom: 1px solid #e8eaed;
+        border-radius: 8px 8px 0 0;
       }
       
       .compact-header h2 {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 500;
         color: #5f6368;
-        margin: 0 0 4px 0;
+        margin: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
       
       .course-meta {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
         flex-wrap: wrap;
       }
       
       .course-code-badge {
         background: #1a73e8;
         color: white;
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
         font-weight: 600;
       }
       
@@ -797,49 +864,70 @@
       .course-title {
         color: #202124;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 16px;
       }
       
       .course-info-compact {
-        padding: 8px 16px 12px 16px;
+        padding: 12px 20px 16px 20px;
       }
       
       .course-teachers-compact {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 8px;
       }
       
       .teacher-tag {
         background: white;
         border: 1px solid #dadce0;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 11px;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
         color: #5f6368;
         white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .teacher-tag:hover {
+        background: #e8f0fe;
+        border-color: #1a73e8;
+        color: #1a73e8;
+      }
+
+      .teacher-tag.active {
+        background: #1a73e8;
+        border-color: #1a73e8;
+        color: white;
       }
 
       /* Drive Folders Section */
       .drive-category-section {
-        margin-bottom: 20px;
+        margin-bottom: 24px;
+        border: 1px solid #e8eaed;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
       }
       
       .drive-category-title {
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 500;
         color: #202124;
-        margin: 0 0 12px 0;
-        padding: 8px 12px;
+        margin: 0;
+        padding: 12px 16px;
         background: #f8f9fa;
-        border-radius: 6px;
-        border: 1px solid #e8eaed;
+        border-bottom: 1px solid #e8eaed;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
       
       .drive-folders-list {
         display: flex;
         flex-direction: column;
         gap: 8px;
+        padding: 16px;
       }
       
       .drive-folder-item {
@@ -847,6 +935,7 @@
         border-radius: 6px;
         background: white;
         overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
       
       .folder-header {
@@ -855,6 +944,7 @@
         align-items: center;
         padding: 12px 16px;
         background: #fafbfc;
+        border-bottom: 1px solid #f0f0f0;
       }
       
       .folder-info {
