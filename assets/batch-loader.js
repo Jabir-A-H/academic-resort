@@ -25,7 +25,7 @@ async function loadAllBatchData() {
     const batchPromises = batchFiles.map(async (batchFile) => {
       try {
         const basePath = getBasePath();
-        const response = await fetch(`${basePath}assets/batches/${batchFile}`);
+        const response = await fetch(`${basePath}batches/${batchFile}`);
         if (!response.ok) {
           console.warn(`Could not load ${batchFile}: ${response.status}`);
           return null;

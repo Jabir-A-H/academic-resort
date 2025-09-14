@@ -1,45 +1,33 @@
 {
-  "batch_name": "28th Batch",
-  "batch_year": "2028-2032",
+  "batch_name": "31st Batch",
+  "batch_year": "2031-2035",
   "last_updated": "2025-09-14",
   "contact_person": "",
+  "drive_folders": {
+    "note": "31st batch folders not yet created in drive mapping"
+  },
   "faculty_reference": {
     "last_updated": "2025-09-04",
     "source": "Official DU Accounting & Information Systems Department Faculty List",
     "chairman": "Md. Maksudur Rahman Sarker",
+    "key_professors": [
+      "Dr. Riazur Rahman Chowdhury",
+      "Dr. Dhiman Kumar Chowdhury",
+      "Dr. Mahmuda Akter",
+      "Dr. Mahfuzul Hoque",
+      "Sadia Afroze",
+      "Dr. Mohammad Tareq"
+    ],
     "note": "Complete faculty list with contact details available in faculty-mapping.json"
-  },
-  "common_resources": {
-    "syllabus_folders": {
-      "general": "1WkOJq5ep_6p3YZw3tENrH6wbAOWdWrjI",
-      "7th_semester": "14OQvH90cP3W2mPGOuLPgdS0Wv5alSEIP"
-    },
-    "shared_materials": {
-      "solution_manuals_5th": "10iW_oE4mGqIL9Ft3JtvGowJmNPgPasaJ",
-      "solution_manuals_7th": "1ctFA9VJod6YmkuDy5t6MHgnE4UQZ1mI3",
-      "solution_manuals_8th": "15DjY7GTUvGpXxA1bogcH18mBRkBXKkgN",
-      "seniors_materials_5th": "1dWMahU0ugtF9Em5sGZ0aywkuGY1noN81",
-      "seniors_materials_7th": "1LNyyBYeYuMLOaHmLnICivLDC29lBO3Ru",
-      "seniors_materials_8th": "1ZTwgGlgpDwYgwbifq-m-42O_L_WN7kMP"
-    },
-    "personal_notes_folders": {
-      "2nd_semester": "1GqE1mLi-ir3OCvBdMBgChCIpws8dTGI7",
-      "3rd_semester": "15d1gjiKGXu_FixNjxdVVwyny4cFVAwMV",
-      "4th_semester": "1DBwDKIjWozsnq8CJyiRnANKwTcgmmzWp",
-      "5th_semester": "1S0SFn1__66OTcOu5GoLo8iC-GKFrihqE",
-      "7th_semester": "1_VhhpUP71NeGNxBXFBFQsdpHrnOyUXcT",
-      "8th_semester": "1y0OVqiBSdYKwVRa2REztPozfMg-PFfkK"
-    }
   },
   "semesters": {
     "1st": {
-      "drive_folder": "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
       "subjects": {
         "1101": {
           "code": "1101",
           "title": "Introduction to Financial Accounting",
           "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
-          "teacher": "Dr. Riazur Rahman Chowdhury",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [
@@ -64,7 +52,7 @@
           "code": "1102",
           "title": "Introduction to Business",
           "description": "Fundamental business concepts, organizational structures, and basic business operations and management principles.",
-          "teacher": "Dr. Dhiman Kumar Chowdhury",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [],
@@ -84,7 +72,7 @@
           "code": "1103",
           "title": "Computer Concepts",
           "description": "Introduction to computer systems, software applications, and basic programming concepts for business students.",
-          "teacher": "Dr. Mahmuda Akter",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [],
@@ -104,7 +92,7 @@
           "code": "1104",
           "title": "Business Mathematics",
           "description": "Mathematical concepts and applications in business, including algebra, calculus, and statistical analysis for business decisions.",
-          "teacher": "Dr. Mahfuzul Hoque",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [],
@@ -119,7 +107,7 @@
           "code": "1105",
           "title": "Business Communication",
           "description": "Professional communication skills, business writing, presentation techniques, and effective communication strategies in business environments.",
-          "teacher": "Sadia Afroze",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [],
@@ -133,13 +121,12 @@
       }
     },
     "2nd": {
-      "drive_folder": "1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj",
       "subjects": {
         "1201": {
           "code": "1201",
           "title": "Intermediate Accounting",
           "description": "Advanced accounting principles, financial reporting standards, and complex accounting transactions and procedures.",
-          "teacher": "Dr. Mohammad Tareq",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [
@@ -164,7 +151,7 @@
           "code": "1202",
           "title": "Microeconomics",
           "description": "Consumer behavior, market structures, economic decision-making principles and microeconomic analysis.",
-          "teacher": "Dr. Mizanur Rahman",
+          "teacher": "",
           "links": {
             "class_updates": "https://docs.google.com/document/d/1example_doc_id/edit",
             "notes": [
@@ -193,7 +180,7 @@
           "code": "1203",
           "title": "Management & Organizational Behavior",
           "description": "Leadership principles, team dynamics, and organizational management strategies for business environments.",
-          "teacher": "Dr. Md. Sharif Hossain",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [
@@ -217,7 +204,7 @@
           "code": "1204",
           "title": "Mathematics for Business Decisions-II",
           "description": "Advanced calculus, optimization techniques, and mathematical modeling for complex business decision-making processes.",
-          "teacher": "Dr. Mahfuzul Hoque",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [],
@@ -232,7 +219,7 @@
           "code": "1205",
           "title": "Bangladesh Studies",
           "description": "History, culture, political development, and socio-economic aspects of Bangladesh for comprehensive understanding of the nation.",
-          "teacher": "Tanzina Haque",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [],
@@ -246,13 +233,12 @@
       }
     },
     "3rd": {
-      "drive_folder": "11X8KpIfn1Jkh8_sy96xNbg8a1Z8EWy-I",
       "subjects": {
         "2101": {
           "code": "2101",
           "title": "Advanced Financial Accounting-I",
           "description": "Partnership accounting, corporate accounting, and financial statement analysis",
-          "teacher": "Dr. Riazur Rahman Chowdhury",
+          "teacher": "",
           "links": {
             "class_updates": "",
             "notes": [],
@@ -326,7 +312,6 @@
       }
     },
     "4th": {
-      "drive_folder": "1MiupaUP-RJQCyounSK2LA32BPlr2s_jo",
       "subjects": {
         "2201": {
           "code": "2201",
@@ -406,7 +391,6 @@
       }
     },
     "5th": {
-      "drive_folder": "1xU30Tj4q6oXZWb17ubqszqwLVBi-a6N_",
       "subjects": {
         "3101": {
           "code": "3101",
@@ -486,7 +470,6 @@
       }
     },
     "6th": {
-      "drive_folder": "1cSYiB69iMz2czYOHZAlI7nzVniD4bmH9",
       "subjects": {
         "3201": {
           "code": "3201",
@@ -793,89 +776,6 @@
           "code": "6202",
           "title": "Advanced Cost & Management Accounting",
           "description": "Advanced costing techniques, strategic cost management, and performance measurement",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        }
-      }
-    },
-    "project": {
-      "subjects": {
-        "7101": {
-          "code": "7101",
-          "title": "Corporate Reporting",
-          "description": "Advanced financial reporting, corporate disclosure requirements, and regulatory compliance",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        },
-        "7102": {
-          "code": "7102",
-          "title": "Project Management",
-          "description": "Project planning, execution, monitoring, risk management, and professional methodologies",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        },
-        "7103": {
-          "code": "7103",
-          "title": "Government Accounting",
-          "description": "Public sector accounting principles, government financial reporting, and budgetary systems",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        },
-        "7112": {
-          "code": "7112",
-          "title": "Strategic Management",
-          "description": "Corporate strategy, competitive advantage, strategic planning, and business policy",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        }
-      }
-    },
-    "internship": {
-      "subjects": {
-        "7203": {
-          "code": "7203",
-          "title": "Corporate Tax Planning",
-          "description": "Corporate taxation strategies, tax compliance, and financial planning",
           "teacher": "",
           "links": {
             "class_updates": "",

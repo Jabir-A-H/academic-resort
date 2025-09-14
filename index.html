@@ -823,7 +823,7 @@
       <div id="all-resources"></div>
     </div>
 
-    <div data-include="./assets/includes/footer.html"></div>
+    <div data-include="./assets/footer.html"></div>
 
     <script>
       // Function to populate batch filter with available batches
@@ -906,7 +906,7 @@
           const availableSemesters = Object.keys(batchData.semesters);
           
           // Sort semesters in logical order
-          const semesterOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', 'internship', 'project', 'mba-1st', 'mba-2nd'];
+          const semesterOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', 'mba-1st', 'mba-2nd'];
           const sortedSemesters = availableSemesters.sort((a, b) => {
             return semesterOrder.indexOf(a) - semesterOrder.indexOf(b);
           });
@@ -920,10 +920,6 @@
             let displayName = semester;
             if (semester.includes('mba')) {
               displayName = semester.replace('mba-', 'MBA ').replace(/\b\w/g, l => l.toUpperCase()) + ' Semester';
-            } else if (semester === 'internship') {
-              displayName = 'Internship';
-            } else if (semester === 'project') {
-              displayName = 'Project';
             } else {
               displayName = semester.replace(/\b\w/g, l => l.toUpperCase()) + ' Semester';
             }
@@ -1600,7 +1596,7 @@
         }
 
         // Search folders in parallel batches
-        const PARALLEL_BATCH_SIZE = 20; // Reduced for better performance
+        const PARALLEL_BATCH_SIZE = 40; // Optimized for better performance
         const MAX_SEARCH_DEPTH = 6; // Optimized depth for balance between completeness and speed
 
         // Clear results container at start

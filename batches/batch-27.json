@@ -1,27 +1,17 @@
 {
-  "batch_name": "24th Batch",
-  "batch_year": "2024-2028",
+  "batch_name": "27th Batch",
+  "batch_year": "2027-2031",
   "last_updated": "2025-09-14",
   "contact_person": "",
-  "drive_folders": {
-    "note": "24th batch folders not yet created in drive mapping"
-  },
   "faculty_reference": {
     "last_updated": "2025-09-04",
     "source": "Official DU Accounting & Information Systems Department Faculty List",
     "chairman": "Md. Maksudur Rahman Sarker",
-    "key_professors": [
-      "Dr. Riazur Rahman Chowdhury",
-      "Dr. Dhiman Kumar Chowdhury",
-      "Dr. Mahmuda Akter",
-      "Dr. Mahfuzul Hoque",
-      "Sadia Afroze",
-      "Dr. Mohammad Tareq"
-    ],
     "note": "Complete faculty list with contact details available in faculty-mapping.json"
   },
   "semesters": {
     "1st": {
+      "drive_folder": "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
       "subjects": {
         "1101": {
           "code": "1101",
@@ -121,6 +111,7 @@
       }
     },
     "2nd": {
+      "drive_folder": "17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_",
       "subjects": {
         "1201": {
           "code": "1201",
@@ -233,6 +224,7 @@
       }
     },
     "3rd": {
+      "drive_folder": "1fZuFo3qsPUtaN53ZvKOrwgb-fVIr8B4N",
       "subjects": {
         "2101": {
           "code": "2101",
@@ -312,6 +304,7 @@
       }
     },
     "4th": {
+      "drive_folder": "1GdxoRIoO8dnqZAf7PxWXDB3-pYpNep-Q",
       "subjects": {
         "2201": {
           "code": "2201",
@@ -391,6 +384,7 @@
       }
     },
     "5th": {
+      "drive_folder": "1AjQxHD_A3HjKA0tKyBNb-A2p5ypf6hi6",
       "subjects": {
         "3101": {
           "code": "3101",
@@ -470,6 +464,7 @@
       }
     },
     "6th": {
+      "drive_folder": "1V1bC-dZV6_NrHvA8q75TmfLIp-tXN-pj",
       "subjects": {
         "3201": {
           "code": "3201",
@@ -549,6 +544,7 @@
       }
     },
     "7th": {
+      "drive_folder": "1_cGrDFivmX1Bkw2iLnP_KKriNMBOfJGx",
       "subjects": {
         "4101": {
           "code": "4101",
@@ -628,6 +624,7 @@
       }
     },
     "8th": {
+      "drive_folder": "1dHSV2wI96GMIRyk_31fA2RaHbeAydGVo",
       "subjects": {
         "4201": {
           "code": "4201",
@@ -776,89 +773,6 @@
           "code": "6202",
           "title": "Advanced Cost & Management Accounting",
           "description": "Advanced costing techniques, strategic cost management, and performance measurement",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        }
-      }
-    },
-    "project": {
-      "subjects": {
-        "7101": {
-          "code": "7101",
-          "title": "Corporate Reporting",
-          "description": "Advanced financial reporting, corporate disclosure requirements, and regulatory compliance",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        },
-        "7102": {
-          "code": "7102",
-          "title": "Project Management",
-          "description": "Project planning, execution, monitoring, risk management, and professional methodologies",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        },
-        "7103": {
-          "code": "7103",
-          "title": "Government Accounting",
-          "description": "Public sector accounting principles, government financial reporting, and budgetary systems",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        },
-        "7112": {
-          "code": "7112",
-          "title": "Strategic Management",
-          "description": "Corporate strategy, competitive advantage, strategic planning, and business policy",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        }
-      }
-    },
-    "internship": {
-      "subjects": {
-        "7203": {
-          "code": "7203",
-          "title": "Corporate Tax Planning",
-          "description": "Corporate taxation strategies, tax compliance, and financial planning",
           "teacher": "",
           "links": {
             "class_updates": "",

@@ -1,10 +1,10 @@
 {
-  "batch_name": "31st Batch",
-  "batch_year": "2031-2035",
+  "batch_name": "24th Batch",
+  "batch_year": "2024-2028",
   "last_updated": "2025-09-14",
   "contact_person": "",
   "drive_folders": {
-    "note": "31st batch folders not yet created in drive mapping"
+    "note": "24th batch folders not yet created in drive mapping"
   },
   "faculty_reference": {
     "last_updated": "2025-09-04",
@@ -776,89 +776,6 @@
           "code": "6202",
           "title": "Advanced Cost & Management Accounting",
           "description": "Advanced costing techniques, strategic cost management, and performance measurement",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        }
-      }
-    },
-    "project": {
-      "subjects": {
-        "7101": {
-          "code": "7101",
-          "title": "Corporate Reporting",
-          "description": "Advanced financial reporting, corporate disclosure requirements, and regulatory compliance",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        },
-        "7102": {
-          "code": "7102",
-          "title": "Project Management",
-          "description": "Project planning, execution, monitoring, risk management, and professional methodologies",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        },
-        "7103": {
-          "code": "7103",
-          "title": "Government Accounting",
-          "description": "Public sector accounting principles, government financial reporting, and budgetary systems",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        },
-        "7112": {
-          "code": "7112",
-          "title": "Strategic Management",
-          "description": "Corporate strategy, competitive advantage, strategic planning, and business policy",
-          "teacher": "",
-          "links": {
-            "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
-          }
-        }
-      }
-    },
-    "internship": {
-      "subjects": {
-        "7203": {
-          "code": "7203",
-          "title": "Corporate Tax Planning",
-          "description": "Corporate taxation strategies, tax compliance, and financial planning",
           "teacher": "",
           "links": {
             "class_updates": "",
