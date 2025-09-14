@@ -292,10 +292,7 @@
     // Show placeholder content when data loading fails
     const sections = [
       'class-updates-content',
-      'personal-notes-content', 
-      'slides-content',
       'books-content',
-      'previous-materials-content',
       'current-questions-content',
       'previous-questions-content'
     ];
@@ -334,39 +331,12 @@
       }
     }
 
-    // Personal Notes
-    const personalNotesContent = document.getElementById(
-      "personal-notes-content"
-    );
-    if (personalNotesContent && links.notes) {
-      personalNotesContent.innerHTML =
-        createLinksFromArray(links.notes) || "No notes available yet.";
-    }
-
-    // Slides and Lectures
-    const slidesContent = document.getElementById("slides-content");
-    if (slidesContent && links.slides_lectures) {
-      slidesContent.innerHTML =
-        createLinksFromArray(links.slides_lectures) ||
-        "No slide materials available yet.";
-    }
-
-    // Books and Manuals
+    // Books and Manuals - Only in Additional Resources now
     const booksContent = document.getElementById("books-content");
     if (booksContent && links.books_manuals) {
       booksContent.innerHTML =
         createLinksFromArray(links.books_manuals) ||
         "No books/manuals available yet.";
-    }
-
-    // Previous Materials
-    const previousContent = document.getElementById(
-      "previous-materials-content"
-    );
-    if (previousContent && links.previous_materials) {
-      previousContent.innerHTML =
-        createLinksFromArray(links.previous_materials) ||
-        "No previous materials available yet.";
     }
 
     // Current Questions (from question_papers field)
@@ -616,32 +586,6 @@
             </div>
           </div>
           
-          <div class="subsection collapsible-subsection" id="personal-notes">
-            <div class="subsection-header" onclick="toggleSubsection('personal-notes')">
-              <h3 class="subsection-title">📝 Personal Notes</h3>
-              <span class="toggle-icon google-toggle-small">▲</span>
-            </div>
-            <div class="subsection-content">
-              <div class="subsection-description">Student-created study notes and summaries</div>
-              <div class="resource-content" id="personal-notes-content">
-                <div class="loading-state">Loading content...</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="subsection collapsible-subsection" id="slides-lectures">
-            <div class="subsection-header" onclick="toggleSubsection('slides-lectures')">
-              <h3 class="subsection-title">📊 Slides and Lecture Materials</h3>
-              <span class="toggle-icon google-toggle-small">▲</span>
-            </div>
-            <div class="subsection-content">
-              <div class="subsection-description">Official lecture slides and presentation materials</div>
-              <div class="resource-content" id="slides-content">
-                <div class="loading-state">Loading content...</div>
-              </div>
-            </div>
-          </div>
-          
           <div class="subsection collapsible-subsection" id="books-manuals">
             <div class="subsection-header" onclick="toggleSubsection('books-manuals')">
               <h3 class="subsection-title">📚 Books and Manuals</h3>
@@ -650,19 +594,6 @@
             <div class="subsection-content">
               <div class="subsection-description">Textbooks, reference materials, and official manuals</div>
               <div class="resource-content" id="books-content">
-                <div class="loading-state">Loading content...</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="subsection collapsible-subsection" id="previous-materials">
-            <div class="subsection-header" onclick="toggleSubsection('previous-materials')">
-              <h3 class="subsection-title">📁 Previous Materials</h3>
-              <span class="toggle-icon google-toggle-small">▼</span>
-            </div>
-            <div class="subsection-content">
-              <div class="subsection-description">Materials from previous batches and semesters</div>
-              <div class="resource-content" id="previous-materials-content">
                 <div class="loading-state">Loading content...</div>
               </div>
             </div>
@@ -721,7 +652,7 @@
         }
       }
 
-      // Study materials section: collapsed by default 
+      // Additional resources section: collapsed by default 
       const studySection = document.getElementById('study');
       if (studySection) {
         const content = studySection.querySelector('.section-content');
