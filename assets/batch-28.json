@@ -505,8 +505,8 @@
         },
         "3202": {
           "code": "3202",
-          "title": "International Business",
-          "description": "Global trade, multinational corporations, and international markets",
+          "title": "Corporate Finance",
+          "description": "Corporate financial management, capital structure, and financial decision-making",
           "teacher": "",
           "links": {
             "class_updates": "",
@@ -535,8 +535,8 @@
         },
         "3204": {
           "code": "3204",
-          "title": "Investment Analysis",
-          "description": "Portfolio management, securities analysis, and risk assessment",
+          "title": "VAT and Cross-border Taxation",
+          "description": "Value Added Tax regulations, cross-border taxation, and international tax compliance",
           "teacher": "",
           "links": {
             "class_updates": "",
@@ -569,8 +569,8 @@
       "subjects": {
         "4101": {
           "code": "4101",
-          "title": "Strategic Management",
-          "description": "Strategic planning, competitive analysis, and corporate strategy",
+          "title": "Advanced Management Accounting",
+          "description": "Advanced cost accounting, budgeting, performance measurement, and strategic management accounting",
           "teacher": "",
           "links": {
             "class_updates": "",
