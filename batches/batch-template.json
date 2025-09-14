@@ -1,14 +1,5 @@
 {
-  "batch_name": "32nd Batch",
-  "batch_year": "2032-2036",
-  "last_updated": "2025-01-XX",
-  "contact_person": "",
-  "faculty_reference": {
-    "last_updated": "2025-09-04",
-    "source": "Official DU Accounting & Information Systems Department Faculty List",
-    "chairman": "Md. Maksudur Rahman Sarker",
-    "note": "Complete faculty list with contact details available in faculty-mapping.json"
-  },
+  "batch_name": "XXth Batch",
   "drive_folders": {
     "1st_semester": "REPLACE_WITH_1ST_SEMESTER_DRIVE_FOLDER_ID",
     "2nd_semester": "REPLACE_WITH_2ND_SEMESTER_DRIVE_FOLDER_ID",
@@ -27,76 +18,95 @@
         "1101": {
           "code": "1101",
           "title": "Introduction to Financial Accounting",
-          "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
-          "teacher": "",
+          "teachers": {
+            "A": "Teacher Name Section A",
+            "B": "Teacher Name Section B",
+            "C": "Teacher Name Section C"
+          },
           "links": {
             "class_updates": "",
-            "notes": [],
-            "slides_lectures": [],
-            "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "notes": [
+              "topper-notes-folder-id",
+              "backbencher-notes-folder-id",
+              "cg4-notes-folder-id"
+            ],
+            "slides_lectures": [
+              "section-A-slides-folder-id",
+              "section-B-slides-folder-id"
+            ],
+            "books_manuals": [
+              "books-folder-id",
+              "manuals-folder-id",
+              "more-books-folder-id"
+            ],
+            "question_bank": [
+              "section-A-questions-folder-id",
+              "section-B-questions-folder-id"
+            ]
           }
         },
         "1102": {
           "code": "1102",
           "title": "Introduction to Business",
-          "description": "Fundamental business concepts, organizational structures, and basic business operations and management principles.",
-          "teacher": "",
+          "teachers": {
+            "A": "Teacher Name Section A",
+            "B": "Teacher Name Section B",
+            "C": "Teacher Name Section C"
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1103": {
           "code": "1103",
           "title": "Computer Concepts and Applications",
-          "description": "Introduction to computer systems, software applications, and basic programming concepts for business use.",
-          "teacher": "",
+          "teachers": {
+            "A": "Teacher Name Section A",
+            "B": "Teacher Name Section B",
+            "C": "Teacher Name Section C"
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1104": {
           "code": "1104",
           "title": "Mathematics for Business Decisions-I",
-          "description": "Mathematical foundations for business decision-making, including algebra, calculus, and statistical methods.",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1105": {
           "code": "1105",
           "title": "Business Communication",
-          "description": "Effective communication skills for business environments, including written, oral, and digital communication.",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -104,78 +114,691 @@
     "2nd": {
       "subjects": {
         "1201": {
-          "code": "1201", 
+          "code": "1201",
           "title": "Intermediate Accounting",
-          "description": "Advanced accounting principles, complex financial transactions, and intermediate level financial reporting.",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1202": {
           "code": "1202",
-          "title": "Microeconomics", 
-          "description": "Individual economic behavior, market structures, consumer theory, and firm decision-making processes.",
-          "teacher": "",
+          "title": "Microeconomics",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1203": {
           "code": "1203",
           "title": "Management and Organizational Behavior",
-          "description": "Principles of management, organizational behavior, leadership theories, and human resource management.",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1204": {
           "code": "1204",
           "title": "Mathematics for Business Decisions-II",
-          "description": "Advanced mathematical concepts for business including optimization, probability, and financial mathematics.",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1205": {
           "code": "1205",
           "title": "Bangladesh Studies",
-          "description": "History, culture, politics, and economics of Bangladesh with focus on national development.",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
+          }
+        }
+      }
+    },
+    "3rd": {
+      "subjects": {
+        "2101": {
+          "code": "2101",
+          "title": "Advanced Financial Accounting-I",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "2102": {
+          "code": "2102",
+          "title": "Macroeconomics",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "2103": {
+          "code": "2103",
+          "title": "Programming and Database Management",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "2104": {
+          "code": "2104",
+          "title": "General Science and Environment",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "2105": {
+          "code": "2105",
+          "title": "Business Statistics-I",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        }
+      }
+    },
+    "4th": {
+      "subjects": {
+        "2201": {
+          "code": "2201",
+          "title": "Advanced Financial Accounting-II",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "2202": {
+          "code": "2202",
+          "title": "Financial Management",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "2203": {
+          "code": "2203",
+          "title": "Cost Accounting",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "2204": {
+          "code": "2204",
+          "title": "Marketing",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "2205": {
+          "code": "2205",
+          "title": "Business Statistics-II",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        }
+      }
+    },
+    "5th": {
+      "subjects": {
+        "3101": {
+          "code": "3101",
+          "title": "Management Accounting",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "3102": {
+          "code": "3102",
+          "title": "Banking and Insurance",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "3103": {
+          "code": "3103",
+          "title": "Audit and Assurance",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "3104": {
+          "code": "3104",
+          "title": "Income Tax: Laws and Practice",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "3105": {
+          "code": "3105",
+          "title": "Business Laws",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        }
+      }
+    },
+    "6th": {
+      "subjects": {
+        "3201": {
+          "code": "3201",
+          "title": "Forensic Accounting and Fraud Investigation",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "3202": {
+          "code": "3202",
+          "title": "Corporate Finance",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "3203": {
+          "code": "3203",
+          "title": "Accounting Information Systems",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "3204": {
+          "code": "3204",
+          "title": "VAT and Cross-border Taxation",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "3205": {
+          "code": "3205",
+          "title": "Corporate Laws, Governance and Secretarial Practices",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        }
+      }
+    },
+    "7th": {
+      "subjects": {
+        "4101": {
+          "code": "4101",
+          "title": "Advanced Management Accounting",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "4102": {
+          "code": "4102",
+          "title": "Financial Market and Investment Analysis",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "4103": {
+          "code": "4103",
+          "title": "IT Governance and Information System Audit",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "4104": {
+          "code": "4104",
+          "title": "Supply Chain and Operation Management",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "4105": {
+          "code": "4105",
+          "title": "Public Sector Accounting and Financial Management",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        }
+      }
+    },
+    "8th": {
+      "subjects": {
+        "4201": {
+          "code": "4201",
+          "title": "Accounting Theory",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "4202": {
+          "code": "4202",
+          "title": "Business Analysis and Valuation",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "4203": {
+          "code": "4203",
+          "title": "Data Analytics",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "4204": {
+          "code": "4204",
+          "title": "Strategic Management",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "4205": {
+          "code": "4205",
+          "title": "Research Methodology",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        }
+      }
+    },
+    "mba-1st": {
+      "subjects": {
+        "6101": {
+          "code": "6101",
+          "title": "Advanced Financial Accounting",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "6102": {
+          "code": "6102",
+          "title": "Corporate Governance and Accountability",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "6103": {
+          "code": "6103",
+          "title": "Advanced Research Methodology",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        }
+      }
+    },
+    "mba-2nd": {
+      "subjects": {
+        "6201": {
+          "code": "6201",
+          "title": "Contemporary Issues in Accounting",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "6202": {
+          "code": "6202",
+          "title": "Advanced Cost & Management Accounting",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
+          }
+        },
+        "7203": {
+          "code": "7203",
+          "title": "Corporate Tax Planning",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "question_bank": []
           }
         }
       }
