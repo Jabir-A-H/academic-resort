@@ -1,6 +1,36 @@
 /**
+ * Fix relative paths in included HTML based on current page depth
+ */
+function fixRelativePaths(html) {
+  const currentPath = window.location.pathname;
+  let pathPrefix = '';
+  
+  // Determine path prefix based on page depth
+  if (currentPath.includes('/pages/subjects/')) {
+    // We're in a subject page (2 levels deep from root)
+    pathPrefix = '../../';
+  } else if (currentPath.includes('/pages/')) {
+    // We're in a regular page (1 level deep from root)
+    pathPrefix = '../';
+  } else {
+    // We're at root level
+    pathPrefix = '';
+  }
+  
+  // Fix href paths in navigation links - ensure they use absolute paths from root
+  // Replace relative paths with corrected paths
+  html = html.replace(/href="\.\.\/index\.html"/g, `href="${pathPrefix}index.html"`);
+  html = html.replace(/href="\.\.\/pages\//g, `href="${pathPrefix}pages/`);
+  
+  // Fix any doubled paths that might occur
+  html = html.replace(/pages\/pages\//g, 'pages/');
+  
+  return html;
+}
+
+/**
  * Simple HTML include loader
- * Usage: <div data-include="/assets/includes/sidebar.html"></div>
+ * Usage: <div data-include="/assets/header.html"></div>
  */
 
 // Global flag to prevent multiple sidebar initializations
@@ -22,7 +52,11 @@ async function loadInclude(el) {
 
     const res = await fetch(src, { cache: 'no-cache' });
     if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
-    const html = await res.text();
+    let html = await res.text();
+    
+    // Fix relative paths based on current page depth
+    html = fixRelativePaths(html);
+    
     el.innerHTML = html;
 
     // Mark as loaded
@@ -33,6 +67,9 @@ async function loadInclude(el) {
     
     // Initialize features that depend on included content
     setupDynamicComponents();
+    
+    // Execute inline scripts in the loaded content
+    executeInlineScripts(el);
 
     // Support nested includes
     initIncludes(el);
@@ -48,6 +85,32 @@ function initIncludes(root = document) {
     if (n.getAttribute('data-include-loaded')) return;
     loadInclude(n);
   });
+}
+
+/**
+ * Execute inline scripts in loaded content
+ */
+function executeInlineScripts(container) {
+  try {
+    const scripts = container.querySelectorAll('script');
+    scripts.forEach(oldScript => {
+      // Create a new script element to ensure execution
+      const newScript = document.createElement('script');
+      
+      // Copy attributes
+      Array.from(oldScript.attributes).forEach(attr => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      
+      // Copy content
+      newScript.textContent = oldScript.textContent;
+      
+      // Replace old script with new one to trigger execution
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  } catch (error) {
+    console.error('Error executing inline scripts:', error);
+  }
 }
 
 /**

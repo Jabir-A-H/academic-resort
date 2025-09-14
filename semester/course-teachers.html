@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Teachers' Profiles — Academic Resort</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script src="../assets/script.js" defer></script>
+  </head>
+  <body>
+    <div data-include="../assets/header.html"></div>
+    <!-- App Header -->
+    <header class="app-header">
+      <h1>Academic Resort</h1>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <!-- Page Header -->
+        <div class="teachers-page-header">
+          <h2>Teachers' Profiles</h2>
+          <p>Find teachers by course, batch, or semester</p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="teachers-filters">
+          <!-- Top Row: View Type and Reset -->
+          <div class="teachers-filters-top">
+            <div class="filter-group">
+              <label for="viewSelect">View by:</label>
+              <select id="viewSelect" class="filter-dropdown">
+                <option value="batch">Batch</option>
+                <option value="course">Course</option>
+                <option value="teacher">Teacher</option>
+              </select>
+            </div>
+
+            <button
+              id="resetFiltersBtn"
+              class="reset-filters-btn"
+              style="display: none"
+            >
+              <span>↻</span> Reset Filters
+            </button>
+          </div>
+
+          <!-- Bottom Row: Main Filters -->
+          <div class="teachers-filters-bottom">
+            <div class="filter-group">
+              <label for="batchSelect">Batch:</label>
+              <select id="batchSelect" class="filter-dropdown">
+                <option value="all">All Batches</option>
+                <option value="28">28th Batch</option>
+                <option value="27">27th Batch</option>
+                <option value="26">26th Batch</option>
+                <option value="25">25th Batch</option>
+                <option value="24">24th Batch</option>
+              </select>
+            </div>
+
+            <div
+              class="filter-group"
+              id="semesterFilterGroup"
+              style="display: none"
+            >
+              <label for="semesterSelect">Semester:</label>
+              <select id="semesterSelect" class="filter-dropdown">
+                <option value="all">All Semesters</option>
+                <!-- Semesters will be populated dynamically based on selected batch -->
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="teacherSelect">Teacher:</label>
+              <select id="teacherSelect" class="filter-dropdown">
+                <option value="all">All Teachers</option>
+                <!-- Teachers will be populated dynamically -->
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="courseSelect">Course:</label>
+              <select id="courseSelect" class="filter-dropdown">
+                <option value="all">All Courses</option>
+                <!-- Courses will be populated dynamically -->
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Views -->
+        <div id="view-batch" class="teachers-content-view">
+          <!-- Batch-organized content will be rendered here -->
+        </div>
+
+        <div
+          id="view-course"
+          class="teachers-content-view"
+          style="display: none"
+        >
+          <!-- Course-organized content will be rendered here -->
+        </div>
+
+        <div
+          id="view-teacher"
+          class="teachers-content-view"
+          style="display: none"
+        >
+          <!-- Teacher-focused content will be rendered here -->
+        </div>
+
+        <!-- Department Information Footer -->
+        <div
+          style="
+            margin-top: var(--space-xl);
+            padding: var(--space-lg);
+            border-top: 1px solid var(--border);
+          "
+        >
+          <p class="small">
+            Visit our department of Accounting &amp; Information Systems
+            official website to get to know more about your course teachers:
+            <a
+              href="https://du.ac.bd/body/FacultyMembers/ACC"
+              target="_blank"
+              rel="noopener noreferrer"
+              >https://du.ac.bd/body/FacultyMembers/ACC</a
+            >
+          </p>
+        </div>
+
+        <!-- Hidden source data -->
+        <div id="raw-archive" style="display: none">
+          <div class="archive">
+            <p class="small">
+              Below are t for A&amp;IS (24th to 28th batches). If you want
+              contact details or course assignment changes added, tell me which
+              batch/semester to do next.
+            </p>
+
+            <h3>24th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Principles of Accounting (1101)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Dr. Mahmuda Akter</li>
+              <li>Al-Amin</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Dr. Yousuf Kamal</li>
+              <li>Hasina Begum</li>
+            </ul>
+
+            <h5>Business Communication and Report Writing (1103)</h5>
+            <ul>
+              <li>Dr. Riazur Rahman Chowdhury</li>
+              <li>Dr Mohammed Mehadi Masud Mazumder</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- I (1104)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>Bangladesh Studies (1105)</h5>
+            <ul>
+              <li>Moshahida Sultana</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h4>2nd Semester</h4>
+            <h5>Intermediate Accounting (1201)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Al-Amin</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1202)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Principles of Management (1203)</h5>
+            <ul>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+              <li>Ms. Hasina Begum</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- II (1204)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>General Science and Environment (1205)</h5>
+            <ul>
+              <li>Dr. Mohammed Almujaddade Alfasane</li>
+              <li>Rumana Ahmed</li>
+            </ul>
+
+            <h4>3rd Semester</h4>
+            <h5>Advanced Financial Accounting- I (2101)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Dr. Ranjan Kumar Mitra</li>
+            </ul>
+
+            <h5>Business and Commercial Laws (2102)</h5>
+            <ul>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+              <li>Shah Alam</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Basic Business Statistics (2103)</h5>
+            <ul>
+              <li>Kawsar Jahan</li>
+              <li>Sir Jagadish</li>
+            </ul>
+
+            <h5>Microeconomics (2104)</h5>
+            <ul>
+              <li>Dr. Tahmina Khatun</li>
+              <li>Hasina Begum</li>
+            </ul>
+
+            <h5>Principles of Marketing (2105)</h5>
+            <ul>
+              <li>Ms. Sadia Afroze</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h4>4th Semester</h4>
+            <h5>Advanced Financial Accounting (2201)</h5>
+            <ul>
+              <li>Md. Mahadi Hasan</li>
+              <li>Dr. Md. Mushfiqur Rahman</li>
+              <li>Bilkis Akhter</li>
+            </ul>
+
+            <h5>Applied Business Statistics (2203)</h5>
+            <ul>
+              <li>Md. Mazharul Anwar</li>
+              <li>Ishter Mahal</li>
+            </ul>
+
+            <h5>Introduction to Programming and Database Management (2202)</h5>
+            <ul>
+              <li>Dr. Md. Monzur Morshed</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Macroeconomics (2204)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h5>Principles of Finance (2205)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Md. Ahasan Uddin</li>
+            </ul>
+
+            <h4>5th Semester</h4>
+            <h5>Cost Accounting - I (3101)</h5>
+            <ul>
+              <li>Dr. Md. Musfiqur Rahman</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Financial Management (3102)</h5>
+            <ul>
+              <li>Bilkis Akhter</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+              <li>Md. Hashem</li>
+            </ul>
+
+            <h5>Auditing and Assurance - I (3103)</h5>
+            <ul>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h5>Corporate Laws and Governance (3104)</h5>
+            <ul>
+              <li>Ahmed Rizvan Hasan</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Principles and Practices of Taxation - I (3105)</h5>
+            <ul>
+              <li>Md. Ahasan Uddin</li>
+              <li>Hasina Begum</li>
+            </ul>
+
+            <h4>6th Semester</h4>
+            <h5>Cost Accounting - II (3201)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Tanzina Haque</li>
+            </ul>
+
+            <h5>Corporate Finance (3202)</h5>
+            <ul>
+              <li>Dr. Ranjan Kumar Mitra</li>
+              <li>Md. Nazim Uddin Bhuiyan</li>
+            </ul>
+
+            <h5>Auditing and Assurance - II (3203)</h5>
+            <ul>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h5>Organizational Behavior (3204)</h5>
+            <ul>
+              <li>Dr. Riazur Rahman Chowdhury</li>
+              <li>Ms. Sadia Afroze</li>
+            </ul>
+
+            <h5>Principles and Practices of Taxation - II (3205)</h5>
+            <ul>
+              <li>Dr. Dhiman Kumar Chowdhury</li>
+              <li>Dr. Mohammad Tareq</li>
+            </ul>
+
+            <hr />
+
+            <h3>25th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Principles of Accounting (1101)</h5>
+            <ul>
+              <li>Dr Mohammed Mehadi Masud Mazumder</li>
+              <li>Al-Amin</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Md. Mahadi Hasan</li>
+              <li>Tanzina Haque</li>
+            </ul>
+
+            <h5>Business Communication and Report Writing (1103)</h5>
+            <ul>
+              <li>Tahmina Ahmed</li>
+              <li>Dr. Dewan Mahboob Hossain</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- I (1104)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>Bangladesh Studies (1105)</h5>
+            <ul>
+              <li>Ms. Hasina Begum</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h4>2nd Semester</h4>
+            <h5>Intermediate Accounting (1201)</h5>
+            <ul>
+              <li>Al-Amin</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1202)</h5>
+            <ul>
+              <li>Dr. Minhaj Ferdous</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Principles of Management (1203)</h5>
+            <ul>
+              <li>Ms. Hasina Begum</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- II (1204)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>General Science and Environment (1205)</h5>
+            <ul>
+              <li>Dr. Mohammed Almujaddade Alfasane</li>
+              <li>Rumana Ahmed</li>
+            </ul>
+
+            <h4>3rd Semester</h4>
+            <h5>Advanced Financial Accounting- I (2101)</h5>
+            <ul>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+              <li>Dr. Ranjan Kumar Mitra</li>
+            </ul>
+
+            <h5>Business and Commercial Laws (2102)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h5>Basic Business Statistics (2103)</h5>
+            <ul>
+              <li>Kawsar Jahan</li>
+              <li>Sir Jagadish</li>
+            </ul>
+
+            <h5>Microeconomics (2104)</h5>
+            <ul>
+              <li>Dr. Tahmina Khatun</li>
+              <li>Hasina Begum</li>
+            </ul>
+
+            <h5>Principles of Marketing (2105)</h5>
+            <ul>
+              <li>Ms. Sadia Afroze</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h4>4th Semester</h4>
+            <h5>Advanced Financial Accounting (2201)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Dr. Md. Mushfiqur Rahman</li>
+            </ul>
+
+            <h5>Applied Business Statistics (2203)</h5>
+            <ul>
+              <li>Md. Mazharul Anwar</li>
+              <li>Kawsar Jahan</li>
+            </ul>
+
+            <h5>Introduction to Programming and Database Management (2202)</h5>
+            <ul>
+              <li>Dr. Minhaj Ferdous</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Macroeconomics (2204)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Dr. Tahmina Khatun</li>
+            </ul>
+
+            <h5>Principles of Finance (2205)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Md. Ahasan Uddin</li>
+            </ul>
+
+            <h4>5th Semester</h4>
+            <h5>Cost Accounting - I (3101)</h5>
+            <ul>
+              <li>Dr. Md. Musfiqur Rahman</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Financial Management (3102)</h5>
+            <ul>
+              <li>Bilkis Akhter</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h5>Auditing and Assurance - I (3103)</h5>
+            <ul>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h5>Corporate Laws and Governance (3104)</h5>
+            <ul>
+              <li>Ahmed Rizvan Hasan</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Principles and Practices of Taxation - I (3105)</h5>
+            <ul>
+              <li>Md. Ahasan Uddin</li>
+              <li>Hasina Begum</li>
+            </ul>
+
+            <h4>6th Semester</h4>
+            <h5>Cost Accounting - II (3201)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Tanzina Haque</li>
+            </ul>
+
+            <h5>Corporate Finance (3202)</h5>
+            <ul>
+              <li>Dr. Ranjan Kumar Mitra</li>
+              <li>Md. Nazim Uddin Bhuiyan</li>
+            </ul>
+
+            <h5>Auditing and Assurance - II (3203)</h5>
+            <ul>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+              <li>Md. Rezaul Karim</li>
+            </ul>
+
+            <h5>Organizational Behavior (3204)</h5>
+            <ul>
+              <li>Dr. Riazur Rahman Chowdhury</li>
+              <li>Ms. Sadia Afroze</li>
+            </ul>
+
+            <h5>Principles and Practices of Taxation - II (3205)</h5>
+            <ul>
+              <li>Dr. Dhiman Kumar Chowdhury</li>
+              <li>Dr. Mohammad Tareq</li>
+            </ul>
+
+            <hr />
+
+            <h3>26th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Principles of Accounting (1101)</h5>
+            <ul>
+              <li>Dr Mohammed Mehadi Masud Mazumder</li>
+              <li>Al-Amin</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Md. Mahadi Hasan</li>
+              <li>Tanzina Haque</li>
+            </ul>
+
+            <h5>Business Communication and Report Writing (1103)</h5>
+            <ul>
+              <li>Tahmina Ahmed</li>
+              <li>Dr. Dewan Mahboob Hossain</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- I (1104)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>Bangladesh Studies (1105)</h5>
+            <ul>
+              <li>Ms. Hasina Begum</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h4>2nd Semester</h4>
+            <h5>Intermediate Accounting (1201)</h5>
+            <ul>
+              <li>Al-Amin</li>
+              <li>Shah Alam</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1202)</h5>
+            <ul>
+              <li>Dr. Minhaj Ferdous</li>
+              <li>Md. Mahadi Hasan</li>
+            </ul>
+
+            <h5>Principles of Management (1203)</h5>
+            <ul>
+              <li>Ms. Hasina Begum</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- II (1204)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>General Science and Environment (1205)</h5>
+            <ul>
+              <li>Dr. Mohammed Almujaddade Alfasane</li>
+              <li>Rumana Ahmed</li>
+            </ul>
+
+            <h4>3rd Semester</h4>
+            <h5>Advanced Financial Accounting- I (2101)</h5>
+            <ul>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+              <li>Dr. Ranjan Kumar Mitra</li>
+            </ul>
+
+            <h5>Business and Commercial Laws (2102)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h5>Basic Business Statistics (2103)</h5>
+            <ul>
+              <li>Kawsar Jahan</li>
+              <li>Sir Jagadish</li>
+            </ul>
+
+            <h5>Microeconomics (2104)</h5>
+            <ul>
+              <li>Dr. Tahmina Khatun</li>
+              <li>Hasina Begum</li>
+            </ul>
+
+            <h5>Principles of Marketing (2105)</h5>
+            <ul>
+              <li>Ms. Sadia Afroze</li>
+              <li>Mohammad Saif Uddin Bhuiyah</li>
+            </ul>
+
+            <h4>4th Semester</h4>
+            <h5>Advanced Financial Accounting (2201)</h5>
+            <ul>
+              <li>Mamtaz Uddin Ahmed</li>
+              <li>Dr. Md. Mushfiqur Rahman</li>
+            </ul>
+
+            <h5>Applied Business Statistics (2203)</h5>
+            <ul>
+              <li>Md. Mazharul Anwar</li>
+              <li>Kawsar Jahan</li>
+            </ul>
+
+            <h5>Introduction to Programming and Database Management (2202)</h5>
+            <ul>
+              <li>Dr. Minhaj Ferdous</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Macroeconomics (2204)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Dr. Tahmina Khatun</li>
+            </ul>
+
+            <h5>Principles of Finance (2205)</h5>
+            <ul>
+              <li>Shah Alam</li>
+              <li>Md. Ahasan Uddin</li>
+            </ul>
+
+            <hr />
+
+            <h3>27th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Introduction to Financial Accounting (1101)</h5>
+            <ul>
+              <li>Al-Amin</li>
+              <li>Dr. Md. Jamil Sharif, ACMA</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Tanzina Haque</li>
+              <li>Md. Nazim Uddin Bhuiyan</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1103)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Ahmed Rizvan Hasan</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions- I (1104)</h5>
+            <ul>
+              <li>Md. Abdul Hakim</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>Business Communication (1105)</h5>
+            <ul>
+              <li>Ms. Sadia Afroze</li>
+              <li>Bilkis Akhter</li>
+            </ul>
+
+            <hr />
+
+            <h3>28th Batch</h3>
+
+            <h4>1st Semester</h4>
+            <h5>Introduction to Financial Accounting (1101)</h5>
+            <ul>
+              <li>Amirus Salat</li>
+              <li>Al-Amin</li>
+            </ul>
+
+            <h5>Introduction To Business (1102)</h5>
+            <ul>
+              <li>Md. Nazim Uddin Bhuiyan</li>
+              <li>Tanzina Haque</li>
+            </ul>
+
+            <h5>Computer Concepts and Applications (1103)</h5>
+            <ul>
+              <li>Md. Rezaul Karim</li>
+              <li>Raihan Sobhan</li>
+            </ul>
+
+            <h5>Mathematics for Business Decisions - I (1104)</h5>
+            <ul>
+              <li>Kawsar Jahan</li>
+              <li>Md. Mazharul Anwar</li>
+            </ul>
+
+            <h5>Business Communication (1105)</h5>
+            <ul>
+              <li>Dr. Riazur Rahman Chowdhury</li>
+              <li>Bilkis Akhter</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // Enhanced Teachers Page Script
+      let allBatches = [];
+      let allTeachers = new Map(); // teacherName -> { courses: Set, batches: Set, semesters: Set }
+      let allCourses = new Map(); // courseName -> { batches: Set, teachers: Set, semesters: Set }
+
+      // Faculty position and order mapping (based on official DU Accounting Department page)
+      // Faculty data will be loaded from external JSON file
+      let facultyData = {};
+
+      // Function to normalize teacher names (remove titles/honorifics for matching)
+      function normalizeName(name) {
+        if (!name) return "";
+
+        // Remove common academic titles and honorifics
+        const titlePrefixes = [
+          "Dr.",
+          "Prof.",
+          "Professor",
+          "Mr.",
+          "Ms.",
+          "Mrs.",
+          "Miss",
+          "Sir",
+          "Madam",
+          "ACMA",
+          "ACA",
+          "FCMA",
+          "FCA",
+          "CPA",
+        ];
+
+        let normalized = name.trim();
+
+        // Remove prefixes
+        for (const prefix of titlePrefixes) {
+          const regex = new RegExp(`^${prefix}\\s+`, "gi");
+          normalized = normalized.replace(regex, "");
+        }
+
+        // Remove suffixes (titles after comma)
+        normalized = normalized.replace(
+          /,\s*(Dr|Prof|Professor|ACMA|ACA|FCMA|FCA|CPA)\.?$/gi,
+          ""
+        );
+
+        // Clean up extra whitespace
+        normalized = normalized.replace(/\s+/g, " ").trim();
+
+        return normalized;
+      }
+
+      // Function to load faculty data from external JSON file
+      async function loadFacultyData() {
+        try {
+          const response = await fetch("../assets/faculty-mapping.json");
+          const data = await response.json();
+
+          // Transform the JSON structure to the format expected by the page
+          facultyData = {};
+          const categories = [
+            "professors",
+            "associateProfessors",
+            "assistantProfessors",
+            "lecturers",
+            "honoraryProfessors",
+            "guestTeachers",
+          ];
+
+          categories.forEach((category) => {
+            if (data.faculty && data.faculty[category]) {
+              data.faculty[category].forEach((faculty) => {
+                // Add main name
+                facultyData[faculty.name] = {
+                  position: faculty.position,
+                  order: faculty.order,
+                  cleanName: faculty.cleanName,
+                };
+
+                // Add alternative names if they exist
+                if (faculty.alternativeNames) {
+                  faculty.alternativeNames.forEach((altName) => {
+                    facultyData[altName] = {
+                      position: faculty.position,
+                      order: faculty.order,
+                      cleanName: faculty.cleanName,
+                    };
+                  });
+                }
+              });
+            }
+          });
+
+          console.log(
+            "Faculty data loaded successfully:",
+            Object.keys(facultyData).length,
+            "entries"
+          );
+        } catch (error) {
+          console.error("Error loading faculty data:", error);
+          // Fallback to empty object if loading fails
+          facultyData = {};
+        }
+      }
+
+      // Function to get faculty info with improved name matching
+      function getFacultyInfo(teacherName) {
+        // First try direct match
+        if (facultyData[teacherName]) {
+          return facultyData[teacherName];
+        }
+
+        // Try normalized name matching
+        const normalizedInput = normalizeName(teacherName);
+        for (const [key, value] of Object.entries(facultyData)) {
+          if (normalizeName(key) === normalizedInput) {
+            return value;
+          }
+        }
+
+        // Fallback to default
+        return {
+          position: "Faculty",
+          order: 1000,
+          cleanName: normalizeName(teacherName) || teacherName,
+        };
+      }
+
+      // Function to get clean teacher name (without prefixes)
+      function getCleanTeacherName(teacherName) {
+        const facultyInfo = getFacultyInfo(teacherName);
+        return (
+          facultyInfo.cleanName || normalizeName(teacherName) || teacherName
+        );
+      }
+
+      // Function to sort teachers by official order
+      function sortTeachersByOrder(teachers) {
+        return teachers.sort((a, b) => {
+          const aInfo = getFacultyInfo(a);
+          const bInfo = getFacultyInfo(b);
+          return aInfo.order - bInfo.order;
+        });
+      }
+
+      // Semester order mapping from README
+      const semesterOrder = [
+        "1st Semester",
+        "2nd Semester",
+        "3rd Semester",
+        "4th Semester",
+        "5th Semester",
+        "6th Semester",
+        "7th Semester",
+        "8th Semester",
+        "MBA 1st Semester",
+        "MBA 2nd Semester",
+      ];
+
+      // Batch order (latest first)
+      const batchOrder = [
+        "28th Batch",
+        "27th Batch",
+        "26th Batch",
+        "25th Batch",
+        "24th Batch",
+      ];
+
+      // Parse the hidden archive into structured data
+      function parseArchive(archiveElement) {
+        const batches = [];
+        let currentBatch = null;
+        let currentSemester = null;
+        let currentCourse = null;
+
+        const elements = Array.from(archiveElement.children);
+
+        for (const element of elements) {
+          if (element.tagName === "H3") {
+            // New batch
+            currentBatch = {
+              name: element.textContent.trim(),
+              semesters: [],
+            };
+            batches.push(currentBatch);
+          } else if (element.tagName === "H4" && currentBatch) {
+            // New semester
+            currentSemester = {
+              name: element.textContent.trim(),
+              courses: [],
+            };
+            currentBatch.semesters.push(currentSemester);
+          } else if (element.tagName === "H5" && currentSemester) {
+            // New course
+            const courseText = element.textContent.trim();
+            const match = courseText.match(/^(.+?)\s*\((\d+)\)$/);
+            currentCourse = {
+              name: match ? match[1].trim() : courseText,
+              code: match ? match[2] : "",
+              teachers: [],
+            };
+            currentSemester.courses.push(currentCourse);
+          } else if (element.tagName === "UL" && currentCourse) {
+            // Teachers list
+            const teachers = Array.from(element.children).map((li) =>
+              li.textContent.trim()
+            );
+            currentCourse.teachers = teachers;
+
+            // Build teacher index
+            teachers.forEach((teacher) => {
+              if (!allTeachers.has(teacher)) {
+                allTeachers.set(teacher, {
+                  courses: new Set(),
+                  batches: new Set(),
+                  semesters: new Set(),
+                });
+              }
+              const teacherData = allTeachers.get(teacher);
+              teacherData.courses.add(
+                `${currentCourse.name} (${currentCourse.code})`
+              );
+              teacherData.batches.add(currentBatch.name);
+              teacherData.semesters.add(currentSemester.name);
+            });
+
+            // Build course index
+            const courseKey = `${currentCourse.name} (${currentCourse.code})`;
+            if (!allCourses.has(courseKey)) {
+              allCourses.set(courseKey, {
+                batches: new Set(),
+                teachers: new Set(),
+                semesters: new Set(),
+              });
+            }
+            const courseData = allCourses.get(courseKey);
+            courseData.batches.add(currentBatch.name);
+            courseData.semesters.add(currentSemester.name);
+            teachers.forEach((teacher) => courseData.teachers.add(teacher));
+          }
+        }
+
+        return batches;
+      }
+
+      // Sort batches by order (latest first)
+      function sortBatches(batches) {
+        return batches.sort((a, b) => {
+          const aIndex = batchOrder.indexOf(a.name);
+          const bIndex = batchOrder.indexOf(b.name);
+          if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+          if (aIndex !== -1) return -1;
+          if (bIndex !== -1) return 1;
+          return a.name.localeCompare(b.name);
+        });
+      }
+
+      // Sort semesters by order
+      function sortSemesters(semesters) {
+        return semesters.sort((a, b) => {
+          const aIndex = semesterOrder.indexOf(a.name);
+          const bIndex = semesterOrder.indexOf(b.name);
+          if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+          if (aIndex !== -1) return -1;
+          if (bIndex !== -1) return 1;
+          return a.name.localeCompare(b.name);
+        });
+      }
+
+      // Populate dropdowns
+      function populateDropdowns() {
+        // Populate teacher dropdown with official order
+        const teacherSelect = document.getElementById("teacherSelect");
+        const sortedTeachers = sortTeachersByOrder(
+          Array.from(allTeachers.keys())
+        );
+
+        teacherSelect.innerHTML = '<option value="all">All Teachers</option>';
+        sortedTeachers.forEach((teacher) => {
+          const option = document.createElement("option");
+          option.value = teacher;
+          option.textContent = getCleanTeacherName(teacher);
+          teacherSelect.appendChild(option);
+        });
+
+        // Populate course dropdown
+        const courseSelect = document.getElementById("courseSelect");
+        // Sort courses by course code numerically
+        const sortedCourses = Array.from(allCourses.keys()).sort((a, b) => {
+          // Extract course codes from format "Course Name (CODE)"
+          const codeA = a.match(/\((\d+)\)$/)?.[1];
+          const codeB = b.match(/\((\d+)\)$/)?.[1];
+
+          if (codeA && codeB) {
+            return parseInt(codeA) - parseInt(codeB);
+          }
+          // Fallback to alphabetical if no code found
+          return a.localeCompare(b);
+        });
+
+        courseSelect.innerHTML = '<option value="all">All Courses</option>';
+        sortedCourses.forEach((course) => {
+          const option = document.createElement("option");
+          option.value = course;
+          option.textContent = course;
+          courseSelect.appendChild(option);
+        });
+      }
+
+      // Render batch view
+      function renderBatchView(
+        batches,
+        container,
+        selectedBatch = "all",
+        selectedSemester = "all",
+        selectedTeacher = "all",
+        selectedCourse = "all"
+      ) {
+        container.innerHTML = "";
+
+        let filteredBatches =
+          selectedBatch === "all"
+            ? batches
+            : batches.filter((batch) => batch.name.includes(selectedBatch));
+
+        // Sort batches (latest first)
+        filteredBatches = sortBatches(filteredBatches);
+
+        filteredBatches.forEach((batch) => {
+          const batchSection = document.createElement("div");
+          batchSection.className = "teachers-section";
+
+          const batchHeader = document.createElement("h3");
+          batchHeader.className = "teachers-section-title";
+          batchHeader.textContent = batch.name;
+          batchSection.appendChild(batchHeader);
+
+          // Sort semesters by order
+          let sortedSemesters = sortSemesters([...batch.semesters]);
+
+          // Filter by semester if selected
+          if (selectedSemester !== "all") {
+            sortedSemesters = sortedSemesters.filter(
+              (semester) => semester.name === selectedSemester
+            );
+          }
+
+          sortedSemesters.forEach((semester) => {
+            const semesterDiv = document.createElement("div");
+            semesterDiv.className = "teachers-semester";
+
+            const semesterHeader = document.createElement("h4");
+            semesterHeader.className = "teachers-semester-title";
+            semesterHeader.textContent = semester.name;
+            semesterDiv.appendChild(semesterHeader);
+
+            const coursesGrid = document.createElement("div");
+            coursesGrid.className = "teachers-courses-grid";
+
+            // Sort courses by course code
+            const sortedCourses = [...semester.courses].sort((a, b) => {
+              const codeA = parseInt(a.code);
+              const codeB = parseInt(b.code);
+              return codeA - codeB;
+            });
+
+            sortedCourses.forEach((course) => {
+              // Filter by course if selected
+              if (
+                selectedCourse !== "all" &&
+                `${course.name} (${course.code})` !== selectedCourse
+              ) {
+                return;
+              }
+
+              // Filter by teacher if selected
+              let teachersToShow = course.teachers;
+              if (selectedTeacher !== "all") {
+                teachersToShow = course.teachers.filter(
+                  (teacher) => teacher === selectedTeacher
+                );
+                if (teachersToShow.length === 0) return;
+              }
+
+              const courseCard = document.createElement("div");
+              courseCard.className = "teachers-course-card";
+
+              const courseHeader = document.createElement("div");
+              courseHeader.className = "teachers-course-header";
+              courseHeader.innerHTML = `
+                <span class="teachers-course-name">${course.name}</span>
+                <span class="teachers-course-code">${course.code}</span>
+              `;
+
+              const teachersList = document.createElement("div");
+              teachersList.className = "teachers-list";
+
+              // Sort teachers by official order
+              const sortedTeachers = sortTeachersByOrder([...teachersToShow]);
+
+              sortedTeachers.forEach((teacher, index) => {
+                const teacherItem = document.createElement("div");
+                teacherItem.className = "teachers-teacher-item";
+
+                const teacherInfo = document.createElement("div");
+                teacherInfo.className = "teachers-teacher-info";
+
+                const teacherName = document.createElement("span");
+                teacherName.className = "teachers-teacher-name";
+                teacherName.textContent = getCleanTeacherName(teacher);
+
+                const facultyInfo = getFacultyInfo(teacher);
+                const positionTag = document.createElement("span");
+                positionTag.className = "teachers-position-tag";
+                positionTag.textContent = facultyInfo.position;
+
+                teacherInfo.appendChild(teacherName);
+                teacherInfo.appendChild(positionTag);
+
+                const sectionTag = document.createElement("span");
+                sectionTag.className = "teachers-section-tag";
+                sectionTag.textContent = String.fromCharCode(65 + index); // A, B, C, etc.
+
+                teacherItem.appendChild(teacherInfo);
+                teacherItem.appendChild(sectionTag);
+                teachersList.appendChild(teacherItem);
+              });
+
+              courseCard.appendChild(courseHeader);
+              courseCard.appendChild(teachersList);
+              coursesGrid.appendChild(courseCard);
+            });
+
+            if (coursesGrid.children.length > 0) {
+              semesterDiv.appendChild(coursesGrid);
+              batchSection.appendChild(semesterDiv);
+            }
+          });
+
+          if (batchSection.children.length > 1) {
+            // More than just the header
+            container.appendChild(batchSection);
+          }
+        });
+      }
+
+      // Render course view
+      function renderCourseView(
+        batches,
+        container,
+        selectedBatch = "all",
+        selectedSemester = "all",
+        selectedTeacher = "all",
+        selectedCourse = "all"
+      ) {
+        container.innerHTML = "";
+
+        // Group courses by semester
+        const semesterMap = new Map();
+
+        batches.forEach((batch) => {
+          if (selectedBatch !== "all" && !batch.name.includes(selectedBatch))
+            return;
+
+          batch.semesters.forEach((semester) => {
+            // Filter by semester if selected
+            if (
+              selectedSemester !== "all" &&
+              semester.name !== selectedSemester
+            )
+              return;
+
+            semester.courses.forEach((course) => {
+              const courseKey = `${course.name} (${course.code})`;
+
+              // Filter by course if selected
+              if (selectedCourse !== "all" && courseKey !== selectedCourse)
+                return;
+
+              // Filter by teacher if selected
+              let teachersToShow = course.teachers;
+              if (selectedTeacher !== "all") {
+                teachersToShow = course.teachers.filter(
+                  (teacher) => teacher === selectedTeacher
+                );
+                if (teachersToShow.length === 0) return;
+              }
+
+              if (!semesterMap.has(semester.name)) {
+                semesterMap.set(semester.name, new Map());
+              }
+
+              const courseMap = semesterMap.get(semester.name);
+              if (!courseMap.has(courseKey)) {
+                courseMap.set(courseKey, {
+                  name: course.name,
+                  code: course.code,
+                  offerings: [],
+                });
+              }
+
+              courseMap.get(courseKey).offerings.push({
+                batch: batch.name,
+                teachers: teachersToShow,
+              });
+            });
+          });
+        });
+
+        // Sort semesters by order
+        const sortedSemesters = Array.from(semesterMap.keys()).sort((a, b) => {
+          const aIndex = semesterOrder.indexOf(a);
+          const bIndex = semesterOrder.indexOf(b);
+          if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+          if (aIndex !== -1) return -1;
+          if (bIndex !== -1) return 1;
+          return a.localeCompare(b);
+        });
+
+        sortedSemesters.forEach((semesterName) => {
+          const semesterSection = document.createElement("div");
+          semesterSection.className = "teachers-section";
+
+          const semesterHeader = document.createElement("h3");
+          semesterHeader.className = "teachers-section-title";
+          semesterHeader.textContent = semesterName;
+          semesterSection.appendChild(semesterHeader);
+
+          const coursesGrid = document.createElement("div");
+          coursesGrid.className = "teachers-courses-grid";
+
+          const courseMap = semesterMap.get(semesterName);
+
+          // Sort courses by course code within each semester
+          const sortedCourses = Array.from(courseMap.entries()).sort((a, b) => {
+            const codeA = parseInt(a[1].code);
+            const codeB = parseInt(b[1].code);
+            return codeA - codeB;
+          });
+
+          sortedCourses.forEach(([courseKey, courseData]) => {
+            const courseCard = document.createElement("div");
+            courseCard.className = "teachers-course-card";
+
+            const courseHeader = document.createElement("div");
+            courseHeader.className = "teachers-course-header";
+            courseHeader.innerHTML = `
+              <span class="teachers-course-name">${courseData.name}</span>
+              <span class="teachers-course-code">${courseData.code}</span>
+            `;
+
+            const offeringsContainer = document.createElement("div");
+            offeringsContainer.className = "teachers-list";
+
+            // Sort offerings by batch order (latest first)
+            courseData.offerings.sort((a, b) => {
+              const aBatchIndex = batchOrder.indexOf(a.batch);
+              const bBatchIndex = batchOrder.indexOf(b.batch);
+              if (aBatchIndex !== -1 && bBatchIndex !== -1)
+                return aBatchIndex - bBatchIndex;
+              if (aBatchIndex !== -1) return -1;
+              if (bBatchIndex !== -1) return 1;
+              return a.batch.localeCompare(b.batch);
+            });
+
+            courseData.offerings.forEach((offering) => {
+              const batchGroup = document.createElement("div");
+              batchGroup.className = "teachers-batch-group";
+
+              const batchHeader = document.createElement("div");
+              batchHeader.className = "teachers-batch-header";
+              batchHeader.innerHTML = `<span class="teachers-batch-name">${offering.batch}</span>`;
+
+              const teachersList = document.createElement("div");
+              teachersList.className = "teachers-teacher-list";
+
+              // Sort teachers by official order
+              const sortedTeachers = sortTeachersByOrder([
+                ...offering.teachers,
+              ]);
+
+              sortedTeachers.forEach((teacher, index) => {
+                const teacherItem = document.createElement("div");
+                teacherItem.className = "teachers-teacher-item";
+
+                const teacherInfo = document.createElement("div");
+                teacherInfo.className = "teachers-teacher-info";
+
+                const teacherName = document.createElement("span");
+                teacherName.className = "teachers-teacher-name";
+                teacherName.textContent = getCleanTeacherName(teacher);
+
+                const facultyInfo = getFacultyInfo(teacher);
+                const positionTag = document.createElement("span");
+                positionTag.className = "teachers-position-tag";
+                positionTag.textContent = facultyInfo.position;
+
+                teacherInfo.appendChild(teacherName);
+                teacherInfo.appendChild(positionTag);
+
+                const sectionTag = document.createElement("span");
+                sectionTag.className = "teachers-section-tag";
+                sectionTag.textContent = String.fromCharCode(65 + index); // A, B, C, etc.
+
+                teacherItem.appendChild(teacherInfo);
+                teacherItem.appendChild(sectionTag);
+                teachersList.appendChild(teacherItem);
+              });
+
+              batchGroup.appendChild(batchHeader);
+              batchGroup.appendChild(teachersList);
+              offeringsContainer.appendChild(batchGroup);
+            });
+
+            courseCard.appendChild(courseHeader);
+            courseCard.appendChild(offeringsContainer);
+            coursesGrid.appendChild(courseCard);
+          });
+
+          semesterSection.appendChild(coursesGrid);
+          container.appendChild(semesterSection);
+        });
+      }
+
+      // Render teacher view
+      function renderTeacherView(
+        container,
+        selectedTeacher = "all",
+        selectedCourse = "all"
+      ) {
+        container.innerHTML = "";
+
+        const teachersToShow =
+          selectedTeacher === "all"
+            ? sortTeachersByOrder(Array.from(allTeachers.keys()))
+            : [selectedTeacher];
+
+        teachersToShow.forEach((teacherName) => {
+          const teacherData = allTeachers.get(teacherName);
+          if (!teacherData) return;
+
+          const teacherSection = document.createElement("div");
+          teacherSection.className = "teachers-section";
+
+          const teacherHeader = document.createElement("div");
+          teacherHeader.className = "teachers-section-title-with-position";
+
+          const teacherNameSpan = document.createElement("h3");
+          teacherNameSpan.className = "teachers-section-title";
+          teacherNameSpan.textContent = getCleanTeacherName(teacherName);
+
+          const facultyInfo = getFacultyInfo(teacherName);
+          const positionTag = document.createElement("span");
+          positionTag.className = "teachers-position-tag";
+          positionTag.textContent = facultyInfo.position;
+
+          teacherHeader.appendChild(teacherNameSpan);
+          teacherHeader.appendChild(positionTag);
+          teacherSection.appendChild(teacherHeader);
+
+          // Show courses with batch tags and section tags
+          const coursesContainer = document.createElement("div");
+          coursesContainer.className = "teachers-teacher-courses";
+
+          let coursesToShow = Array.from(teacherData.courses);
+          if (selectedCourse !== "all") {
+            coursesToShow = coursesToShow.filter(
+              (course) => course === selectedCourse
+            );
+          }
+
+          coursesToShow.sort().forEach((course) => {
+            const courseCard = document.createElement("div");
+            courseCard.className = "teachers-course-card";
+
+            const courseHeader = document.createElement("div");
+            courseHeader.className = "teachers-course-header";
+            courseHeader.innerHTML = `<span class="teachers-course-name">${course}</span>`;
+
+            const batchSectionTags = document.createElement("div");
+            batchSectionTags.className = "teachers-batch-tags";
+
+            // Find which batches this teacher taught this course in and get section info
+            const courseOfferings = [];
+            allBatches.forEach((batch) => {
+              batch.semesters.forEach((semester) => {
+                semester.courses.forEach((c) => {
+                  if (`${c.name} (${c.code})` === course) {
+                    // Sort teachers by official order to get correct section assignment
+                    const sortedCourseTeachers = sortTeachersByOrder([
+                      ...c.teachers,
+                    ]);
+                    const teacherIndex =
+                      sortedCourseTeachers.indexOf(teacherName);
+                    if (teacherIndex !== -1) {
+                      courseOfferings.push({
+                        batch: batch.name,
+                        section: String.fromCharCode(65 + teacherIndex), // A, B, C, etc.
+                      });
+                    }
+                  }
+                });
+              });
+            });
+
+            // Sort offerings by batch order (latest first)
+            courseOfferings.sort((a, b) => {
+              const aBatchIndex = batchOrder.indexOf(a.batch);
+              const bBatchIndex = batchOrder.indexOf(b.batch);
+              if (aBatchIndex !== -1 && bBatchIndex !== -1)
+                return aBatchIndex - bBatchIndex;
+              if (aBatchIndex !== -1) return -1;
+              if (bBatchIndex !== -1) return 1;
+              return a.batch.localeCompare(b.batch);
+            });
+
+            courseOfferings.forEach((offering) => {
+              const offeringTag = document.createElement("span");
+              offeringTag.className = "teachers-offering-tag";
+              offeringTag.innerHTML = `${offering.batch} • ${offering.section}`;
+              batchSectionTags.appendChild(offeringTag);
+            });
+
+            courseCard.appendChild(courseHeader);
+            courseCard.appendChild(batchSectionTags);
+            coursesContainer.appendChild(courseCard);
+          });
+
+          teacherSection.appendChild(coursesContainer);
+          container.appendChild(teacherSection);
+        });
+      }
+
+      // Check if any filters are applied
+      function hasFiltersApplied() {
+        const batchSelect = document.getElementById("batchSelect");
+        const semesterSelect = document.getElementById("semesterSelect");
+        const teacherSelect = document.getElementById("teacherSelect");
+        const courseSelect = document.getElementById("courseSelect");
+
+        return (
+          batchSelect.value !== "all" ||
+          semesterSelect.value !== "all" ||
+          teacherSelect.value !== "all" ||
+          courseSelect.value !== "all"
+        );
+      }
+
+      // Update reset button visibility
+      function updateResetButtonVisibility() {
+        const resetBtn = document.getElementById("resetFiltersBtn");
+        const showReset = hasFiltersApplied();
+        resetBtn.style.display = showReset ? "flex" : "none";
+      }
+
+      // Populate semester dropdown based on selected batch
+      function populateSemesterDropdown(selectedBatch) {
+        const semesterSelect = document.getElementById("semesterSelect");
+        const semesterFilterGroup = document.getElementById(
+          "semesterFilterGroup"
+        );
+
+        // Store current selection
+        const currentSelection = semesterSelect.value;
+
+        // Clear existing options except "All Semesters"
+        semesterSelect.innerHTML = '<option value="all">All Semesters</option>';
+
+        if (selectedBatch === "all") {
+          semesterFilterGroup.style.display = "none";
+          return;
+        }
+
+        // Show semester filter
+        semesterFilterGroup.style.display = "block";
+
+        // Find the batch and get its semesters
+        const batch = allBatches.find((b) => b.name.includes(selectedBatch));
+        if (batch) {
+          const semesters = batch.semesters
+            .map((s) => s.name)
+            .sort((a, b) => {
+              const orderMap = {
+                "1st Semester": 1,
+                "2nd Semester": 2,
+                "3rd Semester": 3,
+                "4th Semester": 4,
+                "5th Semester": 5,
+                "6th Semester": 6,
+                "7th Semester": 7,
+                "8th Semester": 8,
+                "MBA 1st Semester": 9,
+                "MBA 2nd Semester": 10,
+              };
+              return orderMap[a] - orderMap[b];
+            });
+
+          semesters.forEach((semester) => {
+            const option = document.createElement("option");
+            option.value = semester;
+            option.textContent = semester;
+            semesterSelect.appendChild(option);
+          });
+
+          // Restore selection if it still exists in the new options
+          if (semesters.includes(currentSelection)) {
+            semesterSelect.value = currentSelection;
+          }
+        }
+      }
+
+      // Reset all filters
+      function resetFilters() {
+        document.getElementById("batchSelect").value = "all";
+        document.getElementById("semesterSelect").value = "all";
+        document.getElementById("teacherSelect").value = "all";
+        document.getElementById("courseSelect").value = "all";
+
+        // Hide semester filter when batch is reset
+        const semesterFilterGroup = document.getElementById(
+          "semesterFilterGroup"
+        );
+        semesterFilterGroup.style.display = "none";
+
+        updateResetButtonVisibility();
+        handleFilterChange();
+      }
+
+      // Handle filter changes
+      function handleFilterChange() {
+        const batchSelect = document.getElementById("batchSelect");
+        const viewSelect = document.getElementById("viewSelect");
+        const teacherSelect = document.getElementById("teacherSelect");
+        const courseSelect = document.getElementById("courseSelect");
+
+        const selectedBatch = batchSelect.value;
+        const selectedView = viewSelect.value;
+        const selectedTeacher = teacherSelect.value;
+        const selectedCourse = courseSelect.value;
+
+        // Update semester dropdown based on batch selection first
+        populateSemesterDropdown(selectedBatch);
+
+        // Now get the semester value after population
+        const semesterSelect = document.getElementById("semesterSelect");
+        const selectedSemester = semesterSelect.value;
+
+        // Update reset button visibility
+        updateResetButtonVisibility();
+
+        // Hide all views
+        document.getElementById("view-batch").style.display = "none";
+        document.getElementById("view-course").style.display = "none";
+        document.getElementById("view-teacher").style.display = "none";
+
+        // Show appropriate view
+        if (selectedView === "batch") {
+          document.getElementById("view-batch").style.display = "block";
+          renderBatchView(
+            allBatches,
+            document.getElementById("view-batch"),
+            selectedBatch,
+            selectedSemester,
+            selectedTeacher,
+            selectedCourse
+          );
+        } else if (selectedView === "course") {
+          document.getElementById("view-course").style.display = "block";
+          renderCourseView(
+            allBatches,
+            document.getElementById("view-course"),
+            selectedBatch,
+            selectedSemester,
+            selectedTeacher,
+            selectedCourse
+          );
+        } else if (selectedView === "teacher") {
+          document.getElementById("view-teacher").style.display = "block";
+          renderTeacherView(
+            document.getElementById("view-teacher"),
+            selectedTeacher,
+            selectedCourse
+          );
+        }
+      }
+
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", async () => {
+        const raw = document.querySelector("#raw-archive .archive");
+        if (!raw) {
+          console.warn("Raw archive element not found");
+          return;
+        }
+
+        // Load faculty data first
+        await loadFacultyData();
+
+        // Parse data
+        allBatches = parseArchive(raw);
+
+        // Populate dropdowns
+        populateDropdowns();
+
+        // Initial render
+        renderBatchView(allBatches, document.getElementById("view-batch"));
+
+        // Add event listeners
+        document
+          .getElementById("batchSelect")
+          .addEventListener("change", handleFilterChange);
+        document
+          .getElementById("semesterSelect")
+          .addEventListener("change", handleFilterChange);
+        document
+          .getElementById("viewSelect")
+          .addEventListener("change", handleFilterChange);
+        document
+          .getElementById("teacherSelect")
+          .addEventListener("change", handleFilterChange);
+        document
+          .getElementById("courseSelect")
+          .addEventListener("change", handleFilterChange);
+        document
+          .getElementById("resetFiltersBtn")
+          .addEventListener("click", resetFilters);
+
+        // Set initial reset button state
+        updateResetButtonVisibility();
+
+        // Check for URL parameters for automatic filtering
+        checkUrlParameters();
+      });
+
+      // Check URL parameters for automatic course filtering
+      function checkUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseParam = urlParams.get("course");
+
+        if (courseParam) {
+          // Set the course filter
+          const courseSelect = document.getElementById("courseSelect");
+          courseSelect.value = courseParam;
+
+          // Trigger filter change
+          setTimeout(() => {
+            handleFilterChange();
+          }, 100);
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1385 @@
+<!-- Subject Page Template -->
+<script src="../assets/batch-loader.js"></script>
+<script>
+  // Global subject page functions
+  window.toggleTOC = function () {
+    try {
+      const content = document.getElementById("table-of-contents");
+      const toggle = document.getElementById("toc-toggle");
+      if (content && toggle) {
+        const isExpanded = content.style.display !== "none";
+        content.style.display = isExpanded ? "none" : "block";
+        toggle.textContent = isExpanded ? "▼" : "▲";
+      }
+    } catch (error) {
+      console.error("Error in toggleTOC:", error);
+    }
+  };
+
+  window.toggleSection = function (sectionId) {
+    try {
+      const section = document.getElementById(sectionId);
+      if (!section) return;
+
+      const content = section.querySelector(".section-content");
+      const toggle = section.querySelector(".toggle-icon");
+
+      if (content && toggle) {
+        const isExpanded = content.style.display !== "none";
+        content.style.display = isExpanded ? "none" : "block";
+        toggle.textContent = isExpanded ? "▼" : "▲";
+        section.classList.toggle("collapsed", isExpanded);
+      }
+    } catch (error) {
+      console.error("Error in toggleSection:", error);
+    }
+  };
+
+  window.toggleSubsection = function (subsectionId) {
+    try {
+      const subsection = document.getElementById(subsectionId);
+      if (!subsection) return;
+
+      const content = subsection.querySelector(".subsection-content");
+      const toggle = subsection.querySelector(".toggle-icon");
+
+      if (content && toggle) {
+        const isExpanded = content.style.display !== "none";
+        content.style.display = isExpanded ? "none" : "block";
+        toggle.textContent = isExpanded ? "▼" : "▲";
+        subsection.classList.toggle("collapsed", isExpanded);
+      }
+    } catch (error) {
+      console.error("Error in toggleSubsection:", error);
+    }
+  };
+
+  // Subject page configuration that will be set by each page
+  window.subjectConfig = window.subjectConfig || {};
+
+  function initializeSubjectPage() {
+    try {
+      const config = window.subjectConfig;
+      if (!config) {
+        console.error("Subject configuration not found");
+        return;
+      }
+
+      // Update breadcrumb
+      updateBreadcrumb(config);
+
+      // Update page title and description
+      updatePageHeader(config);
+
+      // Create standardized sections
+      createStandardizedSections(config);
+
+      // Initialize collapsible sections
+      initializeCollapsibleSections();
+
+      // Load drive content
+      loadDriveContent(config);
+
+      console.log("Subject page initialized successfully for:", config.title);
+    } catch (error) {
+      console.error("Error initializing subject page:", error);
+    }
+  }
+
+  async function loadDriveContent(config) {
+    try {
+      // Load subject data from consolidated batch files
+      const subjectData = await getSubjectDataByCode(config.code);
+      
+      if (!subjectData) {
+        console.warn("Could not load subject data for:", config.code);
+        showPlaceholderContent();
+        return;
+      }
+
+      // Populate sections with subject-specific drive links
+      populateSubjectLinks(subjectData);
+      
+      // Load drive folder contents for the new drive folders section
+      await loadCourseDriveFolders(config.code);
+    } catch (error) {
+      console.error("Error loading subject content:", error);
+      showPlaceholderContent();
+    }
+  }
+
+  // Drive API key for folder content loading
+  const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
+
+  // Load and display drive folder contents for the course
+  async function loadCourseDriveFolders(courseCode) {
+    try {
+      const driveFolders = await getCourseDriverFolders(courseCode);
+      const container = document.getElementById('drive-folders-content');
+      
+      if (!container) return;
+      
+      if (driveFolders.length === 0) {
+        container.innerHTML = '<div class="placeholder-link">No drive folders available for this course.</div>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      // Group folders by category
+      const foldersByCategory = {};
+      driveFolders.forEach(folder => {
+        if (!foldersByCategory[folder.category]) {
+          foldersByCategory[folder.category] = [];
+        }
+        foldersByCategory[folder.category].push(folder);
+      });
+      
+      // Create sections for each category
+      Object.entries(foldersByCategory).forEach(([category, folders]) => {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'drive-category-section';
+        
+        const categoryName = getCategoryDisplayName(category);
+        categoryDiv.innerHTML = `
+          <h4 class="drive-category-title">${folders[0].icon} ${categoryName}</h4>
+          <div class="drive-folders-list" id="category-${category}"></div>
+        `;
+        
+        container.appendChild(categoryDiv);
+        
+        // Add folders for this category
+        const foldersList = document.getElementById(`category-${category}`);
+        folders.forEach(folder => {
+          const folderElement = createDriveFolderElement(folder);
+          foldersList.appendChild(folderElement);
+        });
+      });
+      
+    } catch (error) {
+      console.error('Error loading course drive folders:', error);
+      const container = document.getElementById('drive-folders-content');
+      if (container) {
+        container.innerHTML = '<div class="error-message">Error loading drive folders</div>';
+      }
+    }
+  }
+  
+  function getCategoryDisplayName(category) {
+    const categoryNames = {
+      'class_updates': 'Class Updates',
+      'notes': 'Personal Notes', 
+      'slides_lectures': 'Slides & Lectures',
+      'books_manuals': 'Books & Manuals',
+      'previous_materials': 'Previous Materials',
+      'question_papers': 'Question Papers',
+      'assignments': 'Assignments'
+    };
+    return categoryNames[category] || category;
+  }
+  
+  function createDriveFolderElement(folder) {
+    const folderDiv = document.createElement('div');
+    folderDiv.className = 'drive-folder-item';
+    folderDiv.innerHTML = `
+      <div class="folder-header">
+        <div class="folder-info">
+          <a href="https://drive.google.com/drive/folders/${folder.id}" target="_blank" class="folder-link">
+            📁 ${folder.name}
+          </a>
+        </div>
+        <div class="folder-actions">
+          <button class="expand-btn" onclick="toggleCourseFolderExpansion('${folder.id}', this)" title="Expand folder contents">
+            ▼
+          </button>
+        </div>
+      </div>
+      <div class="folder-contents" id="folder-${folder.id}" style="display: none;">
+        <div class="loading-state">Loading...</div>
+      </div>
+    `;
+    return folderDiv;
+  }
+  
+  // Toggle folder expansion for course pages
+  window.toggleCourseFolderExpansion = async function(folderId, button) {
+    const folderContents = document.getElementById(`folder-${folderId}`);
+    
+    if (folderContents.style.display === 'none') {
+      // Expand folder
+      button.innerHTML = '▲';
+      button.title = 'Collapse folder contents';
+      folderContents.style.display = 'block';
+      
+      // Load folder contents if not already loaded
+      if (folderContents.querySelector('.loading-state')) {
+        await loadFolderContents(folderId, folderContents);
+      }
+    } else {
+      // Collapse folder
+      button.innerHTML = '▼';
+      button.title = 'Expand folder contents';
+      folderContents.style.display = 'none';
+    }
+  };
+  
+  async function loadFolderContents(folderId, container) {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      renderFolderContents(data.files || [], container);
+    } catch (error) {
+      console.error('Error loading folder contents:', error);
+      container.innerHTML = `<div class="error-message">Error loading contents: ${error.message}</div>`;
+    }
+  }
+  
+  function renderFolderContents(files, container) {
+    if (!files || files.length === 0) {
+      container.innerHTML = '<div class="empty-folder">No files found in this folder</div>';
+      return;
+    }
+    
+    // Sort files alphabetically
+    files.sort((a, b) => a.name.localeCompare(b.name));
+    
+    const filesList = document.createElement('ul');
+    filesList.className = 'folder-files-list';
+    
+    files.forEach(file => {
+      const li = document.createElement('li');
+      li.className = 'folder-file-item';
+      
+      if (file.mimeType === 'application/vnd.google-apps.folder') {
+        // Nested folder
+        li.innerHTML = `
+          <div class="nested-folder">
+            <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="nested-folder-link">
+              📁 ${file.name}
+            </a>
+            <button class="expand-btn nested-expand" onclick="toggleCourseFolderExpansion('${file.id}', this)" title="Expand folder contents">
+              ▼
+            </button>
+          </div>
+          <div class="folder-contents nested-contents" id="folder-${file.id}" style="display: none;">
+            <div class="loading-state">Loading...</div>
+          </div>
+        `;
+      } else {
+        // File
+        li.innerHTML = `
+          <a href="${file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`}" target="_blank" class="file-link">
+            📄 ${file.name}
+          </a>
+        `;
+      }
+      
+      filesList.appendChild(li);
+    });
+    
+    container.innerHTML = '';
+    container.appendChild(filesList);
+  }
+
+  function showPlaceholderContent() {
+    // Show placeholder content when data loading fails
+    const sections = [
+      'class-updates-content',
+      'books-content',
+      'current-questions-content',
+      'previous-questions-content'
+    ];
+    
+    sections.forEach(sectionId => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.innerHTML = '<div class="placeholder-link">Content will be available soon</div>';
+      }
+    });
+  }
+
+  function populateSubjectLinks(subjectData) {
+    if (!subjectData.links) return;
+
+    const links = subjectData.links;
+
+    // Class Updates - Simple document link
+    const classUpdatesContent = document.getElementById(
+      "class-updates-content"
+    );
+    if (classUpdatesContent && links.class_updates) {
+      if (links.class_updates && links.class_updates !== "") {
+        classUpdatesContent.innerHTML = `
+          <a href="${links.class_updates}" target="_blank" rel="noopener" class="document-link">
+            <span class="doc-icon">📄</span>
+            Latest Class Updates & Announcements
+          </a>
+        `;
+      } else {
+        classUpdatesContent.innerHTML = `
+          <div class="placeholder-link">
+            Latest Class Updates & Announcements (Coming soon)
+          </div>
+        `;
+      }
+    }
+
+    // Books and Manuals - Only in Additional Resources now
+    const booksContent = document.getElementById("books-content");
+    if (booksContent && links.books_manuals) {
+      booksContent.innerHTML =
+        createLinksFromArray(links.books_manuals) ||
+        "No books/manuals available yet.";
+    }
+
+    // Current Questions (from question_papers field)
+    const currentQuestionsContent = document.getElementById(
+      "current-questions-content"
+    );
+    if (currentQuestionsContent && links.question_papers) {
+      currentQuestionsContent.innerHTML =
+        createLinksFromArray(links.question_papers) ||
+        "No current questions available yet.";
+    }
+
+    // Previous Questions (from assignments field)
+    const previousQuestionsContent = document.getElementById(
+      "previous-questions-content"
+    );
+    if (previousQuestionsContent && links.assignments) {
+      previousQuestionsContent.innerHTML =
+        createLinksFromArray(links.assignments) ||
+        "No previous questions available yet.";
+    }
+
+    // Update course details with current batch and teacher
+    updateCourseDetails(subjectData);
+  }
+
+  function updateCourseDetails(subjectData) {
+    // Update compact course teachers section
+    const compactTeachers = document.getElementById('course-teachers-compact');
+    if (compactTeachers && subjectData) {
+      if (subjectData.batches && subjectData.batches.length > 0) {
+        const teachersContent = subjectData.batches.map(batch => {
+          const teacherName = batch.teacher || "To be announced";
+          const batchId = `batch-${batch.batch}`;
+          return `<span class="teacher-tag" data-batch="${batch.batch}" onclick="toggleBatchFilter('${batch.batch}')" id="${batchId}">${batch.batchName || `${batch.batch}th Batch`}: ${teacherName}</span>`;
+        }).join('');
+        
+        compactTeachers.innerHTML = teachersContent;
+      } else {
+        compactTeachers.innerHTML = '<span class="teacher-tag">No teacher assignments available</span>';
+      }
+    }
+  }
+
+  // Global state for batch filtering
+  window.currentBatchFilter = null;
+
+  // Batch filtering functionality
+  window.toggleBatchFilter = function(batchNumber) {
+    const teacherTags = document.querySelectorAll('.teacher-tag[data-batch]');
+    const currentTag = document.getElementById(`batch-${batchNumber}`);
+    
+    if (window.currentBatchFilter === batchNumber) {
+      // Deactivate filter - show all
+      window.currentBatchFilter = null;
+      teacherTags.forEach(tag => tag.classList.remove('active'));
+      showAllBatchContent();
+    } else {
+      // Activate filter for this batch
+      window.currentBatchFilter = batchNumber;
+      teacherTags.forEach(tag => tag.classList.remove('active'));
+      if (currentTag) currentTag.classList.add('active');
+      filterContentByBatch(batchNumber);
+    }
+  };
+
+  function showAllBatchContent() {
+    // Show all drive folders and content
+    const driveItems = document.querySelectorAll('.drive-folder-item, .folder-file-item');
+    driveItems.forEach(item => {
+      item.style.display = 'block';
+    });
+    
+    // Update status
+    updateFilterStatus('Showing content from all batches');
+  }
+
+  function filterContentByBatch(batchNumber) {
+    // This is a placeholder for batch-specific filtering
+    // In a full implementation, this would filter drive folders based on batch
+    updateFilterStatus(`Filtered to show ${batchNumber}th Batch content only`);
+  }
+
+  function updateFilterStatus(message) {
+    // Add a status indicator
+    let statusElement = document.getElementById('filter-status');
+    if (!statusElement) {
+      statusElement = document.createElement('div');
+      statusElement.id = 'filter-status';
+      statusElement.style.cssText = `
+        padding: 8px 12px;
+        background: #e8f0fe;
+        border: 1px solid #1a73e8;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #1a73e8;
+        margin-top: 8px;
+        text-align: center;
+      `;
+      document.getElementById('course-teachers-compact').parentNode.appendChild(statusElement);
+    }
+    statusElement.textContent = message;
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      if (statusElement && !window.currentBatchFilter) {
+        statusElement.remove();
+      }
+    }, 3000);
+  }
+
+  function createLinksFromArray(linkArray) {
+    if (!linkArray || linkArray.length === 0) return "";
+
+    return linkArray
+      .map((url) => {
+        if (!url || url === "")
+          return '<div class="placeholder-link">Link coming soon</div>';
+
+        // Parse the URL to determine type
+        if (url.includes("docs.google.com/document")) {
+          return createDocumentLink(url, "Document");
+        } else if (url.includes("drive.google.com/drive/folders")) {
+          // Extract folder ID from URL
+          const match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+          const folderId = match ? match[1] : null;
+          if (folderId) {
+            return createDriveLink(folderId, "Drive Folder");
+          }
+        } else if (url.includes("drive.google.com/file")) {
+          return createDocumentLink(url, "Drive File");
+        }
+
+        // Fallback for other URLs
+        return `<a href="${url}" target="_blank" rel="noopener" class="drive-link">
+        <span class="drive-icon">🔗</span>
+        Link
+      </a>`;
+      })
+      .join("<br>");
+  }
+
+  function createContentLinks(links) {
+    if (!links || links.length === 0) return "No content available yet.";
+
+    return links
+      .map((link) => {
+        if (link.folderId) {
+          return createDriveLink(link.folderId, link.label);
+        } else if (link.url) {
+          return createDocumentLink(link.url, link.label);
+        } else {
+          return `<div class="placeholder-link">${link.label} (Coming soon)</div>`;
+        }
+      })
+      .join("<br>");
+  }
+
+  function createDocumentLink(url, label) {
+    if (!url) {
+      return `<div class="placeholder-link">${label} (Coming soon)</div>`;
+    }
+    return `<a href="${url}" target="_blank" rel="noopener" class="drive-link">
+      <span class="drive-icon">📄</span>
+      ${label}
+    </a>`;
+  }
+
+  function createDriveLink(folderId, label) {
+    return `<a href="https://drive.google.com/drive/folders/${folderId}" target="_blank" rel="noopener" class="drive-link">
+      <span class="drive-icon">📁</span>
+      ${label}
+    </a>`;
+  }
+
+  function updateBreadcrumb(config) {
+    // Don't update breadcrumb as it's already correctly set in the HTML
+    // The HTML already has the correct relative paths for courses in /courses/ folder
+  }
+
+  function updatePageHeader(config) {
+    const pageTitle = document.querySelector(".page-title");
+    
+    if (pageTitle) {
+      pageTitle.innerHTML = `<span class="course-code">${config.code}</span> ${config.title}`;
+    }
+
+    // Remove quick actions section entirely - it's no longer needed
+    const quickActions = document.querySelector(".quick-actions");
+    if (quickActions) {
+      quickActions.remove();
+    }
+  }
+
+  function createStandardizedSections(config) {
+    const container = document.querySelector(".subject-content");
+    if (!container) return;
+
+    container.innerHTML = `
+      <!-- Course Overview - Compact Forum Style -->
+      <div class="google-card compact-overview" id="overview">
+        <div class="compact-header">
+          <h2>📋 Course Overview</h2>
+          <div class="course-meta">
+            <span class="course-code-badge">${config.code}</span>
+            <span class="divider">•</span>
+            <span class="course-title">${config.title}</span>
+          </div>
+        </div>
+        <div class="course-info-compact">
+          <div class="course-teachers-compact" id="course-teachers-compact">
+            <div class="loading-state">Loading teacher information...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drive Folders Section -->
+      <div class="google-card collapsible-section" id="drive-folders">
+        <div class="section-header" onclick="toggleSection('drive-folders')">
+          <h2 class="section-title">📁 Study Materials</h2>
+          <span class="toggle-icon google-toggle">▲</span>
+        </div>
+        <div class="section-content">
+          <div id="drive-folders-content">
+            <div class="loading-state">Loading drive folders...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Study Materials Section -->
+      <div class="google-card collapsible-section" id="study">
+        <div class="section-header" onclick="toggleSection('study')">
+          <h2 class="section-title">📚 Additional Resources</h2>
+          <span class="toggle-icon google-toggle">▼</span>
+        </div>
+        <div class="section-content">
+          <div class="subsection collapsible-subsection" id="class-updates">
+            <div class="subsection-header" onclick="toggleSubsection('class-updates')">
+              <h3 class="subsection-title">📢 Class Updates</h3>
+              <span class="toggle-icon google-toggle-small">▲</span>
+            </div>
+            <div class="subsection-content">
+              <div class="subsection-description">Latest class updates and announcements</div>
+              <div class="resource-content" id="class-updates-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="books-manuals">
+            <div class="subsection-header" onclick="toggleSubsection('books-manuals')">
+              <h3 class="subsection-title">📚 Books and Manuals</h3>
+              <span class="toggle-icon google-toggle-small">▲</span>
+            </div>
+            <div class="subsection-content">
+              <div class="subsection-description">Textbooks, reference materials, and official manuals</div>
+              <div class="resource-content" id="books-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions Section -->
+      <div class="google-card collapsible-section" id="questions">
+        <div class="section-header" onclick="toggleSection('questions')">
+          <h2 class="section-title">📝 Questions & Examinations</h2>
+          <span class="toggle-icon google-toggle">▲</span>
+        </div>
+        <div class="section-content">
+          <div class="subsection collapsible-subsection" id="current-questions">
+            <div class="subsection-header" onclick="toggleSubsection('current-questions')">
+              <h3 class="subsection-title">📝 Current Questions</h3>
+              <span class="toggle-icon google-toggle-small">▲</span>
+            </div>
+            <div class="subsection-content">
+              <div class="subsection-description">Recent exam questions and practice materials</div>
+              <div class="resource-content" id="current-questions-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="subsection collapsible-subsection" id="previous-questions">
+            <div class="subsection-header" onclick="toggleSubsection('previous-questions')">
+              <h3 class="subsection-title">📋 Previous Questions</h3>
+              <span class="toggle-icon google-toggle-small">▼</span>
+            </div>
+            <div class="subsection-content">
+              <div class="subsection-description">Historical exam questions and answer keys</div>
+              <div class="resource-content" id="previous-questions-content">
+                <div class="loading-state">Loading content...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    `;
+  }
+
+  function initializeCollapsibleSections() {
+    try {
+      // Drive folders section: expanded by default
+      const driveFoldersSection = document.getElementById('drive-folders');
+      if (driveFoldersSection) {
+        const content = driveFoldersSection.querySelector('.section-content');
+        const icon = driveFoldersSection.querySelector('.toggle-icon');
+        if (content && icon) {
+          content.style.display = 'block';
+          icon.textContent = '▲';
+        }
+      }
+
+      // Additional resources section: collapsed by default 
+      const studySection = document.getElementById('study');
+      if (studySection) {
+        const content = studySection.querySelector('.section-content');
+        const icon = studySection.querySelector('.toggle-icon');
+        if (content && icon) {
+          content.style.display = 'none';
+          icon.textContent = '▼';
+        }
+      }
+
+      // Questions section: expanded by default
+      const questionsSection = document.getElementById('questions');
+      if (questionsSection) {
+        const content = questionsSection.querySelector('.section-content');
+        const icon = questionsSection.querySelector('.toggle-icon');
+        if (content && icon) {
+          content.style.display = 'block';
+          icon.textContent = '▲';
+        }
+      }
+
+      // Subsections: All expanded except "Previous" ones
+      const subsections = document.querySelectorAll(".collapsible-subsection");
+      subsections.forEach((subsection) => {
+        const content = subsection.querySelector(".subsection-content");
+        const icon = subsection.querySelector(".toggle-icon");
+        const isPreviousSection = subsection.id.includes("previous");
+
+        if (content && icon) {
+          if (isPreviousSection) {
+            // Keep previous sections collapsed
+            content.style.display = "none";
+            icon.textContent = "▼";
+          } else {
+            // All other subsections expanded
+            content.style.display = "block";
+            icon.textContent = "▲";
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error initializing collapsible sections:", error);
+    }
+  }
+
+  // Add CSS for Google-style subject pages
+  if (!document.querySelector("#google-subject-css")) {
+    const styleElement = document.createElement("style");
+    styleElement.id = "google-subject-css";
+    styleElement.textContent = `
+      /* Google-style Page Layout */
+      .page-intro {
+        background: transparent;
+        padding: 20px 0;
+        margin-bottom: 24px;
+        text-align: center;
+      }
+      
+      .page-title {
+        font-size: 2.5rem;
+        font-weight: 400;
+        color: #202124;
+        margin: 0 0 8px 0;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      
+      .page-description {
+        font-size: 16px;
+        color: #5f6368;
+        margin: 0 0 24px 0;
+        line-height: 1.5;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .course-code {
+        display: inline-block;
+        background: #1a73e8;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        margin-right: 8px;
+        white-space: nowrap;
+      }
+
+      /* Compact Course Overview - Forum Style */
+      .compact-overview {
+        margin-bottom: 20px;
+        background: #f8f9fa;
+        border: 1px solid #e8eaed;
+        border-radius: 8px;
+      }
+      
+      .compact-header {
+        padding: 16px 20px;
+        background: white;
+        border-bottom: 1px solid #e8eaed;
+        border-radius: 8px 8px 0 0;
+      }
+      
+      .compact-header h2 {
+        font-size: 16px;
+        font-weight: 500;
+        color: #5f6368;
+        margin: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .course-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      
+      .course-code-badge {
+        background: #1a73e8;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      
+      .divider {
+        color: #dadce0;
+        font-weight: bold;
+      }
+      
+      .course-title {
+        color: #202124;
+        font-weight: 500;
+        font-size: 16px;
+      }
+      
+      .course-info-compact {
+        padding: 12px 20px 16px 20px;
+      }
+      
+      .course-teachers-compact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      
+      .teacher-tag {
+        background: white;
+        border: 1px solid #dadce0;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        color: #5f6368;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .teacher-tag:hover {
+        background: #e8f0fe;
+        border-color: #1a73e8;
+        color: #1a73e8;
+      }
+
+      .teacher-tag.active {
+        background: #1a73e8;
+        border-color: #1a73e8;
+        color: white;
+      }
+
+      /* Drive Folders Section */
+      .drive-category-section {
+        margin-bottom: 24px;
+        border: 1px solid #e8eaed;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+      }
+      
+      .drive-category-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #202124;
+        margin: 0;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e8eaed;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .drive-folders-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 16px;
+      }
+      
+      .drive-folder-item {
+        border: 1px solid #e8eaed;
+        border-radius: 6px;
+        background: white;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      
+      .folder-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background: #fafbfc;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .folder-info {
+        flex-grow: 1;
+      }
+      
+      .folder-link {
+        color: #1a73e8;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+      }
+      
+      .folder-link:hover {
+        text-decoration: underline;
+      }
+      
+      .folder-actions {
+        display: flex;
+        gap: 4px;
+      }
+      
+      .folder-contents {
+        padding: 16px;
+        background: white;
+        border-top: 1px solid #f0f0f0;
+      }
+      
+      .folder-files-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .folder-file-item {
+        padding: 6px 0;
+        border-bottom: 1px solid #f5f5f5;
+      }
+      
+      .folder-file-item:last-child {
+        border-bottom: none;
+      }
+      
+      .nested-folder {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .nested-folder-link {
+        color: #5f6368;
+        text-decoration: none;
+        font-size: 13px;
+        flex-grow: 1;
+      }
+      
+      .nested-folder-link:hover {
+        color: #1a73e8;
+        text-decoration: underline;
+      }
+      
+      .file-link {
+        color: #5f6368;
+        text-decoration: none;
+        font-size: 13px;
+      }
+      
+      .file-link:hover {
+        color: #1a73e8;
+        text-decoration: underline;
+      }
+      
+      .nested-expand {
+        padding: 2px 6px;
+        font-size: 10px;
+        margin-left: 8px;
+      }
+      
+      .nested-contents {
+        margin-left: 16px;
+        margin-top: 8px;
+        padding: 8px;
+        background: #fafbfc;
+        border-radius: 4px;
+      }
+      
+      .empty-folder {
+        color: #5f6368;
+        font-style: italic;
+        font-size: 12px;
+        text-align: center;
+        padding: 8px;
+      }
+      
+      .error-message {
+        color: #d93025;
+        font-size: 12px;
+        padding: 8px;
+        background: #fce8e6;
+        border-radius: 4px;
+      }
+
+      /* Google-style Buttons */
+      .quick-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 24px 0;
+      }
+
+      .google-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        background: white;
+        color: #3c4043;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        font-family: inherit;
+        outline: none;
+      }
+
+      .google-btn:hover {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        border-color: #dadce0;
+      }
+
+      .google-btn.primary {
+        background: #1a73e8;
+        color: white;
+        border-color: #1a73e8;
+      }
+
+      .google-btn.primary:hover {
+        background: #1557b0;
+        border-color: #1557b0;
+      }
+
+      .google-btn.secondary:hover {
+        background: #f8f9fa;
+      }
+
+      .btn-icon {
+        font-size: 16px;
+      }
+
+      /* Google-style Cards */
+      .google-card {
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: box-shadow 0.2s ease;
+      }
+
+      .google-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Section Headers */
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dadce0;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .section-header:hover {
+        background: #f1f3f4;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #202124;
+        margin: 0;
+      }
+
+      .google-toggle {
+        font-size: 14px;
+        color: #5f6368;
+        transition: transform 0.2s ease;
+        font-weight: bold;
+      }
+
+      .section-content {
+        padding: 20px;
+      }
+
+      /* Subsections */
+      .subsection {
+        margin-bottom: 20px;
+        border: 1px solid #e8eaed;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .subsection:last-child {
+        margin-bottom: 0;
+      }
+
+      .subsection-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #fafbfc;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .subsection-header:hover {
+        background: #f1f3f4;
+      }
+
+      .subsection-title {
+        font-size: 15px;
+        font-weight: 500;
+        color: #202124;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .google-toggle-small {
+        font-size: 12px;
+        color: #5f6368;
+        transition: transform 0.2s ease;
+        font-weight: bold;
+      }
+
+      .subsection-content {
+        padding: 16px;
+        background: white;
+      }
+
+      .subsection-description {
+        font-size: 14px;
+        color: #5f6368;
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+
+      .resource-content {
+        min-height: 40px;
+      }
+
+      .loading-state {
+        color: #5f6368;
+        font-style: italic;
+        font-size: 14px;
+        padding: 8px 0;
+      }
+
+      /* Course Info Grid */
+      .course-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .info-card {
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border: 1px solid #e8eaed;
+      }
+      
+      .course-teachers-card {
+        grid-column: 1 / -1; /* Make the course teachers card span the full width */
+      }
+
+      .info-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #5f6368;
+        margin: 0 0 8px 0;
+      }
+
+      .info-value {
+        font-size: 16px;
+        font-weight: 400;
+        color: #202124;
+        margin: 0;
+      }
+      
+      .course-teachers-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .teacher-batch-item {
+        padding: 8px 12px;
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      
+      .batch-name {
+        font-weight: 500;
+        color: #1a73e8;
+      }
+      
+      .teacher-name {
+        color: #202124;
+      }
+
+      .course-description {
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #3c4043;
+      }
+
+      /* Drive Links */
+      .drive-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #1a73e8;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        margin: 4px 8px 4px 0;
+        font-weight: 500;
+      }
+
+      .drive-link:hover {
+        background: #f8f9fa;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        text-decoration: none;
+        color: #1557b0;
+      }
+
+      .drive-icon {
+        font-size: 16px;
+      }
+
+      .document-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: #e8f0fe;
+        border: 1px solid #1a73e8;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #1a73e8;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        margin: 4px 8px 4px 0;
+      }
+
+      .document-link:hover {
+        background: #d2e3fc;
+        text-decoration: none;
+        color: #1557b0;
+        box-shadow: 0 1px 3px rgba(26, 115, 232, 0.2);
+      }
+
+      .doc-icon {
+        font-size: 18px;
+      }
+
+      .placeholder-link {
+        display: inline-block;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border: 1px dashed #dadce0;
+        border-radius: 6px;
+        color: #5f6368;
+        font-size: 14px;
+        font-style: italic;
+        margin: 4px 8px 4px 0;
+      }
+
+      /* Breadcrumb */
+      .breadcrumb {
+        font-size: 14px;
+        color: #5f6368;
+        margin-bottom: 16px;
+        padding: 0 20px;
+      }
+
+      .breadcrumb a {
+        color: #1a73e8;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* Table of Contents */
+      .toc-accordion {
+        margin: 20px auto;
+        max-width: 600px;
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .toc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .toc-header:hover {
+        background: #f1f3f4;
+      }
+
+      .toc-content {
+        padding: 16px;
+        list-style: none;
+        margin: 0;
+      }
+
+      .toc-content li {
+        margin-bottom: 8px;
+      }
+
+      .toc-content a {
+        color: #1a73e8;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      .toc-content a:hover {
+        text-decoration: underline;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .page-title {
+          font-size: 2rem;
+        }
+
+        .quick-actions {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .google-btn {
+          width: 100%;
+          max-width: 300px;
+          justify-content: center;
+        }
+
+        .course-info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section-content {
+          padding: 16px;
+        }
+
+        .subsection-content {
+          padding: 12px;
+        }
+
+        .breadcrumb {
+          padding: 0 16px;
+        }
+      }
+
+    `;
+    document.head.appendChild(styleElement);
+  }
+
+  // Auto-initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeSubjectPage);
+  } else {
+    // DOM already loaded
+    setTimeout(initializeSubjectPage, 100);
+  }
+</script>

@@ -1,0 +1,325 @@
+/**
+ * Batch Data Loader Utility
+ * Provides functions to load and access consolidated batch JSON data
+ */
+
+// Global cache for batch data
+window.BATCH_DATA_CACHE = new Map();
+window.SUBJECT_DATA_CACHE = new Map();
+
+/**
+ * Load all batch JSON files and cache them
+ */
+async function loadAllBatchData() {
+  if (window.BATCH_DATA_CACHE.size > 0) {
+    return window.BATCH_DATA_CACHE;
+  }
+
+  const batchFiles = [
+    'batch-24.json', 'batch-25.json', 'batch-26.json', 'batch-27.json', 
+    'batch-28.json', 'batch-29.json', 'batch-30.json', 'batch-31.json'
+  ];
+
+  try {
+    // Load all batch files in parallel
+    const batchPromises = batchFiles.map(async (batchFile) => {
+      try {
+        const basePath = getBasePath();
+        const response = await fetch(`${basePath}batches/${batchFile}`);
+        if (!response.ok) {
+          console.warn(`Could not load ${batchFile}: ${response.status}`);
+          return null;
+        }
+        const data = await response.json();
+        const batchNumber = batchFile.replace('batch-', '').replace('.json', '');
+        return { batchNumber, data };
+      } catch (error) {
+        console.warn(`Error loading ${batchFile}:`, error);
+        return null;
+      }
+    });
+
+    const batchResults = await Promise.all(batchPromises);
+
+    // Cache all batch data
+    batchResults.forEach(result => {
+      if (result && result.data) {
+        window.BATCH_DATA_CACHE.set(result.batchNumber, result.data);
+      }
+    });
+
+    console.log('Batch data loaded successfully:', Array.from(window.BATCH_DATA_CACHE.keys()));
+    return window.BATCH_DATA_CACHE;
+  } catch (error) {
+    console.error('Error loading batch data:', error);
+    return window.BATCH_DATA_CACHE;
+  }
+}
+
+/**
+ * Get base path for asset loading based on current page location
+ */
+function getBasePath() {
+  const currentPath = window.location.pathname;
+  if (currentPath.includes('/courses/')) {
+    return '../';
+  } else if (currentPath.includes('/semester/')) {
+    return '../';
+  } else {
+    return './';
+  }
+}
+
+/**
+ * Find subject data by course code across all batches
+ */
+async function getSubjectDataByCode(courseCode) {
+  // Check cache first
+  if (window.SUBJECT_DATA_CACHE.has(courseCode)) {
+    return window.SUBJECT_DATA_CACHE.get(courseCode);
+  }
+
+  // Load batch data if not already loaded
+  await loadAllBatchData();
+
+  const subjectData = {
+    code: courseCode,
+    title: 'Unknown Subject',
+    description: 'Course information will be available soon.',
+    current_teacher: '',
+    links: {
+      class_updates: '',
+      notes: [],
+      slides_lectures: [],
+      books_manuals: [],
+      previous_materials: [],
+      question_papers: [],
+      assignments: []
+    }
+  };
+
+  // Search through all batches for this subject
+  for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
+    if (batchData.semesters) {
+      for (const [semesterKey, semesterData] of Object.entries(batchData.semesters)) {
+        if (semesterData.subjects && semesterData.subjects[courseCode]) {
+          const subjectInfo = semesterData.subjects[courseCode];
+          
+          // Merge data from this batch
+          subjectData.title = subjectInfo.title || subjectData.title;
+          subjectData.description = subjectInfo.description || subjectData.description;
+          subjectData.current_teacher = subjectInfo.teacher || subjectData.current_teacher;
+          
+          // Merge links
+          if (subjectInfo.links) {
+            subjectData.links.class_updates = subjectInfo.links.class_updates || subjectData.links.class_updates;
+            
+            // Merge arrays while avoiding duplicates
+            ['notes', 'slides_lectures', 'books_manuals', 'previous_materials', 'question_papers', 'assignments'].forEach(linkType => {
+              if (subjectInfo.links[linkType]) {
+                const newLinks = Array.isArray(subjectInfo.links[linkType]) ? subjectInfo.links[linkType] : [];
+                newLinks.forEach(link => {
+                  if (link && !subjectData.links[linkType].includes(link)) {
+                    subjectData.links[linkType].push(link);
+                  }
+                });
+              }
+            });
+          }
+          
+          // Add batch information for context
+          if (!subjectData.batches) {
+            subjectData.batches = [];
+          }
+          subjectData.batches.push({
+            batch: batchNumber,
+            batchName: batchData.batch_name,
+            semester: semesterKey,
+            teacher: subjectInfo.teacher || ""
+          });
+        }
+      }
+    }
+  }
+
+  // Cache the result
+  window.SUBJECT_DATA_CACHE.set(courseCode, subjectData);
+  return subjectData;
+}
+
+/**
+ * Get all subjects for a specific semester across all batches
+ */
+async function getSubjectsBySemester(semesterKey) {
+  await loadAllBatchData();
+  
+  const subjects = new Map();
+  
+  for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
+    if (batchData.semesters && batchData.semesters[semesterKey]) {
+      const semesterData = batchData.semesters[semesterKey];
+      if (semesterData.subjects) {
+        for (const [code, subjectInfo] of Object.entries(semesterData.subjects)) {
+          if (!subjects.has(code)) {
+            subjects.set(code, {
+              code: code,
+              title: subjectInfo.title,
+              description: subjectInfo.description,
+              batches: []
+            });
+          }
+          
+          subjects.get(code).batches.push({
+            batch: batchNumber,
+            batchName: batchData.batch_name,
+            teacher: subjectInfo.teacher
+          });
+        }
+      }
+    }
+  }
+  
+  return Array.from(subjects.values());
+}
+
+/**
+ * Get drive folder mapping for search functionality
+ */
+async function getDriveFolderMapping() {
+  await loadAllBatchData();
+  
+  const mapping = {};
+  
+  for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
+    if (batchData.semesters) {
+      for (const semesterKey of Object.keys(batchData.semesters)) {
+        if (!mapping[semesterKey]) {
+          mapping[semesterKey] = {};
+        }
+        
+        let folderId = null;
+        
+        // Handle different drive folder structures across batches
+        // Check for batch-specific drive folder structure first
+        if (batchData.semesters[semesterKey].drive_folder) {
+          // Structure used by batches 27, 28 (individual drive_folder per semester)
+          folderId = batchData.semesters[semesterKey].drive_folder;
+        }
+        // Check for batch-wide drive_folders structure  
+        else if (batchData.drive_folders) {
+          // Structure used by batches 24, 25, 26, 29, 30, 31 (drive_folders object)
+          const possibleKeys = [
+            `${semesterKey}_semester`,
+            `${semesterKey.replace('-', '_')}_semester`,
+            semesterKey
+          ];
+          
+          for (const key of possibleKeys) {
+            if (batchData.drive_folders[key]) {
+              folderId = batchData.drive_folders[key];
+              break;
+            }
+          }
+        }
+        
+        if (folderId) {
+          mapping[semesterKey][batchNumber] = {
+            folderId: folderId,
+            label: batchData.batch_name || `${batchNumber}th Batch`
+          };
+        }
+      }
+    }
+  }
+  
+  console.log('Drive folder mapping generated:', mapping);
+  return mapping;
+}
+
+/**
+ * Get batch information by batch number
+ */
+async function getBatchInfo(batchNumber) {
+  await loadAllBatchData();
+  return window.BATCH_DATA_CACHE.get(batchNumber) || null;
+}
+
+/**
+ * Clear all cached data (useful for development/debugging)
+ */
+function clearBatchDataCache() {
+  window.BATCH_DATA_CACHE.clear();
+  window.SUBJECT_DATA_CACHE.clear();
+  console.log('Batch data cache cleared');
+}
+
+/**
+ * Extract Google Drive folder ID from drive URL
+ */
+function extractFolderId(driveUrl) {
+  if (!driveUrl || typeof driveUrl !== 'string') return null;
+  
+  const match = driveUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : null;
+}
+
+/**
+ * Get drive folder data for a specific course
+ */
+async function getCourseDriverFolders(courseCode) {
+  try {
+    const subjectData = await getSubjectDataByCode(courseCode);
+    if (!subjectData || !subjectData.links) return [];
+    
+    const driveFolders = [];
+    const links = subjectData.links;
+    
+    // Map each link type to drive folders
+    const linkTypes = [
+      { key: 'class_updates', name: 'Class Updates', icon: '📢' },
+      { key: 'notes', name: 'Personal Notes', icon: '📝' },
+      { key: 'slides_lectures', name: 'Slides & Lectures', icon: '📊' },
+      { key: 'books_manuals', name: 'Books & Manuals', icon: '📚' },
+      { key: 'previous_materials', name: 'Previous Materials', icon: '📁' },
+      { key: 'question_papers', name: 'Question Papers', icon: '📝' },
+      { key: 'assignments', name: 'Assignments', icon: '📋' }
+    ];
+    
+    linkTypes.forEach(linkType => {
+      const linkData = links[linkType.key];
+      if (linkData) {
+        if (Array.isArray(linkData)) {
+          linkData.forEach((url, index) => {
+            const folderId = extractFolderId(url);
+            if (folderId) {
+              driveFolders.push({
+                id: folderId,
+                name: `${linkType.name} ${index + 1}`,
+                icon: linkType.icon,
+                category: linkType.key
+              });
+            }
+          });
+        } else if (typeof linkData === 'string') {
+          const folderId = extractFolderId(linkData);
+          if (folderId) {
+            driveFolders.push({
+              id: folderId,
+              name: linkType.name,
+              icon: linkType.icon,
+              category: linkType.key
+            });
+          }
+        }
+      }
+    });
+    
+    return driveFolders;
+  } catch (error) {
+    console.error('Error getting course drive folders:', error);
+    return [];
+  }
+}
+
+// Export the new function
+window.getCourseDriverFolders = getCourseDriverFolders;

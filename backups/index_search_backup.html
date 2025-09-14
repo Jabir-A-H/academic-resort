@@ -13,7 +13,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./assets/styles.css" />
-    <script src="./assets/batch-loader.js"></script>
     <script src="./assets/script.js" defer></script>
     <style>
       /* Google-style Header - Seamless */
@@ -178,39 +177,11 @@
 
       .search-filters {
         display: flex;
-        flex-direction: column;
         gap: 12px;
         justify-content: center;
         margin-bottom: 16px;
+        flex-wrap: wrap;
         align-items: center;
-        max-width: 400px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      /* Individual filter rows */
-      .filter-row {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        width: 100%;
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-        max-height: 0;
-        overflow: hidden;
-      }
-
-      .filter-row.show {
-        opacity: 1;
-        transform: translateY(0);
-        max-height: 60px;
-      }
-
-      .filter-row:first-child {
-        opacity: 1;
-        transform: translateY(0);
-        max-height: 60px;
       }
 
       .search-options {
@@ -256,19 +227,13 @@
       }
 
       .options-toggle-btn::after {
-        content: "";
-        margin-left: 0;
-        font-size: 12px;
-        transition: transform 0.2s ease;
-      }
-
-      .options-toggle-btn .accordion-icon {
+        content: "▼";
         margin-left: 8px;
         font-size: 12px;
         transition: transform 0.2s ease;
       }
 
-      .options-toggle-btn.active .accordion-icon {
+      .options-toggle-btn.active::after {
         transform: rotate(180deg);
       }
 
@@ -351,10 +316,9 @@
         font-size: 14px;
         font-weight: 500;
         transition: all 0.2s ease;
-        margin-top: 8px;
+        margin-left: 8px;
         outline: none;
         font-family: inherit;
-        width: 100%;
       }
 
       .apply-filters-btn-subtle:hover {
@@ -409,7 +373,6 @@
         background: #ffffff;
         color: #3c4043;
         min-width: 140px;
-        width: 100%;
         margin: 0;
         outline: none;
         transition: all 0.2s ease;
@@ -555,12 +518,6 @@
           flex-direction: column;
           gap: 12px;
           align-items: center;
-          max-width: none;
-          width: 100%;
-        }
-
-        .filter-row {
-          width: 100%;
         }
 
         .filter-select {
@@ -573,7 +530,7 @@
           width: 100%;
           max-width: 300px;
           margin-left: 0;
-          margin-top: 8px;
+          margin-top: 4px;
         }
 
         .options-toggle-btn {
@@ -637,47 +594,47 @@
           </button>
           <div class="apps-dropdown-content" id="appsDropdown">
             <div class="apps-grid">
-              <a class="app-item" href="./semester/1st.html">
+              <a class="app-item" href="./pages/1st.html">
                 <div class="app-icon">1️⃣</div>
                 <span class="app-label">1st Semester</span>
               </a>
-              <a class="app-item" href="./semester/2nd.html">
+              <a class="app-item" href="./pages/2nd.html">
                 <div class="app-icon">2️⃣</div>
                 <span class="app-label">2nd Semester</span>
               </a>
-              <a class="app-item" href="./semester/3rd.html">
+              <a class="app-item" href="./pages/3rd.html">
                 <div class="app-icon">3️⃣</div>
                 <span class="app-label">3rd Semester</span>
               </a>
-              <a class="app-item" href="./semester/4th.html">
+              <a class="app-item" href="./pages/4th.html">
                 <div class="app-icon">4️⃣</div>
                 <span class="app-label">4th Semester</span>
               </a>
-              <a class="app-item" href="./semester/5th.html">
+              <a class="app-item" href="./pages/5th.html">
                 <div class="app-icon">5️⃣</div>
                 <span class="app-label">5th Semester</span>
               </a>
-              <a class="app-item" href="./semester/6th.html">
+              <a class="app-item" href="./pages/6th.html">
                 <div class="app-icon">6️⃣</div>
                 <span class="app-label">6th Semester</span>
               </a>
-              <a class="app-item" href="./semester/7th.html">
+              <a class="app-item" href="./pages/7th.html">
                 <div class="app-icon">7️⃣</div>
                 <span class="app-label">7th Semester</span>
               </a>
-              <a class="app-item" href="./semester/8th.html">
+              <a class="app-item" href="./pages/8th.html">
                 <div class="app-icon">8️⃣</div>
                 <span class="app-label">8th Semester</span>
               </a>
-              <a class="app-item" href="./semester/mba-1st.html">
+              <a class="app-item" href="./pages/mba-1st.html">
                 <div class="app-icon">🎯</div>
                 <span class="app-label">MBA 1st</span>
               </a>
-              <a class="app-item" href="./semester/mba-2nd.html">
+              <a class="app-item" href="./pages/mba-2nd.html">
                 <div class="app-icon">🎓</div>
                 <span class="app-label">MBA 2nd</span>
               </a>
-              <a class="app-item" href="./semester/course-teachers.html">
+              <a class="app-item" href="./pages/course-teachers.html">
                 <div class="app-icon">👨‍🏫</div>
                 <span class="app-label">Teachers</span>
               </a>
@@ -720,7 +677,7 @@
       <!-- Advanced Options Toggle -->
       <div class="options-toggle">
         <button class="options-toggle-btn" onclick="toggleAdvancedOptions()">
-          Search Globally <span class="accordion-icon">▼</span>
+          Advanced Search
         </button>
       </div>
 
@@ -728,43 +685,35 @@
       <div class="advanced-options" id="advancedOptions">
         <!-- Search Filters -->
         <div class="search-filters">
-          <!-- Batch Filter Row (Always visible) -->
-          <div class="filter-row">
-            <select
-              id="batchFilter"
-              class="filter-select"
-              onchange="updateSemesterOptions()"
-            >
-              <option value="">Select Batch</option>
-              <!-- Batch options will be populated dynamically -->
-            </select>
-          </div>
+          <select
+            id="semesterFilter"
+            class="filter-select"
+            onchange="handleFilterChange()"
+          >
+            <option value="">All Semesters</option>
+            <option value="1st">1st Semester</option>
+            <option value="2nd">2nd Semester</option>
+            <option value="3rd">3rd Semester</option>
+            <option value="4th">4th Semester</option>
+            <option value="5th">5th Semester</option>
+            <option value="6th">6th Semester</option>
+            <option value="7th">7th Semester</option>
+            <option value="8th">8th Semester</option>
+          </select>
 
-          <!-- Semester Filter Row (Hidden until batch selected) -->
-          <div class="filter-row" id="semesterRow">
-            <select
-              id="semesterFilter"
-              class="filter-select"
-              onchange="updateCourseOptions()"
-              disabled
-            >
-              <option value="">Select Semester</option>
-            </select>
-          </div>
+          <select
+            id="batchFilter"
+            class="filter-select"
+            onchange="handleFilterChange()"
+          >
+            <option value="">All Batches</option>
+            <option value="30">30th Batch</option>
+            <option value="29">29th Batch</option>
+            <option value="28">28th Batch</option>
+            <option value="27">27th Batch</option>
+            <option value="26">26th Batch</option>
+          </select>
 
-          <!-- Course Filter Row (Hidden until semester selected) -->
-          <div class="filter-row" id="courseRow">
-            <select
-              id="courseFilter"
-              class="filter-select"
-              onchange="handleFilterChange()"
-              disabled
-            >
-              <option value="">Select Course</option>
-            </select>
-          </div>
-
-          <!-- Apply Filters Button -->
           <button
             id="applyFiltersBtn"
             class="apply-filters-btn-subtle"
@@ -826,172 +775,6 @@
     <div data-include="./assets/footer.html"></div>
 
     <script>
-      // Function to populate batch filter with available batches
-      async function populateBatchOptions() {
-        const batchSelect = document.getElementById('batchFilter');
-        
-        try {
-          // Load all batch data
-          await loadAllBatchData();
-          
-          // Get available batch numbers and sort them in descending order (newest first)
-          const availableBatches = Array.from(window.BATCH_DATA_CACHE.keys())
-            .map(batch => parseInt(batch))
-            .filter(batch => !isNaN(batch))
-            .sort((a, b) => b - a); // Descending order
-          
-          // Populate batch dropdown
-          availableBatches.forEach(batchNumber => {
-            const batchData = window.BATCH_DATA_CACHE.get(batchNumber.toString());
-            const option = document.createElement('option');
-            option.value = batchNumber.toString();
-            option.textContent = batchData?.batch_name || `${batchNumber}th Batch`;
-            batchSelect.appendChild(option);
-          });
-          
-          console.log('Batch options populated:', availableBatches);
-        } catch (error) {
-          console.error('Error populating batch options:', error);
-          // Add fallback options if batch loading fails
-          const fallbackBatches = ['31', '30', '29', '28', '27', '26', '25', '24'];
-          fallbackBatches.forEach(batch => {
-            const option = document.createElement('option');
-            option.value = batch;
-            option.textContent = `${batch}th Batch`;
-            batchSelect.appendChild(option);
-          });
-        }
-      }
-
-      // Function to update semester options based on selected batch
-      async function updateSemesterOptions() {
-        const batchSelect = document.getElementById('batchFilter');
-        const semesterSelect = document.getElementById('semesterFilter');
-        const courseSelect = document.getElementById('courseFilter');
-        const semesterRow = document.getElementById('semesterRow');
-        const courseRow = document.getElementById('courseRow');
-        
-        const selectedBatch = batchSelect.value;
-        
-        // Clear and disable semester and course dropdowns
-        semesterSelect.innerHTML = '<option value="">Select Semester</option>';
-        courseSelect.innerHTML = '<option value="">Select Course</option>';
-        semesterSelect.disabled = !selectedBatch;
-        courseSelect.disabled = true;
-        
-        // Hide/show semester row based on batch selection
-        if (!selectedBatch) {
-          semesterRow.classList.remove('show');
-          courseRow.classList.remove('show');
-          return;
-        }
-        
-        // Show semester row with smooth transition
-        setTimeout(() => {
-          semesterRow.classList.add('show');
-        }, 100);
-        
-        try {
-          // Load batch data dynamically from batch JSON files
-          await loadAllBatchData();
-          const batchData = window.BATCH_DATA_CACHE.get(selectedBatch);
-          
-          if (!batchData || !batchData.semesters) {
-            console.warn(`No semester data found for batch ${selectedBatch}`);
-            semesterSelect.disabled = true;
-            return;
-          }
-          
-          // Get available semesters from the batch data
-          const availableSemesters = Object.keys(batchData.semesters);
-          
-          // Sort semesters in logical order
-          const semesterOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', 'mba-1st', 'mba-2nd'];
-          const sortedSemesters = availableSemesters.sort((a, b) => {
-            return semesterOrder.indexOf(a) - semesterOrder.indexOf(b);
-          });
-          
-          // Populate semester dropdown
-          sortedSemesters.forEach(semester => {
-            const option = document.createElement('option');
-            option.value = semester;
-            
-            // Format semester name for display
-            let displayName = semester;
-            if (semester.includes('mba')) {
-              displayName = semester.replace('mba-', 'MBA ').replace(/\b\w/g, l => l.toUpperCase()) + ' Semester';
-            } else {
-              displayName = semester.replace(/\b\w/g, l => l.toUpperCase()) + ' Semester';
-            }
-            
-            option.textContent = displayName;
-            semesterSelect.appendChild(option);
-          });
-          
-          semesterSelect.disabled = false;
-        } catch (error) {
-          console.error('Error loading semester options:', error);
-          semesterSelect.disabled = true;
-        }
-      }
-      
-      // Function to update course options based on selected semester
-      async function updateCourseOptions() {
-        const batchSelect = document.getElementById('batchFilter');
-        const semesterSelect = document.getElementById('semesterFilter');
-        const courseSelect = document.getElementById('courseFilter');
-        const courseRow = document.getElementById('courseRow');
-        
-        const selectedBatch = batchSelect.value;
-        const selectedSemester = semesterSelect.value;
-        
-        // Clear and disable course dropdown
-        courseSelect.innerHTML = '<option value="">Select Course</option>';
-        courseSelect.disabled = !selectedSemester;
-        
-        // Hide/show course row based on semester selection
-        if (!selectedSemester || !selectedBatch) {
-          courseRow.classList.remove('show');
-          return;
-        }
-        
-        // Show course row with smooth transition
-        setTimeout(() => {
-          courseRow.classList.add('show');
-        }, 100);
-        
-        try {
-          // Load batch data dynamically from batch JSON files
-          await loadAllBatchData();
-          const batchData = window.BATCH_DATA_CACHE.get(selectedBatch);
-          
-          if (!batchData || !batchData.semesters || !batchData.semesters[selectedSemester] || !batchData.semesters[selectedSemester].subjects) {
-            console.warn(`No course data found for batch ${selectedBatch}, semester ${selectedSemester}`);
-            courseSelect.disabled = true;
-            return;
-          }
-          
-          // Get available courses from the batch data
-          const courses = batchData.semesters[selectedSemester].subjects;
-          
-          // Sort courses by course code
-          const sortedCourses = Object.entries(courses).sort(([a], [b]) => a.localeCompare(b));
-          
-          // Populate course dropdown
-          sortedCourses.forEach(([code, courseInfo]) => {
-            const option = document.createElement('option');
-            option.value = code;
-            option.textContent = `${code} - ${courseInfo.title || 'Unknown Course'}`;
-            courseSelect.appendChild(option);
-          });
-          
-          courseSelect.disabled = false;
-        } catch (error) {
-          console.error('Error loading course options:', error);
-          courseSelect.disabled = true;
-        }
-      }
-
       // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
       const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
       let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
@@ -1004,9 +787,8 @@
       const DOM_CACHE = {
         globalSearch: null,
         resultsStats: null,
-        batchFilter: null,
         semesterFilter: null,
-        courseFilter: null,
+        batchFilter: null,
         allResources: null,
         accordionControls: null,
         searchResultsContainer: null,
@@ -1015,9 +797,8 @@
         init() {
           this.globalSearch = document.getElementById("globalSearch");
           this.resultsStats = document.getElementById("resultsStats");
-          this.batchFilter = document.getElementById("batchFilter");
           this.semesterFilter = document.getElementById("semesterFilter");
-          this.courseFilter = document.getElementById("courseFilter");
+          this.batchFilter = document.getElementById("batchFilter");
           this.allResources = document.getElementById("all-resources");
           this.accordionControls = document.getElementById("accordionControls");
           this.searchResultsContainer = document.getElementById(
@@ -1050,22 +831,15 @@
       function toggleAdvancedOptions() {
         const advancedOptions = document.getElementById("advancedOptions");
         const toggleBtn = document.querySelector(".options-toggle-btn");
-        const btnIcon = toggleBtn.querySelector(".accordion-icon") || 
-          (() => {
-            const icon = document.createElement("span");
-            icon.className = "accordion-icon";
-            toggleBtn.appendChild(icon);
-            return icon;
-          })();
 
         if (advancedOptions.classList.contains("show")) {
           advancedOptions.classList.remove("show");
           toggleBtn.classList.remove("active");
-          toggleBtn.innerHTML = 'Search Globally <span class="accordion-icon">▼</span>';
+          toggleBtn.textContent = "Advanced Search";
         } else {
           advancedOptions.classList.add("show");
           toggleBtn.classList.add("active");
-          toggleBtn.innerHTML = 'Search Specifically <span class="accordion-icon">▲</span>';
+          toggleBtn.textContent = "Hide Advanced Search";
         }
       }
 
@@ -1398,9 +1172,8 @@
 
       // Apply filters without requiring search term - shows all resources for selected filters
       async function applyFiltersOnly() {
-        const batchFilter = DOM_CACHE.batchFilter.value;
         const semesterFilter = DOM_CACHE.semesterFilter.value;
-        const courseFilter = DOM_CACHE.courseFilter.value;
+        const batchFilter = DOM_CACHE.batchFilter.value;
 
         // Show all resources for the selected filters (no search term required)
         updateSearchStats("Loading all resources for selected filters...");
@@ -1411,14 +1184,13 @@
             "", // Empty search term to get all results
             semesterFilter,
             batchFilter,
-            courseFilter,
             DOM_CACHE.resultsStats, // Use correct DOM element
             true // Flag to indicate this is a filter-only search
           );
           displayResults(results);
           updateSearchStats(
             `Showing ${results.length} resources${
-              semesterFilter || batchFilter || courseFilter ? " for selected filters" : " (all)"
+              semesterFilter || batchFilter ? " for selected filters" : " (all)"
             }`
           );
         } catch (error) {
@@ -1501,9 +1273,8 @@
       // Optimized search - only load data when user searches
       async function optimizedSearch() {
         const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
-        const batchFilter = DOM_CACHE.batchFilter.value;
         const semesterFilter = DOM_CACHE.semesterFilter.value;
-        const courseFilter = DOM_CACHE.courseFilter.value;
+        const batchFilter = DOM_CACHE.batchFilter.value;
 
         // Always require a search term for manual search
         if (!searchTerm) {
@@ -1529,7 +1300,6 @@
             searchTerm,
             semesterFilter,
             batchFilter,
-            courseFilter,
             DOM_CACHE.resultsStats
           );
           displayResults(results);
@@ -1547,7 +1317,6 @@
         searchTerm,
         semesterFilter,
         batchFilter,
-        courseFilter,
         statsElement,
         isFilterOnly = false
       ) {
@@ -1596,8 +1365,8 @@
         }
 
         // Search folders in parallel batches
-        const PARALLEL_BATCH_SIZE = 40; // Optimized for better performance
-        const MAX_SEARCH_DEPTH = 6; // Optimized depth for balance between completeness and speed
+        const PARALLEL_BATCH_SIZE = 40;
+        const MAX_SEARCH_DEPTH = 8; // Increased depth for more comprehensive results
 
         // Clear results container at start
         const container = document.getElementById("all-resources");
@@ -1630,8 +1399,7 @@
                     semester,
                     batchKey,
                     batchInfo.label,
-                    statsElement,
-                    courseFilter // Pass course filter to folder search
+                    statsElement
                   );
                   return folderResults;
                 } catch (error) {
@@ -1804,7 +1572,6 @@
         batchKey,
         batchLabel,
         statsElement,
-        courseFilter = null,
         currentDepth = 0
       ) {
         if (maxDepth >= 0 && currentDepth >= maxDepth) return [];
@@ -1825,7 +1592,6 @@
             batchKey,
             batchLabel,
             statsElement,
-            courseFilter,
             currentDepth
           );
         }
@@ -1843,7 +1609,6 @@
             batchKey,
             batchLabel,
             statsElement,
-            courseFilter,
             currentDepth
           );
         }
@@ -1867,7 +1632,6 @@
             batchKey,
             batchLabel,
             statsElement,
-            courseFilter,
             currentDepth
           );
         } catch (error) {
@@ -1886,7 +1650,6 @@
         batchKey,
         batchLabel,
         statsElement,
-        courseFilter,
         currentDepth
       ) {
         const results = [];
@@ -1901,28 +1664,7 @@
           const matchesSearch =
             !searchTerm || smartMatch(searchTerm, file.name, filePath);
 
-          // Course filter logic - if course filter is selected, only include files/folders related to that course
-          let matchesCourse = !courseFilter;
-          
-          if (courseFilter) {
-            // First try direct course code match
-            matchesCourse = smartMatch(courseFilter, file.name, filePath);
-            
-            // If no direct match, try to get course title from batch data and match that
-            if (!matchesCourse && window.BATCH_DATA_CACHE) {
-              for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
-                if (batchData.semesters && batchData.semesters[semester] && batchData.semesters[semester].subjects && batchData.semesters[semester].subjects[courseFilter]) {
-                  const courseTitle = batchData.semesters[semester].subjects[courseFilter].title;
-                  if (courseTitle && smartMatch(courseTitle, file.name, filePath)) {
-                    matchesCourse = true;
-                    break;
-                  }
-                }
-              }
-            }
-          }
-
-          if (matchesSearch && matchesCourse) {
+          if (matchesSearch) {
             results.push({
               ...file,
               path: filePath,
@@ -1955,7 +1697,6 @@
                 batchKey,
                 batchLabel,
                 statsElement,
-                courseFilter,
                 currentDepth + 1
               )
             );
@@ -1987,23 +1728,36 @@
         return Array.from(uniqueResults.values());
       }
 
-      // Load mapping from batch JSON files
+      // Load mapping from JSON file
       async function loadDriveMapping() {
         try {
-          // Use the batch loader utility to get drive folder mapping
-          const mapping = await getDriveFolderMapping();
-          
-          // Set the global variable used by search
-          ALL_DRIVE_RESOURCES = mapping;
+          const response = await fetch("./assets/drive-mapping.json");
+          if (!response.ok)
+            throw new Error(`Failed to load mapping: ${response.status}`);
+          const mapping = await response.json();
+
+          // Convert to the format expected by the rest of the code
+          ALL_DRIVE_RESOURCES = {};
+          Object.entries(mapping).forEach(([semester, semesterData]) => {
+            ALL_DRIVE_RESOURCES[semester] = {};
+            Object.entries(semesterData.batches).forEach(
+              ([batchKey, batchData]) => {
+                ALL_DRIVE_RESOURCES[semester][batchKey] = {
+                  folderId: batchData.folderId,
+                  label: batchData.label,
+                };
+              }
+            );
+          });
 
           console.log(
-            "Batch mapping loaded successfully",
+            "Drive mapping loaded successfully",
             Object.keys(ALL_DRIVE_RESOURCES)
           );
           return ALL_DRIVE_RESOURCES;
         } catch (error) {
-          console.error("Error loading batch mapping:", error);
-          // Fallback to basic structure if batch loading fails
+          console.error("Error loading drive mapping:", error);
+          // Fallback to basic structure if JSON fails
           ALL_DRIVE_RESOURCES = {
             "1st": {
               30: {
@@ -2369,10 +2123,6 @@
 
         try {
           await loadDriveMapping();
-          
-          // Populate batch filter options dynamically
-          await populateBatchOptions();
-          
           updateCacheStats(); // Update again after loading mapping
         } catch (error) {
           const subtleStatsElement =
