@@ -1,0 +1,873 @@
+{
+  "batch_name": "27th Batch",
+  "batch_year": "2027-2031",
+  "last_updated": "2025-09-14",
+  "contact_person": "",
+  "faculty_reference": {
+    "last_updated": "2025-09-04",
+    "source": "Official DU Accounting & Information Systems Department Faculty List",
+    "chairman": "Md. Maksudur Rahman Sarker",
+    "note": "Complete faculty list with contact details available in faculty-mapping.json"
+  },
+  "semesters": {
+    "1st": {
+      "drive_folder": "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
+      "subjects": {
+        "1101": {
+          "code": "1101",
+          "title": "Introduction to Financial Accounting",
+          "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [
+              "https://drive.google.com/drive/folders/1S0SFn1__66OTcOu5GoLo8iC-GKFrihqE",
+              "https://drive.google.com/drive/folders/1dWMahU0ugtF9Em5sGZ0aywkuGY1noN81"
+            ],
+            "slides_lectures": [
+              "https://drive.google.com/drive/folders/1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+              "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
+              "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
+            ],
+            "books_manuals": [],
+            "previous_materials": [
+              "https://drive.google.com/drive/folders/1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
+              "https://drive.google.com/drive/folders/1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu"
+            ],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1102": {
+          "code": "1102",
+          "title": "Introduction to Business",
+          "description": "Fundamental business concepts, organizational structures, and basic business operations and management principles.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [
+              "https://drive.google.com/drive/folders/1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+              "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
+            ],
+            "books_manuals": [],
+            "previous_materials": [
+              "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
+            ],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1103": {
+          "code": "1103",
+          "title": "Computer Concepts",
+          "description": "Introduction to computer systems, software applications, and basic programming concepts for business students.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [
+              "https://drive.google.com/drive/folders/1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
+              "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
+            ],
+            "books_manuals": [],
+            "previous_materials": [
+              "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
+            ],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1104": {
+          "code": "1104",
+          "title": "Business Mathematics",
+          "description": "Mathematical concepts and applications in business, including algebra, calculus, and statistical analysis for business decisions.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1105": {
+          "code": "1105",
+          "title": "Business Communication",
+          "description": "Professional communication skills, business writing, presentation techniques, and effective communication strategies in business environments.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "2nd": {
+      "drive_folder": "17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_",
+      "subjects": {
+        "1201": {
+          "code": "1201",
+          "title": "Intermediate Accounting",
+          "description": "Advanced accounting principles, financial reporting standards, and complex accounting transactions and procedures.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [
+              "https://drive.google.com/drive/folders/1GqE1mLi-ir3OCvBdMBgChCIpws8dTGI7"
+            ],
+            "slides_lectures": [
+              "https://drive.google.com/drive/folders/1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
+              "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8",
+              "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj"
+            ],
+            "books_manuals": [
+              "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
+            ],
+            "previous_materials": [
+              "https://drive.google.com/drive/folders/17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_"
+            ],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1202": {
+          "code": "1202",
+          "title": "Microeconomics",
+          "description": "Consumer behavior, market structures, economic decision-making principles and microeconomic analysis.",
+          "teacher": "",
+          "links": {
+            "class_updates": "https://docs.google.com/document/d/1example_doc_id/edit",
+            "notes": [
+              "https://drive.google.com/drive/folders/1GqE1mLi-ir3OCvBdMBgChCIpws8dTGI7"
+            ],
+            "slides_lectures": [
+              "https://drive.google.com/drive/folders/1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu"
+            ],
+            "books_manuals": [
+              "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
+            ],
+            "previous_materials": [
+              "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj",
+              "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8"
+            ],
+            "question_papers": [
+              "https://docs.google.com/document/d/class_test_example",
+              "https://docs.google.com/document/d/midterm_example"
+            ],
+            "assignments": [
+              "https://drive.google.com/drive/folders/previous_questions_folder"
+            ]
+          }
+        },
+        "1203": {
+          "code": "1203",
+          "title": "Management & Organizational Behavior",
+          "description": "Leadership principles, team dynamics, and organizational management strategies for business environments.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [
+              "https://drive.google.com/drive/folders/1GqE1mLi-ir3OCvBdMBgChCIpws8dTGI7"
+            ],
+            "slides_lectures": [
+              "https://drive.google.com/drive/folders/1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
+              "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8"
+            ],
+            "books_manuals": [
+              "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
+            ],
+            "previous_materials": [
+              "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj"
+            ],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1204": {
+          "code": "1204",
+          "title": "Mathematics for Business Decisions-II",
+          "description": "Advanced calculus, optimization techniques, and mathematical modeling for complex business decision-making processes.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1205": {
+          "code": "1205",
+          "title": "Bangladesh Studies",
+          "description": "History, culture, political development, and socio-economic aspects of Bangladesh for comprehensive understanding of the nation.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "3rd": {
+      "drive_folder": "1fZuFo3qsPUtaN53ZvKOrwgb-fVIr8B4N",
+      "subjects": {
+        "2101": {
+          "code": "2101",
+          "title": "Advanced Financial Accounting-I",
+          "description": "Partnership accounting, corporate accounting, and financial statement analysis",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "2102": {
+          "code": "2102",
+          "title": "Macroeconomics",
+          "description": "National income, economic policies, and macroeconomic theories",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "2103": {
+          "code": "2103",
+          "title": "Programming and Database Management",
+          "description": "Programming fundamentals, database design, and data management systems",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "2104": {
+          "code": "2104",
+          "title": "General Science & Environment",
+          "description": "Environmental science, sustainable development, and ecological principles",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "2105": {
+          "code": "2105",
+          "title": "Business Statistics-I",
+          "description": "Statistical methods, data analysis, and business research techniques",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "4th": {
+      "drive_folder": "1GdxoRIoO8dnqZAf7PxWXDB3-pYpNep-Q",
+      "subjects": {
+        "2201": {
+          "code": "2201",
+          "title": "Advanced Financial Accounting-II",
+          "description": "Advanced corporate accounting, consolidation, and financial reporting",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "2202": {
+          "code": "2202",
+          "title": "Financial Management",
+          "description": "Capital budgeting, working capital management, and financial analysis",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "2203": {
+          "code": "2203",
+          "title": "Cost Accounting",
+          "description": "Cost allocation, variance analysis, and management accounting",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "2204": {
+          "code": "2204",
+          "title": "Marketing",
+          "description": "Marketing principles, consumer behavior, and promotional strategies",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "2205": {
+          "code": "2205",
+          "title": "Business Statistics-II",
+          "description": "Advanced statistical methods and business research applications",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "5th": {
+      "drive_folder": "1AjQxHD_A3HjKA0tKyBNb-A2p5ypf6hi6",
+      "subjects": {
+        "3101": {
+          "code": "3101",
+          "title": "Management Accounting",
+          "description": "Cost analysis, budgeting, performance measurement, and managerial decision-making",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "3102": {
+          "code": "3102",
+          "title": "Banking and Insurance",
+          "description": "Banking principles, insurance fundamentals, financial services, and risk management",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "3103": {
+          "code": "3103",
+          "title": "Audit and Assurance",
+          "description": "Auditing standards, internal controls, risk assessment, and assurance services",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "3104": {
+          "code": "3104",
+          "title": "Income Tax: Laws and Practice",
+          "description": "Income tax laws, regulations, compliance procedures, and practical applications",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "3105": {
+          "code": "3105",
+          "title": "Business Laws",
+          "description": "Contract law, company law, commercial legislation, and legal principles for business",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "6th": {
+      "drive_folder": "1V1bC-dZV6_NrHvA8q75TmfLIp-tXN-pj",
+      "subjects": {
+        "3201": {
+          "code": "3201",
+          "title": "Forensic Accounting and Fraud Investigation",
+          "description": "Fraud detection, forensic accounting techniques, and investigation procedures",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "3202": {
+          "code": "3202",
+          "title": "International Business",
+          "description": "Global trade, multinational corporations, and international markets",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "3203": {
+          "code": "3203",
+          "title": "Accounting Information Systems",
+          "description": "Computerized accounting systems, ERP software, and information technology in accounting",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "3204": {
+          "code": "3204",
+          "title": "Investment Analysis",
+          "description": "Portfolio management, securities analysis, and risk assessment",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "3205": {
+          "code": "3205",
+          "title": "Corporate Laws, Governance and Secretarial Practices",
+          "description": "Corporate governance principles, company law, and secretarial practice standards",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "7th": {
+      "drive_folder": "1_cGrDFivmX1Bkw2iLnP_KKriNMBOfJGx",
+      "subjects": {
+        "4101": {
+          "code": "4101",
+          "title": "Strategic Management",
+          "description": "Strategic planning, competitive analysis, and corporate strategy",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "4102": {
+          "code": "4102",
+          "title": "Financial Market and Investment Analysis",
+          "description": "Capital markets, investment strategies, portfolio management, and financial analysis",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "4103": {
+          "code": "4103",
+          "title": "IT Governance and Information System Audit",
+          "description": "IT governance frameworks, information system controls, and audit procedures for technology",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "4104": {
+          "code": "4104",
+          "title": "Supply Chain and Operation Management",
+          "description": "Supply chain optimization, operations strategy, logistics management, and process improvement",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "4105": {
+          "code": "4105",
+          "title": "Public Sector Accounting and Financial Management",
+          "description": "Government accounting principles, public financial management, and budgetary control systems",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "8th": {
+      "drive_folder": "1dHSV2wI96GMIRyk_31fA2RaHbeAydGVo",
+      "subjects": {
+        "4201": {
+          "code": "4201",
+          "title": "Accounting Theory",
+          "description": "Theoretical foundations of accounting, conceptual frameworks, and accounting philosophy",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "4202": {
+          "code": "4202",
+          "title": "Business Analysis and Valuation",
+          "description": "Financial analysis techniques, business valuation methods, and investment appraisal",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "4203": {
+          "code": "4203",
+          "title": "Data Analytics",
+          "description": "Data analysis techniques, statistical methods, and business intelligence tools for decision-making",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "4204": {
+          "code": "4204",
+          "title": "Strategic Management",
+          "description": "Strategic planning, competitive analysis, organizational strategy, and business policy",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "4205": {
+          "code": "4205",
+          "title": "Research Methodology",
+          "description": "Research design, data collection methods, statistical analysis, and academic writing",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "mba-1st": {
+      "subjects": {
+        "6101": {
+          "code": "6101",
+          "title": "Advanced Financial Accounting",
+          "description": "Advanced accounting principles, complex financial reporting, and international standards",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "6102": {
+          "code": "6102",
+          "title": "Corporate Governance and Accountability",
+          "description": "Corporate governance frameworks, board accountability, and stakeholder management",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "6103": {
+          "code": "6103",
+          "title": "Advanced Research Methodology",
+          "description": "Advanced research design, quantitative and qualitative methods, and statistical analysis",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "mba-2nd": {
+      "subjects": {
+        "6201": {
+          "code": "6201",
+          "title": "Contemporary Issues in Accounting",
+          "description": "Current developments in accounting standards, emerging issues, and professional practice",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "6202": {
+          "code": "6202",
+          "title": "Advanced Cost & Management Accounting",
+          "description": "Advanced costing techniques, strategic cost management, and performance measurement",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "project": {
+      "subjects": {
+        "7101": {
+          "code": "7101",
+          "title": "Corporate Reporting",
+          "description": "Advanced financial reporting, corporate disclosure requirements, and regulatory compliance",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "7102": {
+          "code": "7102",
+          "title": "Project Management",
+          "description": "Project planning, execution, monitoring, risk management, and professional methodologies",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "7103": {
+          "code": "7103",
+          "title": "Government Accounting",
+          "description": "Public sector accounting principles, government financial reporting, and budgetary systems",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "7112": {
+          "code": "7112",
+          "title": "Strategic Management",
+          "description": "Corporate strategy, competitive advantage, strategic planning, and business policy",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "internship": {
+      "subjects": {
+        "7203": {
+          "code": "7203",
+          "title": "Corporate Tax Planning",
+          "description": "Corporate taxation strategies, tax compliance, and financial planning",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    }
+  }
+}
