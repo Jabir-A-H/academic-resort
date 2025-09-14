@@ -7,6 +7,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
+    <script src="../assets/batch-loader.js"></script>
     <script src="../assets/script.js" defer></script>
   </head>
   <body>
@@ -445,17 +446,15 @@
 
       // === END CACHE SYSTEM ===
 
-      // Load mapping from JSON file
+      // Load mapping from batch JSON files
       async function loadBatchMapping() {
         try {
-          const response = await fetch("../assets/drive-mapping.json");
-          if (!response.ok)
-            throw new Error(`Failed to load mapping: ${response.status}`);
-          const mapping = await response.json();
-
+          // Use the batch loader utility to get drive folder mapping for 1st semester
+          const mapping = await getDriveFolderMapping();
+          
           // Extract 1st semester batches
-          if (mapping["1st"] && mapping["1st"].batches) {
-            Object.entries(mapping["1st"].batches).forEach(
+          if (mapping["1st"]) {
+            Object.entries(mapping["1st"]).forEach(
               ([batchKey, batchData]) => {
                 batches[batchKey] = batchData.folderId;
               }
@@ -464,8 +463,8 @@
 
           return batches;
         } catch (error) {
-          console.error("Error loading drive mapping:", error);
-          // Fallback to basic structure if JSON fails
+          console.error("Error loading batch mapping:", error);
+          // Fallback to basic structure if batch loading fails
           batches = {
             30: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
             29: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
