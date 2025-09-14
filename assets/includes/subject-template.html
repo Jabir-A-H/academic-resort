@@ -1,4 +1,5 @@
 <!-- Subject Page Template -->
+<script src="../../assets/batch-loader.js"></script>
 <script>
   // Global subject page functions
   window.toggleTOC = function () {
@@ -87,20 +88,41 @@
 
   async function loadDriveContent(config) {
     try {
-      // Load subject-specific JSON mapping
-      const response = await fetch(`../../assets/subjects/${config.code}.json`);
-      if (!response.ok) {
-        console.warn("Could not load subject mapping for:", config.code);
+      // Load subject data from consolidated batch files
+      const subjectData = await getSubjectDataByCode(config.code);
+      
+      if (!subjectData) {
+        console.warn("Could not load subject data for:", config.code);
+        showPlaceholderContent();
         return;
       }
-
-      const subjectData = await response.json();
 
       // Populate sections with subject-specific drive links
       populateSubjectLinks(subjectData);
     } catch (error) {
       console.error("Error loading subject content:", error);
+      showPlaceholderContent();
     }
+  }
+
+  function showPlaceholderContent() {
+    // Show placeholder content when data loading fails
+    const sections = [
+      'class-updates-content',
+      'personal-notes-content', 
+      'slides-content',
+      'books-content',
+      'previous-materials-content',
+      'current-questions-content',
+      'previous-questions-content'
+    ];
+    
+    sections.forEach(sectionId => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.innerHTML = '<div class="placeholder-link">Content will be available soon</div>';
+      }
+    });
   }
 
   function populateSubjectLinks(subjectData) {
@@ -164,23 +186,23 @@
         "No previous materials available yet.";
     }
 
-    // Current Questions
+    // Current Questions (from question_papers field)
     const currentQuestionsContent = document.getElementById(
       "current-questions-content"
     );
-    if (currentQuestionsContent && links.current_questions) {
+    if (currentQuestionsContent && links.question_papers) {
       currentQuestionsContent.innerHTML =
-        createLinksFromArray(links.current_questions) ||
+        createLinksFromArray(links.question_papers) ||
         "No current questions available yet.";
     }
 
-    // Previous Questions
+    // Previous Questions (from assignments field)
     const previousQuestionsContent = document.getElementById(
       "previous-questions-content"
     );
-    if (previousQuestionsContent && links.previous_questions) {
+    if (previousQuestionsContent && links.assignments) {
       previousQuestionsContent.innerHTML =
-        createLinksFromArray(links.previous_questions) ||
+        createLinksFromArray(links.assignments) ||
         "No previous questions available yet.";
     }
 
@@ -191,6 +213,11 @@
   function updateCourseDetails(subjectData) {
     const courseInfoGrid = document.querySelector(".course-info-grid");
     if (courseInfoGrid && subjectData) {
+      // Show batch information if available
+      const batchInfo = subjectData.batches && subjectData.batches.length > 0 
+        ? subjectData.batches.map(b => b.batchName || `${b.batch}th Batch`).join(", ")
+        : "Multiple batches";
+        
       courseInfoGrid.innerHTML = `
         <div class="info-card">
           <h4>Course Code:</h4>
@@ -201,8 +228,8 @@
           <p>${subjectData.title}</p>
         </div>
         <div class="info-card">
-          <h4>Current Batch:</h4>
-          <p>${subjectData.current_batch || "To be announced"}</p>
+          <h4>Available in Batches:</h4>
+          <p>${batchInfo}</p>
         </div>
         <div class="info-card">
           <h4>Current Teacher:</h4>

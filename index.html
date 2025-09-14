@@ -13,6 +13,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./assets/styles.css" />
+    <script src="./assets/batch-loader.js"></script>
     <script src="./assets/script.js" defer></script>
     <style>
       /* Google-style Header - Seamless */
@@ -1973,36 +1974,23 @@
         return Array.from(uniqueResults.values());
       }
 
-      // Load mapping from JSON file
+      // Load mapping from batch JSON files
       async function loadDriveMapping() {
         try {
-          const response = await fetch("./assets/drive-mapping.json");
-          if (!response.ok)
-            throw new Error(`Failed to load mapping: ${response.status}`);
-          const mapping = await response.json();
-
-          // Convert to the format expected by the rest of the code
-          ALL_DRIVE_RESOURCES = {};
-          Object.entries(mapping).forEach(([semester, semesterData]) => {
-            ALL_DRIVE_RESOURCES[semester] = {};
-            Object.entries(semesterData.batches).forEach(
-              ([batchKey, batchData]) => {
-                ALL_DRIVE_RESOURCES[semester][batchKey] = {
-                  folderId: batchData.folderId,
-                  label: batchData.label,
-                };
-              }
-            );
-          });
+          // Use the batch loader utility to get drive folder mapping
+          const mapping = await getDriveFolderMapping();
+          
+          // Set the global variable used by search
+          ALL_DRIVE_RESOURCES = mapping;
 
           console.log(
-            "Drive mapping loaded successfully",
+            "Batch mapping loaded successfully",
             Object.keys(ALL_DRIVE_RESOURCES)
           );
           return ALL_DRIVE_RESOURCES;
         } catch (error) {
-          console.error("Error loading drive mapping:", error);
-          // Fallback to basic structure if JSON fails
+          console.error("Error loading batch mapping:", error);
+          // Fallback to basic structure if batch loading fails
           ALL_DRIVE_RESOURCES = {
             "1st": {
               30: {
