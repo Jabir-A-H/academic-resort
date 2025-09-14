@@ -7,6 +7,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
+    <script src="../assets/batch-loader.js"></script>
     <script src="../assets/script.js" defer></script>
   </head>
   <body>
@@ -341,17 +342,14 @@
 
         try {
           // Load drive mapping configuration
-          const response = await fetch("../assets/drive-mapping.json");
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const mapping = await response.json();
-          console.log("Drive mapping loaded:", mapping);
+          // Use the batch loader utility to get drive folder mapping
+          const mapping = await getDriveFolderMapping();
+          
+          console.log("Batch mapping loaded:", mapping);
 
           // Extract 3rd semester data
-          if (mapping.3rd && mapping.3rd.batches) {
-            batches = mapping.3rd.batches;
+          if (mapping["3rd"]) {
+            batches = mapping["3rd"];
             console.log("3rd semester batches:", batches);
 
             // Build table of contents
@@ -364,7 +362,7 @@
             showError("Configuration not found for 3rd semester");
           }
         } catch (error) {
-          console.error("Error loading drive mapping:", error);
+          console.error("Error loading batch mapping:", error);
           showError(`Failed to load configuration: ${error.message}`);
         }
       });
@@ -446,7 +444,7 @@
 
           const response = await fetch(apiUrl);
 
-          if (!response.ok) {
+          // Extract batches for current semester {
             throw new Error(`API request failed: ${response.status} ${response.statusText}`);
           }
 
