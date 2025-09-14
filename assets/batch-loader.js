@@ -25,7 +25,7 @@ async function loadAllBatchData() {
     const batchPromises = batchFiles.map(async (batchFile) => {
       try {
         const basePath = getBasePath();
-        const response = await fetch(`${basePath}assets/${batchFile}`);
+        const response = await fetch(`${basePath}assets/batches/${batchFile}`);
         if (!response.ok) {
           console.warn(`Could not load ${batchFile}: ${response.status}`);
           return null;
@@ -190,24 +190,34 @@ async function getDriveFolderMapping() {
   const mapping = {};
   
   for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
-    if (batchData.semesters && batchData.drive_folders) {
+    if (batchData.semesters) {
       for (const semesterKey of Object.keys(batchData.semesters)) {
         if (!mapping[semesterKey]) {
           mapping[semesterKey] = {};
         }
         
-        // Look for drive folder with different possible naming patterns
         let folderId = null;
-        const possibleKeys = [
-          `${semesterKey}_semester`,
-          `${semesterKey.replace('-', '_')}_semester`,
-          semesterKey
-        ];
         
-        for (const key of possibleKeys) {
-          if (batchData.drive_folders[key]) {
-            folderId = batchData.drive_folders[key];
-            break;
+        // Handle different drive folder structures across batches
+        // Check for batch-specific drive folder structure first
+        if (batchData.semesters[semesterKey].drive_folder) {
+          // Structure used by batches 27, 28 (individual drive_folder per semester)
+          folderId = batchData.semesters[semesterKey].drive_folder;
+        }
+        // Check for batch-wide drive_folders structure  
+        else if (batchData.drive_folders) {
+          // Structure used by batches 24, 25, 26, 29, 30, 31 (drive_folders object)
+          const possibleKeys = [
+            `${semesterKey}_semester`,
+            `${semesterKey.replace('-', '_')}_semester`,
+            semesterKey
+          ];
+          
+          for (const key of possibleKeys) {
+            if (batchData.drive_folders[key]) {
+              folderId = batchData.drive_folders[key];
+              break;
+            }
           }
         }
         
@@ -221,6 +231,7 @@ async function getDriveFolderMapping() {
     }
   }
   
+  console.log('Drive folder mapping generated:', mapping);
   return mapping;
 }
 

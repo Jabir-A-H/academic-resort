@@ -1,0 +1,186 @@
+{
+  "batch_name": "32nd Batch",
+  "batch_year": "2032-2036",
+  "last_updated": "2025-01-XX",
+  "contact_person": "",
+  "faculty_reference": {
+    "last_updated": "2025-09-04",
+    "source": "Official DU Accounting & Information Systems Department Faculty List",
+    "chairman": "Md. Maksudur Rahman Sarker",
+    "note": "Complete faculty list with contact details available in faculty-mapping.json"
+  },
+  "drive_folders": {
+    "1st_semester": "REPLACE_WITH_1ST_SEMESTER_DRIVE_FOLDER_ID",
+    "2nd_semester": "REPLACE_WITH_2ND_SEMESTER_DRIVE_FOLDER_ID",
+    "3rd_semester": "REPLACE_WITH_3RD_SEMESTER_DRIVE_FOLDER_ID",
+    "4th_semester": "REPLACE_WITH_4TH_SEMESTER_DRIVE_FOLDER_ID",
+    "5th_semester": "REPLACE_WITH_5TH_SEMESTER_DRIVE_FOLDER_ID",
+    "6th_semester": "REPLACE_WITH_6TH_SEMESTER_DRIVE_FOLDER_ID",
+    "7th_semester": "REPLACE_WITH_7TH_SEMESTER_DRIVE_FOLDER_ID",
+    "8th_semester": "REPLACE_WITH_8TH_SEMESTER_DRIVE_FOLDER_ID",
+    "mba-1st": "REPLACE_WITH_MBA_1ST_SEMESTER_DRIVE_FOLDER_ID",
+    "mba-2nd": "REPLACE_WITH_MBA_2ND_SEMESTER_DRIVE_FOLDER_ID",
+    "internship": "REPLACE_WITH_INTERNSHIP_DRIVE_FOLDER_ID",
+    "project": "REPLACE_WITH_PROJECT_DRIVE_FOLDER_ID"
+  },
+  "semesters": {
+    "1st": {
+      "subjects": {
+        "1101": {
+          "code": "1101",
+          "title": "Introduction to Financial Accounting",
+          "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1102": {
+          "code": "1102",
+          "title": "Introduction to Business",
+          "description": "Fundamental business concepts, organizational structures, and basic business operations and management principles.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1103": {
+          "code": "1103",
+          "title": "Computer Concepts and Applications",
+          "description": "Introduction to computer systems, software applications, and basic programming concepts for business use.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1104": {
+          "code": "1104",
+          "title": "Mathematics for Business Decisions-I",
+          "description": "Mathematical foundations for business decision-making, including algebra, calculus, and statistical methods.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1105": {
+          "code": "1105",
+          "title": "Business Communication",
+          "description": "Effective communication skills for business environments, including written, oral, and digital communication.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    },
+    "2nd": {
+      "subjects": {
+        "1201": {
+          "code": "1201", 
+          "title": "Intermediate Accounting",
+          "description": "Advanced accounting principles, complex financial transactions, and intermediate level financial reporting.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1202": {
+          "code": "1202",
+          "title": "Microeconomics", 
+          "description": "Individual economic behavior, market structures, consumer theory, and firm decision-making processes.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1203": {
+          "code": "1203",
+          "title": "Management and Organizational Behavior",
+          "description": "Principles of management, organizational behavior, leadership theories, and human resource management.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1204": {
+          "code": "1204",
+          "title": "Mathematics for Business Decisions-II",
+          "description": "Advanced mathematical concepts for business including optimization, probability, and financial mathematics.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        },
+        "1205": {
+          "code": "1205",
+          "title": "Bangladesh Studies",
+          "description": "History, culture, politics, and economics of Bangladesh with focus on national development.",
+          "teacher": "",
+          "links": {
+            "class_updates": "",
+            "notes": [],
+            "slides_lectures": [],
+            "books_manuals": [],
+            "previous_materials": [],
+            "question_papers": [],
+            "assignments": []
+          }
+        }
+      }
+    }
+  }
+}
