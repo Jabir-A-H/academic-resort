@@ -421,31 +421,12 @@
   }
 
   function updateFilterStatus(message) {
-    // Add a status indicator
+    // Remove any existing status element
     let statusElement = document.getElementById('filter-status');
-    if (!statusElement) {
-      statusElement = document.createElement('div');
-      statusElement.id = 'filter-status';
-      statusElement.style.cssText = `
-        padding: 8px 12px;
-        background: #e8f0fe;
-        border: 1px solid #1a73e8;
-        border-radius: 4px;
-        font-size: 12px;
-        color: #1a73e8;
-        margin-top: 8px;
-        text-align: center;
-      `;
-      document.getElementById('course-teachers-compact').parentNode.appendChild(statusElement);
+    if (statusElement) {
+      statusElement.remove();
     }
-    statusElement.textContent = message;
-    
-    // Auto-hide after 3 seconds
-    setTimeout(() => {
-      if (statusElement && !window.currentBatchFilter) {
-        statusElement.remove();
-      }
-    }, 3000);
+    // Don't create or show any status messages
   }
 
   function createLinksFromArray(linkArray) {
@@ -521,7 +502,14 @@
     const pageTitle = document.querySelector(".page-title");
     
     if (pageTitle) {
-      pageTitle.innerHTML = `<span class="course-code">${config.code}</span> ${config.title}`;
+      // Check if the title already contains the course code in parentheses
+      if (config.title.includes(`(${config.code})`)) {
+        // Title already has the course code, use as is
+        pageTitle.innerHTML = config.title;
+      } else {
+        // Add the course code in parentheses
+        pageTitle.innerHTML = `${config.title} (${config.code})`;
+      }
     }
 
     // Remove quick actions section entirely - it's no longer needed
@@ -536,15 +524,10 @@
     if (!container) return;
 
     container.innerHTML = `
-      <!-- Course Overview - Compact Forum Style -->
+      <!-- Course Teachers - Compact Forum Style -->
       <div class="google-card compact-overview" id="overview">
         <div class="compact-header">
-          <h2>📋 Course Overview</h2>
-          <div class="course-meta">
-            <span class="course-code-badge">${config.code}</span>
-            <span class="divider">•</span>
-            <span class="course-title">${config.title}</span>
-          </div>
+          <h2>👥 Course Teachers</h2>
         </div>
         <div class="course-info-compact">
           <div class="course-teachers-compact" id="course-teachers-compact">
