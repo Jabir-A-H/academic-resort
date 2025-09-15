@@ -16,7 +16,11 @@
         "1101": {
           "code": "1101",
           "title": "Introduction to Financial Accounting",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [
@@ -29,16 +33,17 @@
               "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
             ],
             "books_manuals": [],
-            "question_bank": [
-              "https://drive.google.com/drive/folders/1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
-              "https://drive.google.com/drive/folders/1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu"
-            ]
+            "question_bank": []
           }
         },
         "1102": {
           "code": "1102",
           "title": "Introduction to Business",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -47,17 +52,19 @@
               "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
             ],
             "books_manuals": [],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1103": {
           "code": "1103",
           "title": "Computer Concepts",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -66,39 +73,41 @@
               "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
             ],
             "books_manuals": [],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1104": {
           "code": "1104",
           "title": "Business Mathematics",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1105": {
           "code": "1105",
           "title": "Business Communication",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -108,7 +117,11 @@
         "1201": {
           "code": "1201",
           "title": "Intermediate Accounting",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [
@@ -122,17 +135,19 @@
             "books_manuals": [
               "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
             ],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1202": {
           "code": "1202",
           "title": "Microeconomics",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "https://docs.google.com/document/d/1example_doc_id/edit",
             "notes": [
@@ -144,15 +159,11 @@
             "books_manuals": [
               "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
             ],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj",
-              "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8"
-            ],
-            "question_papers": [
+              "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8",
               "https://docs.google.com/document/d/class_test_example",
-              "https://docs.google.com/document/d/midterm_example"
-            ],
-            "assignments": [
+              "https://docs.google.com/document/d/midterm_example",
               "https://drive.google.com/drive/folders/previous_questions_folder"
             ]
           }
@@ -177,11 +188,9 @@
             "books_manuals": [
               "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
             ],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1204": {
@@ -197,9 +206,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1205": {
@@ -215,9 +222,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -237,9 +242,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2102": {
@@ -255,9 +258,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2103": {
@@ -273,9 +274,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2104": {
@@ -291,9 +290,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2105": {
@@ -309,9 +306,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -331,9 +326,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2202": {
@@ -349,9 +342,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2203": {
@@ -367,9 +358,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2204": {
@@ -385,9 +374,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2205": {
@@ -403,9 +390,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -425,9 +410,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3102": {
@@ -443,9 +426,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3103": {
@@ -461,9 +442,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3104": {
@@ -479,9 +458,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3105": {
@@ -497,9 +474,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -519,9 +494,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3202": {
@@ -537,9 +510,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3203": {
@@ -555,9 +526,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3204": {
@@ -573,9 +542,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3205": {
@@ -591,9 +558,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -613,9 +578,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4102": {
@@ -631,9 +594,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4103": {
@@ -649,9 +610,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4104": {
@@ -667,9 +626,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4105": {
@@ -685,9 +642,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -707,9 +662,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4202": {
@@ -725,9 +678,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4203": {
@@ -743,9 +694,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4204": {
@@ -761,9 +710,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4205": {
@@ -779,9 +726,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -801,9 +746,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "6102": {
@@ -819,9 +762,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "6103": {
@@ -837,9 +778,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -859,9 +798,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "6202": {
@@ -877,9 +814,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
