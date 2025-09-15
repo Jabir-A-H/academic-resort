@@ -1,0 +1,242 @@
+{
+  "6th": {
+    "label": "6th Semester",
+    "batches": {
+      "28": {
+        "label": "28th Batch",
+        "folderId": "1cSYiB69iMz2czYOHZAlI7nzVniD4bmH9"
+      },
+      "27": {
+        "label": "27th Batch",
+        "folderId": "1V1bC-dZV6_NrHvA8q75TmfLIp-tXN-pj"
+      },
+      "26": {
+        "label": "26th Batch",
+        "folderId": "1U7chsBvKxAoiN_VRlAQC1mG5jggPYDvb"
+      },
+      "prior": {
+        "label": "Prior to 26th",
+        "folderId": "1SDMCnjAHNYDd0WXApaAQ9swaYw75U9Zl"
+      },
+      "syllabus": {
+        "label": "Syllabus",
+        "folderId": "1WkOJq5ep_6p3YZw3tENrH6wbAOWdWrjI"
+      }
+    }
+  },
+  "5th": {
+    "label": "5th Semester",
+    "batches": {
+      "28": {
+        "label": "28th Batch",
+        "folderId": "1xU30Tj4q6oXZWb17ubqszqwLVBi-a6N_"
+      },
+      "27": {
+        "label": "27th Batch",
+        "folderId": "1AjQxHD_A3HjKA0tKyBNb-A2p5ypf6hi6"
+      },
+      "26": {
+        "label": "26th Batch",
+        "folderId": "155q0US7eYWzDnHxMmtg3iFO9kXQZJIUJ"
+      },
+      "seniors": {
+        "label": "Materials from Seniors",
+        "folderId": "1dWMahU0ugtF9Em5sGZ0aywkuGY1noN81"
+      },
+      "personal": {
+        "label": "Personal Notes",
+        "folderId": "1S0SFn1__66OTcOu5GoLo8iC-GKFrihqE"
+      },
+      "solution": {
+        "label": "Solution Manuals",
+        "folderId": "10iW_oE4mGqIL9Ft3JtvGowJmNPgPasaJ"
+      }
+    }
+  },
+  "1st": {
+    "label": "1st Semester",
+    "batches": {
+      "30": {
+        "label": "30th Batch",
+        "folderId": "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat"
+      },
+      "29": {
+        "label": "29th Batch",
+        "folderId": "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
+      },
+      "28": {
+        "label": "28th Batch",
+        "folderId": "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
+      },
+      "27": {
+        "label": "27th Batch",
+        "folderId": "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu"
+      },
+      "26": {
+        "label": "26th Batch",
+        "folderId": "1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu"
+      }
+    }
+  },
+  "2nd": {
+    "label": "2nd Semester",
+    "batches": {
+      "30": {
+        "label": "30th Batch",
+        "folderId": "1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu"
+      },
+      "29": {
+        "label": "29th Batch",
+        "folderId": "1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8"
+      },
+      "28": {
+        "label": "28th Batch",
+        "folderId": "1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj"
+      },
+      "27": {
+        "label": "27th Batch",
+        "folderId": "17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_"
+      },
+      "books": {
+        "label": "Books & Slides",
+        "folderId": "1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
+      },
+      "math": {
+        "label": "Math II Notes",
+        "folderId": "10Xl4jThcLbNF_5Iq2-9-zL9gxZKF8tlx"
+      },
+      "personal": {
+        "label": "Personal Notes",
+        "folderId": "1GqE1mLi-ir3OCvBdMBgChCIpws8dTGI7"
+      },
+      "syllabus": {
+        "label": "Syllabus",
+        "folderId": "1WkOJq5ep_6p3YZw3tENrH6wbAOWdWrjI"
+      }
+    }
+  },
+  "3rd": {
+    "label": "3rd Semester",
+    "batches": {
+      "29": {
+        "label": "29th Batch",
+        "folderId": "1cD9UZpwr4F4u79N6iI4rJk_J6jVocnGX"
+      },
+      "28": {
+        "label": "28th Batch",
+        "folderId": "11X8KpIfn1Jkh8_sy96xNbg8a1Z8EWy-I"
+      },
+      "27": {
+        "label": "27th Batch",
+        "folderId": "1fZuFo3qsPUtaN53ZvKOrwgb-fVIr8B4N"
+      },
+      "26": {
+        "label": "26th Batch",
+        "folderId": "1-rpP6GshMYj7QoCRRSGWBmRsren-tfWZ"
+      },
+      "personal": {
+        "label": "Personal Notes",
+        "folderId": "15d1gjiKGXu_FixNjxdVVwyny4cFVAwMV"
+      },
+      "class26": {
+        "label": "26th Class Updates",
+        "folderId": "10MaWyjpRPbdrTfxxEWiXw2c3xor9gZnA"
+      }
+    }
+  },
+  "4th": {
+    "label": "4th Semester",
+    "batches": {
+      "29": {
+        "label": "29th Batch",
+        "folderId": "1G2KfcJhwNg2arCpn22pGnqYmTMNU83VZ"
+      },
+      "28": {
+        "label": "28th Batch",
+        "folderId": "1MiupaUP-RJQCyounSK2LA32BPlr2s_jo"
+      },
+      "27": {
+        "label": "27th Batch",
+        "folderId": "1GdxoRIoO8dnqZAf7PxWXDB3-pYpNep-Q"
+      },
+      "26": {
+        "label": "26th Batch",
+        "folderId": "13A4naTmdqQlJax8agk_CPoyzHD1dsZ8B"
+      },
+      "personal": {
+        "label": "Personal Notes",
+        "folderId": "1DBwDKIjWozsnq8CJyiRnANKwTcgmmzWp"
+      },
+      "solution": {
+        "label": "Solution Manuals",
+        "folderId": "1phHQxq37Qvke5KSmHIvMX_uuGqQHUM8u"
+      }
+    }
+  },
+  "7th": {
+    "label": "7th Semester",
+    "batches": {
+      "27": {
+        "label": "27th Batch",
+        "folderId": "1_cGrDFivmX1Bkw2iLnP_KKriNMBOfJGx"
+      },
+      "26": {
+        "label": "26th Class Updates",
+        "folderId": "1nWPYjT2HU6W8JBIyBV9Qpj5LVdDdsJ6I"
+      },
+      "books": {
+        "label": "Books & Course Files",
+        "folderId": "1CcclN8x_xjGXolCP0cFg-FfkHSg_b6b6"
+      },
+      "personal": {
+        "label": "Personal Notes",
+        "folderId": "1_VhhpUP71NeGNxBXFBFQsdpHrnOyUXcT"
+      },
+      "seniors": {
+        "label": "Materials from Seniors",
+        "folderId": "1LNyyBYeYuMLOaHmLnICivLDC29lBO3Ru"
+      },
+      "solution": {
+        "label": "Solution Manuals",
+        "folderId": "1ctFA9VJod6YmkuDy5t6MHgnE4UQZ1mI3"
+      },
+      "syllabus": {
+        "label": "Syllabus",
+        "folderId": "14OQvH90cP3W2mPGOuLPgdS0Wv5alSEIP"
+      }
+    }
+  },
+  "8th": {
+    "label": "8th Semester",
+    "batches": {
+      "27": {
+        "label": "27th Batch",
+        "folderId": "1dHSV2wI96GMIRyk_31fA2RaHbeAydGVo"
+      },
+      "26": {
+        "label": "26th Class Updates",
+        "folderId": "10nJhRpeqDOQ3ALWgmvyPp_OCRXgr_1EX"
+      },
+      "books": {
+        "label": "Books & Course Files",
+        "folderId": "1wJ0tr2F-pCtnzxtNxuMR7-eYvK2h0LkS"
+      },
+      "personal": {
+        "label": "Personal Notes",
+        "folderId": "1y0OVqiBSdYKwVRa2REztPozfMg-PFfkK"
+      },
+      "seniors": {
+        "label": "Materials from Seniors",
+        "folderId": "1ZTwgGlgpDwYgwbifq-m-42O_L_WN7kMP"
+      },
+      "solution": {
+        "label": "Solution Manuals",
+        "folderId": "15DjY7GTUvGpXxA1bogcH18mBRkBXKkgN"
+      },
+      "syllabus": {
+        "label": "Syllabus",
+        "folderId": "14OQvH90cP3W2mPGOuLPgdS0Wv5alSEIP"
+      }
+    }
+  }
+}

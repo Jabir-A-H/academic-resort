@@ -4,6 +4,16 @@
   "last_updated": "2025-09-14",
   "contact_person": "",
   "faculty_reference": {
+    "drive_folders": {
+      "1st_semester": "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
+      "2nd_semester": "1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj",
+      "3rd_semester": "11X8KpIfn1Jkh8_sy96xNbg8a1Z8EWy-I",
+      "4th_semester": "1MiupaUP-RJQCyounSK2LA32BPlr2s_jo",
+      "5th_semester": "1xU30Tj4q6oXZWb17ubqszqwLVBi-a6N_",
+      "6th_semester": "1cSYiB69iMz2czYOHZAlI7nzVniD4bmH9",
+      "7th_semester": "1_cGrDFivmX1Bkw2iLnP_KKriNMBOfJGx",
+      "8th_semester": "1dHSV2wI96GMIRyk_31fA2RaHbeAydGVo"
+    },
     "last_updated": "2025-09-04",
     "source": "Official DU Accounting & Information Systems Department Faculty List",
     "chairman": "Md. Maksudur Rahman Sarker",
@@ -33,13 +43,11 @@
   },
   "semesters": {
     "1st": {
-      "drive_folder": "1hbZPTPxzgyrwVzeUVCljT72E6Scsx303",
       "subjects": {
         "1101": {
           "code": "1101",
           "title": "Introduction to Financial Accounting",
-          "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
-          "teacher": "Dr. Riazur Rahman Chowdhury",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [
@@ -63,8 +71,7 @@
         "1102": {
           "code": "1102",
           "title": "Introduction to Business",
-          "description": "Fundamental business concepts, organizational structures, and basic business operations and management principles.",
-          "teacher": "Dr. Dhiman Kumar Chowdhury",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [],

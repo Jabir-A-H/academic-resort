@@ -27,8 +27,7 @@
         "1101": {
           "code": "1101",
           "title": "Introduction to Financial Accounting",
-          "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [
@@ -52,8 +51,7 @@
         "1102": {
           "code": "1102",
           "title": "Introduction to Business",
-          "description": "Fundamental business concepts, organizational structures, and basic business operations and management principles.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -72,8 +70,7 @@
         "1103": {
           "code": "1103",
           "title": "Computer Concepts",
-          "description": "Introduction to computer systems, software applications, and basic programming concepts for business students.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -92,8 +89,7 @@
         "1104": {
           "code": "1104",
           "title": "Business Mathematics",
-          "description": "Mathematical concepts and applications in business, including algebra, calculus, and statistical analysis for business decisions.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -107,8 +103,7 @@
         "1105": {
           "code": "1105",
           "title": "Business Communication",
-          "description": "Professional communication skills, business writing, presentation techniques, and effective communication strategies in business environments.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [],

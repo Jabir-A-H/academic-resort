@@ -9,15 +9,23 @@
     "chairman": "Md. Maksudur Rahman Sarker",
     "note": "Complete faculty list with contact details available in faculty-mapping.json"
   },
+  "drive_folders": {
+    "1st_semester": "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
+    "2nd_semester": "17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_",
+    "3rd_semester": "1fZuFo3qsPUtaN53ZvKOrwgb-fVIr8B4N",
+    "4th_semester": "1GdxoRIoO8dnqZAf7PxWXDB3-pYpNep-Q",
+    "5th_semester": "1AjQxHD_A3HjKA0tKyBNb-A2p5ypf6hi6",
+    "6th_semester": "1V1bC-dZV6_NrHvA8q75TmfLIp-tXN-pj",
+    "7th_semester": "1_cGrDFivmX1Bkw2iLnP_KKriNMBOfJGx",
+    "8th_semester": "1dHSV2wI96GMIRyk_31fA2RaHbeAydGVo"
+  },
   "semesters": {
     "1st": {
-      "drive_folder": "1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
       "subjects": {
         "1101": {
           "code": "1101",
           "title": "Introduction to Financial Accounting",
-          "description": "Foundation course covering basic accounting principles, financial statements preparation, and fundamental accounting procedures.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [
@@ -41,8 +49,7 @@
         "1102": {
           "code": "1102",
           "title": "Introduction to Business",
-          "description": "Fundamental business concepts, organizational structures, and basic business operations and management principles.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -61,8 +68,7 @@
         "1103": {
           "code": "1103",
           "title": "Computer Concepts",
-          "description": "Introduction to computer systems, software applications, and basic programming concepts for business students.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -81,8 +87,7 @@
         "1104": {
           "code": "1104",
           "title": "Business Mathematics",
-          "description": "Mathematical concepts and applications in business, including algebra, calculus, and statistical analysis for business decisions.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -96,8 +101,7 @@
         "1105": {
           "code": "1105",
           "title": "Business Communication",
-          "description": "Professional communication skills, business writing, presentation techniques, and effective communication strategies in business environments.",
-          "teacher": "",
+          "teachers": { "A": "", "B": "", "C": "" },
           "links": {
             "class_updates": "",
             "notes": [],
