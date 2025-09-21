@@ -10,7 +10,7 @@
 
 // Array of Google Drive API keys - add your additional keys here
 const DRIVE_API_KEYS = [
-  "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0", // Primary API key
+  "AIzaSyDb3zn-YDS42TONfEMI4FPlbBR8BTfDprw", // Primary API key
   "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0", // Second API key (add your actual second key here)
   // Add additional API keys here as needed:
   // "AIzaSy...", // Third API key
