@@ -7,6 +7,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
+    <script src="../assets/api-keys.js"></script>
     <script src="../assets/batch-loader.js"></script>
     <script src="../assets/script.js" defer></script>
   </head>
@@ -223,7 +224,8 @@
       let batches = {};
 
       // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
-      const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
+      // API keys are now loaded from api-keys.js for centralized management
+      // Use getNextApiKey() to get API keys with automatic rotation
 
       // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
 
@@ -440,7 +442,7 @@
           console.log(`Fetching batch ${batchNumber} from API...`);
 
           // Fetch from Google Drive API
-          const apiUrl = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink,size,modifiedTime)&pageSize=1000`;
+          const apiUrl = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${getNextApiKey()}&fields=files(id,name,mimeType,webViewLink,size,modifiedTime)&pageSize=1000`;
 
           const response = await fetch(apiUrl);
 

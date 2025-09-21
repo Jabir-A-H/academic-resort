@@ -13,6 +13,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./assets/styles.css" />
+    <script src="./assets/api-keys.js"></script>
     <script src="./assets/batch-loader.js"></script>
     <script src="./assets/script.js" defer></script>
     <style>
@@ -992,8 +993,8 @@
         }
       }
 
-      // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
-      const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
+      // API keys are now loaded from assets/api-keys.js for centralized management
+      // Use getNextApiKey() to get API keys with automatic rotation
       let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
       let allFiles = []; // Store all loaded files for searching
       let isLoading = false;
@@ -1596,8 +1597,13 @@
         }
 
         // Search folders in parallel batches
-        const PARALLEL_BATCH_SIZE = 40; // Optimized for better performance
+        // Dynamically adjust batch size based on number of available API keys
+        const API_KEY_COUNT = getApiKeyCount();
+        const BASE_BATCH_SIZE = 40; // Base batch size per API key
+        const PARALLEL_BATCH_SIZE = BASE_BATCH_SIZE * API_KEY_COUNT; // Scale with API keys
         const MAX_SEARCH_DEPTH = 6; // Optimized depth for balance between completeness and speed
+        
+        console.log(`Search configuration: ${API_KEY_COUNT} API keys, batch size: ${PARALLEL_BATCH_SIZE}`);
 
         // Clear results container at start
         const container = document.getElementById("all-resources");
@@ -1850,7 +1856,8 @@
         }
 
         try {
-          const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
+          const apiKey = getNextApiKey(); // Get next API key with rotation
+          const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${apiKey}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
 
           const data = await apiLimiter.makeRequest(url);
 

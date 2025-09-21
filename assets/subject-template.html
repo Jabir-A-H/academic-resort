@@ -1,4 +1,5 @@
 <!-- Subject Page Template -->
+<script src="../assets/api-keys.js"></script>
 <script src="../assets/batch-loader.js"></script>
 <script>
   // Global subject page functions
@@ -108,8 +109,8 @@
     }
   }
 
-  // Drive API key for folder content loading
-  const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
+  // API keys are now loaded from api-keys.js for centralized management
+  // Use getNextApiKey() to get API keys with automatic rotation
 
   // Load and display drive folder contents for the course
   async function loadCourseDriveFolders(courseCode) {
@@ -225,8 +226,9 @@
   
   async function loadFolderContents(folderId, container) {
     try {
+      const apiKey = getNextApiKey(); // Get next API key with rotation
       const response = await fetch(
-        `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
+        `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,webViewLink)`
       );
       
       if (!response.ok) {
