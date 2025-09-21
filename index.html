@@ -1603,11 +1603,12 @@
         const container = document.getElementById("all-resources");
         container.innerHTML = '<div class="live-results">Searching...</div>';
 
-        let totalFolders = 0;
-        let completedFolders = 0;
+        let totalRootFolders = 0;
+        let completedRootFolders = 0;
+        let totalFoldersSearched = 0; // Track actual folders searched including subfolders
 
-        // Count total folders
-        smartBatches.forEach((batch) => (totalFolders += batch.length));
+        // Count total root folders
+        smartBatches.forEach((batch) => (totalRootFolders += batch.length));
 
         // Process each round-robin batch
         for (const roundRobinBatch of smartBatches) {
@@ -1649,16 +1650,16 @@
               results.push(...folderResults);
             }
 
-            completedFolders += batch.length;
+            completedRootFolders += batch.length;
             const limiterStats = apiLimiter.getStats();
 
             // Update results display in real-time after each batch
             const currentResults = removeDuplicatesOptimized(results);
             if (currentResults.length > 0) {
               displayResults(currentResults);
-              statsElement.innerHTML = `Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+              statsElement.innerHTML = `Searched ${completedRootFolders}/${totalRootFolders} drive folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
             } else {
-              statsElement.textContent = `Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
+              statsElement.textContent = `Searched ${completedRootFolders}/${totalRootFolders} drive folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
             }
 
             // Early termination if we have many results
@@ -1684,7 +1685,7 @@
         saveResolvedFolderCache();
 
         // Final update
-        statsElement.innerHTML = `Search complete <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
+        statsElement.innerHTML = `Search complete: explored ${totalRootFolders} drive folders and subfolders <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
 
         return flatResults;
       }

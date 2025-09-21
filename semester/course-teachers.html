@@ -52,6 +52,9 @@
               <label for="batchSelect">Batch:</label>
               <select id="batchSelect" class="filter-dropdown">
                 <option value="all">All Batches</option>
+                <option value="31">31st Batch</option>
+                <option value="30">30th Batch</option>
+                <option value="29">29th Batch</option>
                 <option value="28">28th Batch</option>
                 <option value="27">27th Batch</option>
                 <option value="26">26th Batch</option>
@@ -725,6 +728,8 @@
       </section>
     </main>
 
+    <!-- Load batch data loader -->
+    <script src="../assets/batch-loader.js"></script>
     <script>
       // Enhanced Teachers Page Script
       let allBatches = [];
@@ -886,6 +891,9 @@
 
       // Batch order (latest first)
       const batchOrder = [
+        "31st Batch",
+        "30th Batch",
+        "29th Batch",
         "28th Batch",
         "27th Batch",
         "26th Batch",
@@ -893,80 +901,74 @@
         "24th Batch",
       ];
 
-      // Parse the hidden archive into structured data
-      function parseArchive(archiveElement) {
+      // Parse teacher data from batch JSON files instead of hardcoded archive
+      async function loadTeacherDataFromBatches() {
+        const teacherData = await getAllTeacherData();
         const batches = [];
-        let currentBatch = null;
-        let currentSemester = null;
-        let currentCourse = null;
-
-        const elements = Array.from(archiveElement.children);
-
-        for (const element of elements) {
-          if (element.tagName === "H3") {
-            // New batch
-            currentBatch = {
-              name: element.textContent.trim(),
-              semesters: [],
+        
+        // Convert teacher data to the format expected by the existing UI
+        for (const [batchNumber, batchInfo] of Object.entries(teacherData)) {
+          const batch = {
+            name: batchInfo.batchName,
+            semesters: []
+          };
+          
+          for (const [semesterKey, semesterInfo] of Object.entries(batchInfo.semesters)) {
+            const semester = {
+              name: semesterInfo.semesterName,
+              courses: []
             };
-            batches.push(currentBatch);
-          } else if (element.tagName === "H4" && currentBatch) {
-            // New semester
-            currentSemester = {
-              name: element.textContent.trim(),
-              courses: [],
-            };
-            currentBatch.semesters.push(currentSemester);
-          } else if (element.tagName === "H5" && currentSemester) {
-            // New course
-            const courseText = element.textContent.trim();
-            const match = courseText.match(/^(.+?)\s*\((\d+)\)$/);
-            currentCourse = {
-              name: match ? match[1].trim() : courseText,
-              code: match ? match[2] : "",
-              teachers: [],
-            };
-            currentSemester.courses.push(currentCourse);
-          } else if (element.tagName === "UL" && currentCourse) {
-            // Teachers list
-            const teachers = Array.from(element.children).map((li) =>
-              li.textContent.trim()
-            );
-            currentCourse.teachers = teachers;
+            
+            for (const [courseCode, courseInfo] of Object.entries(semesterInfo.courses)) {
+              const teachers = [];
+              if (courseInfo.teachers.A) teachers.push(courseInfo.teachers.A);
+              if (courseInfo.teachers.B) teachers.push(courseInfo.teachers.B);
+              if (courseInfo.teachers.C) teachers.push(courseInfo.teachers.C);
+              
+              const course = {
+                name: courseInfo.title,
+                code: courseCode,
+                teachers: teachers.filter(t => t && t.trim() !== '') // Remove empty teachers
+              };
+              
+              semester.courses.push(course);
+              
+              // Build teacher index
+              course.teachers.forEach((teacher) => {
+                if (!allTeachers.has(teacher)) {
+                  allTeachers.set(teacher, {
+                    courses: new Set(),
+                    batches: new Set(),
+                    semesters: new Set(),
+                  });
+                }
+                const teacherData = allTeachers.get(teacher);
+                teacherData.courses.add(`${course.name} (${course.code})`);
+                teacherData.batches.add(batch.name);
+                teacherData.semesters.add(semester.name);
+              });
 
-            // Build teacher index
-            teachers.forEach((teacher) => {
-              if (!allTeachers.has(teacher)) {
-                allTeachers.set(teacher, {
-                  courses: new Set(),
+              // Build course index
+              const courseKey = `${course.name} (${course.code})`;
+              if (!allCourses.has(courseKey)) {
+                allCourses.set(courseKey, {
                   batches: new Set(),
+                  teachers: new Set(),
                   semesters: new Set(),
                 });
               }
-              const teacherData = allTeachers.get(teacher);
-              teacherData.courses.add(
-                `${currentCourse.name} (${currentCourse.code})`
-              );
-              teacherData.batches.add(currentBatch.name);
-              teacherData.semesters.add(currentSemester.name);
-            });
-
-            // Build course index
-            const courseKey = `${currentCourse.name} (${currentCourse.code})`;
-            if (!allCourses.has(courseKey)) {
-              allCourses.set(courseKey, {
-                batches: new Set(),
-                teachers: new Set(),
-                semesters: new Set(),
-              });
+              const courseData = allCourses.get(courseKey);
+              courseData.batches.add(batch.name);
+              courseData.semesters.add(semester.name);
+              course.teachers.forEach((teacher) => courseData.teachers.add(teacher));
             }
-            const courseData = allCourses.get(courseKey);
-            courseData.batches.add(currentBatch.name);
-            courseData.semesters.add(currentSemester.name);
-            teachers.forEach((teacher) => courseData.teachers.add(teacher));
+            
+            batch.semesters.push(semester);
           }
+          
+          batches.push(batch);
         }
-
+        
         return batches;
       }
 
@@ -1613,49 +1615,52 @@
 
       // Initialize page
       document.addEventListener("DOMContentLoaded", async () => {
-        const raw = document.querySelector("#raw-archive .archive");
-        if (!raw) {
-          console.warn("Raw archive element not found");
-          return;
+        try {
+          // Load faculty data first
+          await loadFacultyData();
+
+          // Load teacher data from batch JSON files instead of hardcoded archive
+          allBatches = await loadTeacherDataFromBatches();
+
+          // Populate dropdowns
+          populateDropdowns();
+
+          // Initial render
+          renderBatchView(allBatches, document.getElementById("view-batch"));
+
+          // Add event listeners
+          document
+            .getElementById("batchSelect")
+            .addEventListener("change", handleFilterChange);
+          document
+            .getElementById("semesterSelect")
+            .addEventListener("change", handleFilterChange);
+          document
+            .getElementById("viewSelect")
+            .addEventListener("change", handleFilterChange);
+          document
+            .getElementById("teacherSelect")
+            .addEventListener("change", handleFilterChange);
+          document
+            .getElementById("courseSelect")
+            .addEventListener("change", handleFilterChange);
+          document
+            .getElementById("resetFiltersBtn")
+            .addEventListener("click", resetFilters);
+
+          // Set initial reset button state
+          updateResetButtonVisibility();
+
+          // Check for URL parameters for automatic filtering
+          checkUrlParameters();
+        } catch (error) {
+          console.error("Error initializing teachers page:", error);
+          // Fallback to show an error message
+          const viewBatch = document.getElementById("view-batch");
+          if (viewBatch) {
+            viewBatch.innerHTML = '<div class="error-message">Error loading teacher data. Please refresh the page.</div>';
+          }
         }
-
-        // Load faculty data first
-        await loadFacultyData();
-
-        // Parse data
-        allBatches = parseArchive(raw);
-
-        // Populate dropdowns
-        populateDropdowns();
-
-        // Initial render
-        renderBatchView(allBatches, document.getElementById("view-batch"));
-
-        // Add event listeners
-        document
-          .getElementById("batchSelect")
-          .addEventListener("change", handleFilterChange);
-        document
-          .getElementById("semesterSelect")
-          .addEventListener("change", handleFilterChange);
-        document
-          .getElementById("viewSelect")
-          .addEventListener("change", handleFilterChange);
-        document
-          .getElementById("teacherSelect")
-          .addEventListener("change", handleFilterChange);
-        document
-          .getElementById("courseSelect")
-          .addEventListener("change", handleFilterChange);
-        document
-          .getElementById("resetFiltersBtn")
-          .addEventListener("click", resetFilters);
-
-        // Set initial reset button state
-        updateResetButtonVisibility();
-
-        // Check for URL parameters for automatic filtering
-        checkUrlParameters();
       });
 
       // Check URL parameters for automatic course filtering

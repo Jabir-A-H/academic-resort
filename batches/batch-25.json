@@ -17,8 +17,8 @@
           "code": "1101",
           "title": "Introduction to Financial Accounting",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr Mohammed Mehadi Masud Mazumder",
+            "B": "Al-Amin",
             "C": ""
           },
           "links": {
@@ -43,8 +43,8 @@
           "code": "1102",
           "title": "Introduction to Business",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Mahadi Hasan",
+            "B": "Tanzina Haque",
             "C": ""
           },
           "links": {
@@ -64,8 +64,8 @@
           "code": "1103",
           "title": "Computer Concepts",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Tahmina Ahmed",
+            "B": "Dr. Dewan Mahboob Hossain",
             "C": ""
           },
           "links": {
@@ -85,8 +85,8 @@
           "code": "1104",
           "title": "Business Mathematics",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Abdul Hakim",
+            "B": "Md. Mazharul Anwar",
             "C": ""
           },
           "links": {
@@ -101,8 +101,8 @@
           "code": "1105",
           "title": "Business Communication",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Ms. Hasina Begum",
+            "B": "Ahmed Rizvan Hasan",
             "C": ""
           },
           "links": {
@@ -121,8 +121,8 @@
           "code": "1201",
           "title": "Intermediate Accounting",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Al-Amin",
+            "B": "Shah Alam",
             "C": ""
           },
           "links": {
@@ -147,8 +147,8 @@
           "code": "1202",
           "title": "Microeconomics",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Minhaj Ferdous",
+            "B": "Md. Mahadi Hasan",
             "C": ""
           },
           "links": {
@@ -175,8 +175,8 @@
           "code": "1203",
           "title": "Management & Organizational Behavior",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Ms. Hasina Begum",
+            "B": "Ahmed Rizvan Hasan",
             "C": ""
           },
           "links": {
@@ -200,8 +200,8 @@
           "code": "1204",
           "title": "Mathematics for Business Decisions-II",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Abdul Hakim",
+            "B": "Md. Mazharul Anwar",
             "C": ""
           },
           "links": {
@@ -216,8 +216,8 @@
           "code": "1205",
           "title": "Bangladesh Studies",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Mohammed Almujaddade Alfasane",
+            "B": "Rumana Ahmed",
             "C": ""
           },
           "links": {
@@ -236,8 +236,8 @@
           "code": "2101",
           "title": "Advanced Financial Accounting-I",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Md. Jamil Sharif, ACMA",
+            "B": "Dr. Ranjan Kumar Mitra",
             "C": ""
           },
           "links": {
@@ -252,8 +252,8 @@
           "code": "2102",
           "title": "Macroeconomics",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Shah Alam",
+            "B": "Mohammad Saif Uddin Bhuiyah",
             "C": ""
           },
           "links": {
@@ -268,8 +268,8 @@
           "code": "2103",
           "title": "Programming and Database Management",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Kawsar Jahan",
+            "B": "Sir Jagadish",
             "C": ""
           },
           "links": {
@@ -284,8 +284,8 @@
           "code": "2104",
           "title": "General Science & Environment",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Tahmina Khatun",
+            "B": "Hasina Begum",
             "C": ""
           },
           "links": {
@@ -300,8 +300,8 @@
           "code": "2105",
           "title": "Business Statistics-I",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Ms. Sadia Afroze",
+            "B": "Mohammad Saif Uddin Bhuiyah",
             "C": ""
           },
           "links": {
@@ -320,8 +320,8 @@
           "code": "2201",
           "title": "Advanced Financial Accounting-II",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Mamtaz Uddin Ahmed",
+            "B": "Dr. Md. Mushfiqur Rahman",
             "C": ""
           },
           "links": {
@@ -336,8 +336,8 @@
           "code": "2202",
           "title": "Financial Management",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Minhaj Ferdous",
+            "B": "Ahmed Rizvan Hasan",
             "C": ""
           },
           "links": {
@@ -352,8 +352,8 @@
           "code": "2203",
           "title": "Cost Accounting",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Mazharul Anwar",
+            "B": "Kawsar Jahan",
             "C": ""
           },
           "links": {
@@ -368,8 +368,8 @@
           "code": "2204",
           "title": "Marketing",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Rezaul Karim",
+            "B": "Dr. Tahmina Khatun",
             "C": ""
           },
           "links": {
@@ -384,8 +384,8 @@
           "code": "2205",
           "title": "Business Statistics-II",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Shah Alam",
+            "B": "Md. Ahasan Uddin",
             "C": ""
           },
           "links": {
@@ -404,8 +404,8 @@
           "code": "3101",
           "title": "Management Accounting",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Md. Musfiqur Rahman",
+            "B": "Shah Alam",
             "C": ""
           },
           "links": {
@@ -420,8 +420,8 @@
           "code": "3102",
           "title": "Banking and Insurance",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Bilkis Akhter",
+            "B": "Mohammad Saif Uddin Bhuiyah",
             "C": ""
           },
           "links": {
@@ -436,8 +436,8 @@
           "code": "3103",
           "title": "Audit and Assurance",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Md. Jamil Sharif, ACMA",
+            "B": "Md. Rezaul Karim",
             "C": ""
           },
           "links": {
@@ -452,8 +452,8 @@
           "code": "3104",
           "title": "Income Tax: Laws and Practice",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Ahmed Rizvan Hasan",
+            "B": "Md. Mahadi Hasan",
             "C": ""
           },
           "links": {
@@ -468,8 +468,8 @@
           "code": "3105",
           "title": "Business Laws",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Ahasan Uddin",
+            "B": "Hasina Begum",
             "C": ""
           },
           "links": {
@@ -488,8 +488,8 @@
           "code": "3201",
           "title": "Forensic Accounting and Fraud Investigation",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Mamtaz Uddin Ahmed",
+            "B": "Tanzina Haque",
             "C": ""
           },
           "links": {
@@ -504,8 +504,8 @@
           "code": "3202",
           "title": "Corporate Finance",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Ranjan Kumar Mitra",
+            "B": "Md. Nazim Uddin Bhuiyan",
             "C": ""
           },
           "links": {
@@ -520,8 +520,8 @@
           "code": "3203",
           "title": "Accounting Information Systems",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Md. Jamil Sharif, ACMA",
+            "B": "Md. Rezaul Karim",
             "C": ""
           },
           "links": {
@@ -536,8 +536,8 @@
           "code": "3204",
           "title": "VAT and Cross-border Taxation",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Riazur Rahman Chowdhury",
+            "B": "Ms. Sadia Afroze",
             "C": ""
           },
           "links": {
@@ -552,8 +552,8 @@
           "code": "3205",
           "title": "Corporate Laws, Governance and Secretarial Practices",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Dhiman Kumar Chowdhury",
+            "B": "Dr. Mohammad Tareq",
             "C": ""
           },
           "links": {
