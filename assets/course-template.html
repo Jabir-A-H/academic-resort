@@ -1,0 +1,474 @@
+<!-- Course Page Template -->
+<script src="../assets/api-keys.js"></script>
+<script src="../assets/batch-loader.js"></script>
+<script>
+  // Course page configuration that will be set by each page
+  window.subjectConfig = window.subjectConfig || {};
+
+  function initializeCoursePage() {
+    try {
+      const config = window.subjectConfig;
+      if (!config) {
+        console.error("Course configuration not found");
+        return;
+      }
+
+      // Create batches container like 1st semester page
+      createBatchesContainer(config);
+
+      console.log("Course page initialized successfully for:", config.title);
+    } catch (error) {
+      console.error("Error initializing course page:", error);
+    }
+  }
+
+  async function createBatchesContainer(config) {
+    const container = document.querySelector(".subject-content");
+    if (!container) return;
+
+    // Create batches container similar to 1st semester page
+    container.innerHTML = `
+      <div id="batches-container">
+        <!-- Batch sections will be populated here -->
+      </div>
+    `;
+
+    // Load batch data and create sections
+    await loadCourseBatches(config.code);
+  }
+
+  async function loadCourseBatches(courseCode) {
+    try {
+      // Load all batch data
+      await loadAllBatchData();
+      
+      const batchesContainer = document.getElementById('batches-container');
+      if (!batchesContainer) return;
+
+      // Get all available batches for this course
+      const courseBatches = new Map();
+      
+      // Search through all batches for this course
+      for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
+        if (batchData.semesters) {
+          for (const [semesterKey, semesterData] of Object.entries(batchData.semesters)) {
+            if (semesterData.subjects && semesterData.subjects[courseCode]) {
+              const subjectInfo = semesterData.subjects[courseCode];
+              courseBatches.set(batchNumber, {
+                batchData: batchData,
+                semesterKey: semesterKey,
+                subjectInfo: subjectInfo
+              });
+            }
+          }
+        }
+      }
+
+      if (courseBatches.size === 0) {
+        batchesContainer.innerHTML = `
+          <div class="no-data-message">
+            <p>No batch data available for this course yet.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort batches in descending order (newest first)
+      const sortedBatches = Array.from(courseBatches.entries()).sort((a, b) => parseInt(b[0]) - parseInt(a[0]));
+
+      // Create batch sections
+      sortedBatches.forEach(([batchNumber, batchInfo]) => {
+        createBatchSection(batchNumber, batchInfo, batchesContainer);
+      });
+
+    } catch (error) {
+      console.error("Error loading course batches:", error);
+      const batchesContainer = document.getElementById('batches-container');
+      if (batchesContainer) {
+        batchesContainer.innerHTML = `
+          <div class="error-message">
+            <p>Error loading batch data. Please try again later.</p>
+          </div>
+        `;
+      }
+    }
+  }
+
+  function createBatchSection(batchNumber, batchInfo, container) {
+    const { batchData, semesterKey, subjectInfo } = batchInfo;
+    const batchName = batchData.batch_name || `${batchNumber}th Batch`;
+
+    const section = document.createElement('section');
+    section.className = 'drive-batch-container';
+    section.id = `batch-${batchNumber}`;
+
+    section.innerHTML = `
+      <div class="card drive-embed-card">
+        <div class="batch-header">
+          <h2>${batchName}</h2>
+        </div>
+        <div class="drive-list-wrapper">
+          <div class="course-links-list" id="course-links-${batchNumber}">
+            ${createCourseLinks(subjectInfo, batchNumber)}
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(section);
+  }
+
+  function createCourseLinks(subjectInfo, batchNumber) {
+    if (!subjectInfo || !subjectInfo.links) {
+      return '<div class="no-links">No course materials available for this batch.</div>';
+    }
+
+    const links = subjectInfo.links;
+    let html = '';
+
+    // Class Updates
+    if (links.class_updates && links.class_updates.trim()) {
+      html += createLinkSection('Class Updates', [links.class_updates], batchNumber, 'class-updates');
+    }
+
+    // Notes
+    if (links.notes && links.notes.length > 0) {
+      html += createLinkSection('Personal Notes', links.notes, batchNumber, 'notes');
+    }
+
+    // Slides & Lectures
+    if (links.slides_lectures && links.slides_lectures.length > 0) {
+      html += createLinkSection('Slides & Lectures', links.slides_lectures, batchNumber, 'slides');
+    }
+
+    // Books & Manuals
+    if (links.books_manuals && links.books_manuals.length > 0) {
+      html += createLinkSection('Books & Manuals', links.books_manuals, batchNumber, 'books');
+    }
+
+    // Question Papers
+    if (links.question_papers && links.question_papers.length > 0) {
+      html += createLinkSection('Question Papers', links.question_papers, batchNumber, 'questions');
+    }
+
+    // Question Bank
+    if (links.question_bank && links.question_bank.length > 0) {
+      html += createLinkSection('Question Bank', links.question_bank, batchNumber, 'question-bank');
+    }
+
+    // Assignments
+    if (links.assignments && links.assignments.length > 0) {
+      html += createLinkSection('Assignments', links.assignments, batchNumber, 'assignments');
+    }
+
+    // Previous Materials
+    if (links.previous_materials && links.previous_materials.length > 0) {
+      html += createLinkSection('Previous Materials', links.previous_materials, batchNumber, 'previous');
+    }
+
+    return html || '<div class="no-links">No course materials available for this batch.</div>';
+  }
+
+  function createLinkSection(title, links, batchNumber, sectionType) {
+    const sectionId = `${sectionType}-${batchNumber}`;
+    
+    let linksHtml = '';
+    links.forEach((link, index) => {
+      if (link && link.trim()) {
+        const folderId = extractFolderId(link);
+        if (folderId) {
+          const linkTitle = links.length > 1 ? `${title} ${index + 1}` : title;
+          linksHtml += `
+            <div class="folder-item">
+              <a href="${link}" target="_blank" class="folder-link">
+                📁 ${linkTitle}
+              </a>
+              <div class="folder-actions">
+                <button class="expand-btn" onclick="toggleFolderExpansion('${folderId}', this)" title="Expand folder contents">
+                  ▼
+                </button>
+              </div>
+            </div>
+            <ul class="subfolder-list" id="subfolder-${folderId}" style="display: none;"></ul>
+          `;
+        } else {
+          // Direct link (not a folder)
+          linksHtml += `
+            <div class="file-item">
+              <a href="${link}" target="_blank" class="file-link">
+                📄 ${title}
+              </a>
+            </div>
+          `;
+        }
+      }
+    });
+
+    return `
+      <div class="link-section">
+        <h4 class="section-title">${title}</h4>
+        <div class="links-list">
+          ${linksHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  // Extract Google Drive folder ID from URL
+  function extractFolderId(driveUrl) {
+    if (!driveUrl || typeof driveUrl !== 'string') return null;
+    
+    const match = driveUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  }
+
+  // Toggle folder expansion with API loading (similar to 1st semester page)
+  async function toggleFolderExpansion(folderId, button) {
+    const subfolderList = document.getElementById(`subfolder-${folderId}`);
+
+    if (subfolderList.style.display === "none") {
+      // Expand folder
+      button.innerHTML = "▲";
+      button.title = "Collapse folder contents";
+      subfolderList.style.display = "block";
+
+      // Load folder contents if not already loaded
+      if (subfolderList.children.length === 0) {
+        subfolderList.innerHTML = '<li class="loading">Loading...</li>';
+
+        try {
+          const response = await fetch(
+            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)`
+          );
+
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+          }
+
+          const data = await response.json();
+          renderSubfolderFiles(data.files, subfolderList);
+        } catch (error) {
+          subfolderList.innerHTML = `<li class="error">Error loading: ${error.message}</li>`;
+        }
+      }
+    } else {
+      // Collapse folder
+      button.innerHTML = "▼";
+      button.title = "Expand folder contents";
+      subfolderList.style.display = "none";
+    }
+  }
+
+  // Helper function to render subfolder files (same as 1st semester page)
+  function renderSubfolderFiles(files, subfolderList) {
+    subfolderList.innerHTML = "";
+
+    if (files && files.length > 0) {
+      // Sort files alphabetically by name
+      files.sort((a, b) => a.name.localeCompare(b.name));
+
+      files.forEach((file) => {
+        const li = document.createElement("li");
+        li.className = "subfolder-item";
+
+        if (file.mimeType === "application/vnd.google-apps.folder") {
+          // Nested folder with its own dropdown
+          li.innerHTML = `
+            <div class="folder-item">
+              <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="folder-link">
+                📁 ${file.name}
+              </a>
+              <div class="folder-actions">
+                <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
+                  ▼
+                </button>
+              </div>
+            </div>
+            <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
+          `;
+        } else {
+          li.innerHTML = `
+            <a href="${
+              file.webViewLink ||
+              `https://drive.google.com/file/d/${file.id}/view`
+            }" target="_blank">
+              📄 ${file.name}
+            </a>
+          `;
+        }
+
+        subfolderList.appendChild(li);
+      });
+    } else {
+      subfolderList.innerHTML = '<li class="empty">No files found</li>';
+    }
+  }
+
+  // Make functions available globally
+  window.toggleFolderExpansion = toggleFolderExpansion;
+
+  // Auto-initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeCoursePage);
+  } else {
+    // DOM already loaded
+    setTimeout(initializeCoursePage, 100);
+  }
+</script>
+
+<style>
+  /* Course page specific styles - similar to 1st semester page */
+  #batches-container {
+    margin-top: 2rem;
+  }
+
+  .drive-batch-container {
+    margin-bottom: 2rem;
+  }
+
+  .batch-header {
+    background: #f8f9fa;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .batch-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .course-links-list {
+    padding: 1.5rem;
+  }
+
+  .link-section {
+    margin-bottom: 2rem;
+  }
+
+  .link-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .links-list {
+    margin-left: 1rem;
+  }
+
+  .folder-item, .file-item {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .folder-link, .file-link {
+    text-decoration: none;
+    color: #2196f3;
+    font-weight: 500;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    flex-grow: 1;
+  }
+
+  .folder-link:hover, .file-link:hover {
+    background-color: #f8f9fa;
+    text-decoration: none;
+  }
+
+  .folder-actions {
+    margin-left: 0.5rem;
+  }
+
+  .expand-btn {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .expand-btn:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+  }
+
+  .subfolder-list {
+    list-style: none;
+    margin: 0.5rem 0 0 2rem;
+    padding: 0;
+    border-left: 2px solid #e9ecef;
+    padding-left: 1rem;
+  }
+
+  .subfolder-item {
+    margin: 0.25rem 0;
+  }
+
+  .subfolder-item a {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .subfolder-item a:hover {
+    color: #2196f3;
+  }
+
+  .loading, .error, .empty {
+    color: #6c757d;
+    font-style: italic;
+    padding: 0.5rem;
+  }
+
+  .error {
+    color: #dc3545;
+  }
+
+  .no-links, .no-data-message, .error-message {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    font-style: italic;
+  }
+
+  .no-data-message, .error-message {
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .batch-header {
+      padding: 1rem;
+    }
+
+    .course-links-list {
+      padding: 1rem;
+    }
+
+    .links-list {
+      margin-left: 0.5rem;
+    }
+
+    .subfolder-list {
+      margin-left: 1rem;
+    }
+  }
+</style>
