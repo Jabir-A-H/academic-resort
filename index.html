@@ -13,6 +13,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./assets/styles.css" />
+    <script src="./assets/api-keys.js"></script>
     <script src="./assets/batch-loader.js"></script>
     <script src="./assets/script.js" defer></script>
     <style>
@@ -188,29 +189,315 @@
         margin-right: auto;
       }
 
-      /* Individual filter rows */
-      .filter-row {
-        display: flex;
-        gap: 12px;
-        align-items: center;
+      /* Checkbox Filter Container */
+      .checkbox-filter-container {
         width: 100%;
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: white;
+        position: relative;
+        z-index: 10; /* Added z-index to ensure dropdown appears above other elements */
+      }
+
+      .filter-header {
+        padding: 12px 16px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f9fafb;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+        user-select: none;
+      }
+
+      .filter-header:hover {
+        background: #f3f4f6;
+      }
+
+      .filter-label {
+        font-weight: 500;
+        color: #374151;
+        font-size: 14px;
+      }
+
+      .selected-count {
+        font-size: 12px;
+        color: #6b7280;
+        background: #e5e7eb;
+        padding: 2px 8px;
+        border-radius: 12px;
+      }
+
+      .dropdown-arrow {
+        font-size: 12px;
+        color: #6b7280;
+        transition: transform 0.2s ease;
+      }
+
+      .filter-header.open .dropdown-arrow {
+        transform: rotate(180deg);
+      }
+
+      .filter-dropdown-content {
         max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        border-top: 1px solid #e5e7eb;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        border: 1px solid #e1e5e9;
+      }
+
+      .filter-dropdown-content.show {
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .checkbox-list {
+        padding: 8px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        user-select: none;
+        min-height: 44px; /* Better touch target for mobile */
+        border-bottom: 1px solid #f3f4f6;
+      }
+
+      .checkbox-item:hover {
+        background: #f3f4f6;
+      }
+
+      .checkbox-item:last-child {
+        border-bottom: none;
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        margin-right: 12px;
+        transform: scale(1.2); /* Larger for easier clicking */
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+        accent-color: #2563eb;
+      }
+
+      .checkbox-item label {
+        cursor: pointer;
+        flex-grow: 1;
+        font-size: 14px;
+        color: #374151;
+        line-height: 1.4;
+        margin: 0; /* Remove default margins */
+      }
+
+      .checkbox-item.all-option {
+        border-bottom: 2px solid #e5e7eb;
+        margin-bottom: 4px;
+        font-weight: 500;
+        background: #f8fafc;
+      }
+
+      /* Retro Loading Animation (Simple XP-style bar) */
+      .retro-loading-container {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+        border: 2px solid #4a90e2;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+
+      .retro-loading-container.active {
+        display: flex;
+      }
+
+      .simple-loading-bar {
+        width: 300px;
+        height: 20px;
+        background: #f0f0f0;
+        border: 2px inset #d0d0d0;
+        border-radius: 2px;
+        padding: 2px;
+        margin-bottom: 10px;
         overflow: hidden;
       }
 
-      .filter-row.show {
-        opacity: 1;
-        transform: translateY(0);
-        max-height: 60px;
+      .loading-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4a90e2, #67b3f0, #4a90e2);
+        background-size: 60px 100%;
+        animation: loadingBarFlow 1.5s linear infinite;
+        border-radius: 1px;
+        width: 100%;
       }
 
-      .filter-row:first-child {
-        opacity: 1;
-        transform: translateY(0);
-        max-height: 60px;
+      @keyframes loadingBarFlow {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+
+      .retro-loading-text {
+        color: #2c5aa0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 5px;
+      }
+
+      .retro-status-text {
+        color: #555;
+        font-size: 12px;
+        text-align: center;
+        font-family: 'Courier New', monospace;
+      }
+
+      /* Filter Section - Completely Rebuilt */
+      .search-filters {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 16px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e1e5e9;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .filter-row {
+        position: relative;
+        width: 100%;
+        margin-bottom: 8px;
+      }
+
+      .filter-row:last-of-type {
+        margin-bottom: 0;
+      }
+
+      .filter-dropdown {
+        position: relative;
+        width: 100%;
+      }
+
+      .filter-button {
+        width: 100%;
+        padding: 10px 14px;
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 13px;
+        color: #374151;
+      }
+
+      .filter-button:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .filter-button.active {
+        border-color: #3b82f6;
+        background: #f8faff;
+      }
+
+      .filter-button-text {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .filter-label {
+        font-weight: 500;
+        color: #374151;
+      }
+
+      .filter-count {
+        font-size: 11px;
+        color: #6b7280;
+        background: #f3f4f6;
+        padding: 2px 6px;
+        border-radius: 10px;
+      }
+
+      .filter-arrow {
+        transition: transform 0.2s ease;
+        color: #6b7280;
+        font-size: 12px;
+      }
+
+      .filter-button.active .filter-arrow {
+        transform: rotate(180deg);
+      }
+
+      .filter-dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #e1e5e9;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        margin-top: 2px;
+        display: none;
+      }
+
+      .filter-dropdown-content.show {
+        display: block;
+      }
+
+      .filter-option {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        border-bottom: 1px solid #f1f3f4;
+      }
+
+      .filter-option:last-child {
+        border-bottom: none;
+      }
+
+      .filter-option:hover {
+        background: #f8f9fa;
+      }
+
+      .filter-option input[type="checkbox"] {
+        margin-right: 10px;
+        transform: scale(1.1);
+        cursor: pointer;
+      }
+
+      .filter-option label {
+        cursor: pointer;
+        flex: 1;
+        font-size: 13px;
+        color: #374151;
       }
 
       .search-options {
@@ -377,24 +664,17 @@
 
       .cache-btn,
       .apply-filters-btn {
-        background: #3b82f6;
+        background: #059669;
         color: white;
         border: none;
         padding: 8px 16px;
         border-radius: 6px;
         cursor: pointer;
-        font-size: 14px;
+        font-size: 13px;
+        font-weight: 500;
         transition: background 0.3s ease;
-      }
-
-      .cache-btn:hover,
-      .apply-filters-btn:hover {
-        background: #2563eb;
-      }
-
-      .apply-filters-btn {
-        background: #059669;
-        margin-left: 10px;
+        margin-top: 12px;
+        width: 100%;
       }
 
       .apply-filters-btn:hover {
@@ -726,52 +1006,65 @@
 
       <!-- Advanced Options (Initially Hidden) -->
       <div class="advanced-options" id="advancedOptions">
-        <!-- Search Filters -->
+        <!-- Search Filters - Completely Rebuilt -->
         <div class="search-filters">
-          <!-- Batch Filter Row (Always visible) -->
+          <!-- Batch Filter (Always visible) -->
           <div class="filter-row">
-            <select
-              id="batchFilter"
-              class="filter-select"
-              onchange="updateSemesterOptions()"
-            >
-              <option value="">Select Batch</option>
-              <!-- Batch options will be populated dynamically -->
-            </select>
+            <div class="filter-dropdown">
+              <div class="filter-button" onclick="toggleFilter('batch')">
+                <div class="filter-button-text">
+                  <span class="filter-label">Select Batches</span>
+                  <span class="filter-count" id="batchCount">All batches selected</span>
+                </div>
+                <span class="filter-arrow">▼</span>
+              </div>
+              <div class="filter-dropdown-content" id="batchDropdown">
+                <div id="batchOptions">
+                  <!-- Batch options will be populated here -->
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Semester Filter Row (Hidden until batch selected) -->
-          <div class="filter-row" id="semesterRow">
-            <select
-              id="semesterFilter"
-              class="filter-select"
-              onchange="updateCourseOptions()"
-              disabled
-            >
-              <option value="">Select Semester</option>
-            </select>
+          <!-- Semester Filter (Always visible) -->
+          <div class="filter-row">
+            <div class="filter-dropdown">
+              <div class="filter-button" onclick="toggleFilter('semester')">
+                <div class="filter-button-text">
+                  <span class="filter-label">Select Semesters</span>
+                  <span class="filter-count" id="semesterCount">All semesters available</span>
+                </div>
+                <span class="filter-arrow">▼</span>
+              </div>
+              <div class="filter-dropdown-content" id="semesterDropdown">
+                <div id="semesterOptions">
+                  <!-- Semester options will be populated here -->
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Course Filter Row (Hidden until semester selected) -->
-          <div class="filter-row" id="courseRow">
-            <select
-              id="courseFilter"
-              class="filter-select"
-              onchange="handleFilterChange()"
-              disabled
-            >
-              <option value="">Select Course</option>
-            </select>
+          <!-- Course Filter (Shows when semesters are selected) -->
+          <div class="filter-row" id="courseRow" style="display: none;">
+            <div class="filter-dropdown">
+              <div class="filter-button" onclick="toggleFilter('course')">
+                <div class="filter-button-text">
+                  <span class="filter-label">Select Courses</span>
+                  <span class="filter-count" id="courseCount">Select semesters first</span>
+                </div>
+                <span class="filter-arrow">▼</span>
+              </div>
+              <div class="filter-dropdown-content" id="courseDropdown">
+                <div id="courseOptions">
+                  <!-- Course options will be populated here -->
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Apply Filters Button -->
-          <button
-            id="applyFiltersBtn"
-            class="apply-filters-btn-subtle"
-            onclick="applyFiltersOnly()"
-            title="Show all resources for selected filters"
-          >
-            Apply Filters
+          <button class="apply-filters-btn" onclick="applyFilters()">
+            Apply Filters & Search
           </button>
         </div>
 
@@ -784,6 +1077,15 @@
 
     <!-- Search Results Container -->
     <div class="search-results-container" id="searchResultsContainer">
+      <!-- Retro Loading Animation -->
+      <div class="retro-loading-container" id="retroLoadingContainer">
+        <div class="simple-loading-bar">
+          <div class="loading-bar-fill"></div>
+        </div>
+        <div class="retro-loading-text" id="retroLoadingText">Searching academic resources...</div>
+        <div class="retro-status-text" id="retroStatusText">Exploring drive folders...</div>
+      </div>
+      
       <div class="results-header">
         <div class="results-status" id="resultsStats">
           Ready! Enter search terms to find resources.
@@ -816,6 +1118,14 @@
           >
             🗂️ Minimize Batches
           </button>
+          <button
+            class="control-btn"
+            onclick="toggleSemesterSort()"
+            title="Toggle semester sort order"
+            id="sortToggleBtn"
+          >
+            📊 Ascending Order
+          </button>
         </div>
       </div>
 
@@ -826,97 +1136,182 @@
     <div data-include="./assets/footer.html"></div>
 
     <script>
-      // Function to populate batch filter with available batches
-      async function populateBatchOptions() {
-        const batchSelect = document.getElementById('batchFilter');
+      // Modern Filter System - Completely Rebuilt
+      let selectedBatches = [];
+      let selectedSemesters = [];
+      let selectedCourses = [];
+      let availableSemesters = [];
+      let availableCourses = [];
+
+      // Toggle filter dropdown
+      function toggleFilter(filterType) {
+        const dropdown = document.getElementById(`${filterType}Dropdown`);
+        const button = dropdown.previousElementSibling;
         
-        try {
-          // Load all batch data
-          await loadAllBatchData();
-          
-          // Get available batch numbers and sort them in descending order (newest first)
-          const availableBatches = Array.from(window.BATCH_DATA_CACHE.keys())
-            .map(batch => parseInt(batch))
-            .filter(batch => !isNaN(batch))
-            .sort((a, b) => b - a); // Descending order
-          
-          // Populate batch dropdown
-          availableBatches.forEach(batchNumber => {
-            const batchData = window.BATCH_DATA_CACHE.get(batchNumber.toString());
-            const option = document.createElement('option');
-            option.value = batchNumber.toString();
-            option.textContent = batchData?.batch_name || `${batchNumber}th Batch`;
-            batchSelect.appendChild(option);
+        // Close all other dropdowns
+        document.querySelectorAll('.filter-dropdown-content').forEach(d => {
+          if (d !== dropdown) {
+            d.classList.remove('show');
+            d.previousElementSibling.classList.remove('active');
+          }
+        });
+        
+        // Toggle current dropdown
+        dropdown.classList.toggle('show');
+        button.classList.toggle('active');
+      }
+
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.filter-dropdown')) {
+          document.querySelectorAll('.filter-dropdown-content').forEach(d => {
+            d.classList.remove('show');
+            d.previousElementSibling.classList.remove('active');
           });
-          
-          console.log('Batch options populated:', availableBatches);
-        } catch (error) {
-          console.error('Error populating batch options:', error);
-          // Add fallback options if batch loading fails
-          const fallbackBatches = ['31', '30', '29', '28', '27', '26', '25', '24'];
-          fallbackBatches.forEach(batch => {
-            const option = document.createElement('option');
-            option.value = batch;
-            option.textContent = `${batch}th Batch`;
-            batchSelect.appendChild(option);
-          });
+        }
+      });
+
+      // Handle checkbox change
+      function handleFilterChange(filterType, value, isChecked) {
+        console.log('handleFilterChange called:', filterType, value, isChecked);
+        
+        if (filterType === 'batch') {
+          if (isChecked) {
+            selectedBatches.push(value);
+          } else {
+            selectedBatches = selectedBatches.filter(b => b !== value);
+          }
+          console.log('selectedBatches:', selectedBatches);
+          updateBatchCount();
+          populateSemesters();
+        } else if (filterType === 'semester') {
+          if (isChecked) {
+            selectedSemesters.push(value);
+          } else {
+            selectedSemesters = selectedSemesters.filter(s => s !== value);
+          }
+          console.log('selectedSemesters:', selectedSemesters);
+          updateSemesterCount();
+          populateCourses(); // This should show the course filter
+        } else if (filterType === 'course') {
+          if (isChecked) {
+            selectedCourses.push(value);
+          } else {
+            selectedCourses = selectedCourses.filter(c => c !== value);
+          }
+          console.log('selectedCourses:', selectedCourses);
+          updateCourseCount();
         }
       }
 
-      // Function to update semester options based on selected batch
-      async function updateSemesterOptions() {
-        const batchSelect = document.getElementById('batchFilter');
-        const semesterSelect = document.getElementById('semesterFilter');
-        const courseSelect = document.getElementById('courseFilter');
-        const semesterRow = document.getElementById('semesterRow');
-        const courseRow = document.getElementById('courseRow');
-        
-        const selectedBatch = batchSelect.value;
-        
-        // Clear and disable semester and course dropdowns
-        semesterSelect.innerHTML = '<option value="">Select Semester</option>';
-        courseSelect.innerHTML = '<option value="">Select Course</option>';
-        semesterSelect.disabled = !selectedBatch;
-        courseSelect.disabled = true;
-        
-        // Hide/show semester row based on batch selection
-        if (!selectedBatch) {
-          semesterRow.classList.remove('show');
-          courseRow.classList.remove('show');
-          return;
+      // Get selected checkbox values (for backward compatibility)
+      function getSelectedCheckboxValues(filterType) {
+        if (filterType === 'batchFilter') return selectedBatches;
+        if (filterType === 'semesterFilter') return selectedSemesters;
+        if (filterType === 'courseFilter') return selectedCourses;
+        return [];
+      }
+
+      // Update count displays
+      function updateBatchCount() {
+        const countEl = document.getElementById('batchCount');
+        if (selectedBatches.length === 0) {
+          countEl.textContent = 'All batches selected';
+        } else {
+          countEl.textContent = `${selectedBatches.length} batch${selectedBatches.length === 1 ? '' : 'es'} selected`;
         }
-        
-        // Show semester row with smooth transition
-        setTimeout(() => {
-          semesterRow.classList.add('show');
-        }, 100);
-        
+      }
+
+      function updateSemesterCount() {
+        const countEl = document.getElementById('semesterCount');
+        if (selectedSemesters.length === 0) {
+          countEl.textContent = availableSemesters.length > 0 ? 'All available semesters' : 'No semesters available';
+        } else {
+          countEl.textContent = `${selectedSemesters.length} semester${selectedSemesters.length === 1 ? '' : 's'} selected`;
+        }
+      }
+
+      function updateCourseCount() {
+        const countEl = document.getElementById('courseCount');
+        if (selectedSemesters.length === 0) {
+          countEl.textContent = 'Select semesters first';
+        } else if (selectedCourses.length === 0) {
+          countEl.textContent = availableCourses.length > 0 ? 'All available courses' : 'No courses available';
+        } else {
+          countEl.textContent = `${selectedCourses.length} course${selectedCourses.length === 1 ? '' : 's'} selected`;
+        }
+      }
+
+      // Populate batch options
+      async function populateBatches() {
         try {
-          // Load batch data dynamically from batch JSON files
           await loadAllBatchData();
-          const batchData = window.BATCH_DATA_CACHE.get(selectedBatch);
           
-          if (!batchData || !batchData.semesters) {
-            console.warn(`No semester data found for batch ${selectedBatch}`);
-            semesterSelect.disabled = true;
-            return;
-          }
+          const batchNumbers = Array.from(window.BATCH_DATA_CACHE.keys())
+            .map(b => parseInt(b))
+            .filter(b => !isNaN(b))
+            .sort((a, b) => b - a); // Newest first
           
-          // Get available semesters from the batch data
-          const availableSemesters = Object.keys(batchData.semesters);
+          const container = document.getElementById('batchOptions');
+          container.innerHTML = '';
+          
+          batchNumbers.forEach(batchNum => {
+            const batchData = window.BATCH_DATA_CACHE.get(batchNum.toString());
+            const batchName = batchData?.batch_name || `${batchNum}th Batch`;
+            
+            const option = document.createElement('div');
+            option.className = 'filter-option';
+            option.innerHTML = `
+              <input type="checkbox" id="batch_${batchNum}" value="${batchNum}">
+              <label for="batch_${batchNum}">${batchName}</label>
+            `;
+            
+            // Add event listener to checkbox
+            const checkbox = option.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', function() {
+              handleFilterChange('batch', batchNum.toString(), this.checked);
+            });
+            
+            container.appendChild(option);
+          });
+          
+          updateBatchCount();
+          populateSemesters(); // Show all semesters initially
+          
+        } catch (error) {
+          console.error('Error populating batches:', error);
+        }
+      }
+
+      // Populate semester options based on selected batches
+      async function populateSemesters() {
+        try {
+          await loadAllBatchData();
+          
+          const semestersSet = new Set();
+          
+          // If no batches selected, show semesters from all batches
+          const batchesToCheck = selectedBatches.length === 0 ? 
+            Array.from(window.BATCH_DATA_CACHE.keys()) : 
+            selectedBatches;
+          
+          batchesToCheck.forEach(batchNum => {
+            const batchData = window.BATCH_DATA_CACHE.get(batchNum.toString());
+            if (batchData?.semesters) {
+              Object.keys(batchData.semesters).forEach(sem => semestersSet.add(sem));
+            }
+          });
+          
+          availableSemesters = Array.from(semestersSet);
           
           // Sort semesters in logical order
           const semesterOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', 'mba-1st', 'mba-2nd'];
-          const sortedSemesters = availableSemesters.sort((a, b) => {
-            return semesterOrder.indexOf(a) - semesterOrder.indexOf(b);
-          });
+          availableSemesters.sort((a, b) => semesterOrder.indexOf(a) - semesterOrder.indexOf(b));
           
-          // Populate semester dropdown
-          sortedSemesters.forEach(semester => {
-            const option = document.createElement('option');
-            option.value = semester;
-            
-            // Format semester name for display
+          const container = document.getElementById('semesterOptions');
+          container.innerHTML = '';
+          
+          availableSemesters.forEach(semester => {
             let displayName = semester;
             if (semester.includes('mba')) {
               displayName = semester.replace('mba-', 'MBA ').replace(/\b\w/g, l => l.toUpperCase()) + ' Semester';
@@ -924,89 +1319,212 @@
               displayName = semester.replace(/\b\w/g, l => l.toUpperCase()) + ' Semester';
             }
             
-            option.textContent = displayName;
-            semesterSelect.appendChild(option);
+            const option = document.createElement('div');
+            option.className = 'filter-option';
+            option.innerHTML = `
+              <input type="checkbox" id="semester_${semester}" value="${semester}">
+              <label for="semester_${semester}">${displayName}</label>
+            `;
+            
+            // Add event listener to checkbox
+            const checkbox = option.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', function() {
+              handleFilterChange('semester', semester, this.checked);
+            });
+            
+            container.appendChild(option);
           });
           
-          semesterSelect.disabled = false;
+          updateSemesterCount();
+          
         } catch (error) {
-          console.error('Error loading semester options:', error);
-          semesterSelect.disabled = true;
-        }
-      }
-      
-      // Function to update course options based on selected semester
-      async function updateCourseOptions() {
-        const batchSelect = document.getElementById('batchFilter');
-        const semesterSelect = document.getElementById('semesterFilter');
-        const courseSelect = document.getElementById('courseFilter');
-        const courseRow = document.getElementById('courseRow');
-        
-        const selectedBatch = batchSelect.value;
-        const selectedSemester = semesterSelect.value;
-        
-        // Clear and disable course dropdown
-        courseSelect.innerHTML = '<option value="">Select Course</option>';
-        courseSelect.disabled = !selectedSemester;
-        
-        // Hide/show course row based on semester selection
-        if (!selectedSemester || !selectedBatch) {
-          courseRow.classList.remove('show');
-          return;
-        }
-        
-        // Show course row with smooth transition
-        setTimeout(() => {
-          courseRow.classList.add('show');
-        }, 100);
-        
-        try {
-          // Load batch data dynamically from batch JSON files
-          await loadAllBatchData();
-          const batchData = window.BATCH_DATA_CACHE.get(selectedBatch);
-          
-          if (!batchData || !batchData.semesters || !batchData.semesters[selectedSemester] || !batchData.semesters[selectedSemester].subjects) {
-            console.warn(`No course data found for batch ${selectedBatch}, semester ${selectedSemester}`);
-            courseSelect.disabled = true;
-            return;
-          }
-          
-          // Get available courses from the batch data
-          const courses = batchData.semesters[selectedSemester].subjects;
-          
-          // Sort courses by course code
-          const sortedCourses = Object.entries(courses).sort(([a], [b]) => a.localeCompare(b));
-          
-          // Populate course dropdown
-          sortedCourses.forEach(([code, courseInfo]) => {
-            const option = document.createElement('option');
-            option.value = code;
-            option.textContent = `${code} - ${courseInfo.title || 'Unknown Course'}`;
-            courseSelect.appendChild(option);
-          });
-          
-          courseSelect.disabled = false;
-        } catch (error) {
-          console.error('Error loading course options:', error);
-          courseSelect.disabled = true;
+          console.error('Error populating semesters:', error);
         }
       }
 
-      // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
-      const DRIVE_API_KEY = "AIzaSyAEOadL6D0G_c8z5EB-sEp0T3hanYAnmF0";
+      // Populate course options based on selected semesters and batches
+      async function populateCourses() {
+        const courseRow = document.getElementById('courseRow');
+        
+        console.log('populateCourses called, selectedSemesters:', selectedSemesters);
+        
+        if (selectedSemesters.length === 0) {
+          courseRow.style.display = 'none';
+          updateCourseCount();
+          return;
+        }
+        
+        courseRow.style.display = 'block';
+        console.log('Course row should now be visible');
+        
+        try {
+          await loadAllBatchData();
+          
+          const coursesMap = new Map(); // code -> course info
+          
+          const batchesToCheck = selectedBatches.length === 0 ? 
+            Array.from(window.BATCH_DATA_CACHE.keys()) : 
+            selectedBatches;
+          
+          batchesToCheck.forEach(batchNum => {
+            const batchData = window.BATCH_DATA_CACHE.get(batchNum.toString());
+            if (batchData?.semesters) {
+              selectedSemesters.forEach(semester => {
+                if (batchData.semesters[semester]?.subjects) {
+                  Object.entries(batchData.semesters[semester].subjects).forEach(([code, courseInfo]) => {
+                    if (!coursesMap.has(code)) {
+                      coursesMap.set(code, {
+                        code,
+                        title: courseInfo.title,
+                        semesters: new Set()
+                      });
+                    }
+                    coursesMap.get(code).semesters.add(semester);
+                  });
+                }
+              });
+            }
+          });
+          
+          availableCourses = Array.from(coursesMap.values()).sort((a, b) => a.code.localeCompare(b.code));
+          
+          const container = document.getElementById('courseOptions');
+          container.innerHTML = '';
+          
+          availableCourses.forEach(course => {
+            const option = document.createElement('div');
+            option.className = 'filter-option';
+            option.innerHTML = `
+              <input type="checkbox" id="course_${course.code}" value="${course.code}">
+              <label for="course_${course.code}" title="Available in: ${Array.from(course.semesters).join(', ')}">${course.code} - ${course.title}</label>
+            `;
+            
+            // Add event listener to checkbox
+            const checkbox = option.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', function() {
+              handleFilterChange('course', course.code, this.checked);
+            });
+            
+            container.appendChild(option);
+          });
+          
+          updateCourseCount();
+          
+        } catch (error) {
+          console.error('Error populating courses:', error);
+        }
+      }
+
+      // Apply filters and search
+      function applyFilters() {
+        // Get current search term
+        const searchTerm = document.getElementById('globalSearch').value.trim();
+        
+        if (searchTerm) {
+          // If there's a search term, perform filtered search
+          optimizedSearch();
+        } else {
+          // If no search term, just apply filters to show all resources
+          applyFiltersOnly();
+        }
+      }
+
+      // Initialize filters when page loads
+      async function initializeFilters() {
+        try {
+          await populateBatches();
+          console.log('Filters initialized successfully');
+        } catch (error) {
+          console.error('Error initializing filters:', error);
+        }
+      }
+
+      // Integration with existing search system
+      function getActiveFilters() {
+        return {
+          batches: selectedBatches.length === 0 ? null : selectedBatches,
+          semesters: selectedSemesters.length === 0 ? null : selectedSemesters,
+          courses: selectedCourses.length === 0 ? null : selectedCourses
+        };
+      }
+
+      // Update existing search functions to use filters
+      function getFilteredBatches() {
+        return selectedBatches.length === 0 ? null : selectedBatches;
+      }
+
+      function getFilteredSemesters() {
+        return selectedSemesters.length === 0 ? null : selectedSemesters;
+      }
+
+      function getFilteredCourses() {
+        return selectedCourses.length === 0 ? null : selectedCourses;
+      }
+
+      // Show filtered resources
+      function showFilteredResources() {
+        hideRetroLoading();
+        
+        const statsEl = document.getElementById('resultsStats');
+        const activeFilters = [];
+        
+        if (selectedBatches.length > 0) {
+          activeFilters.push(`${selectedBatches.length} batch${selectedBatches.length === 1 ? '' : 'es'}`);
+        }
+        if (selectedSemesters.length > 0) {
+          activeFilters.push(`${selectedSemesters.length} semester${selectedSemesters.length === 1 ? '' : 's'}`);
+        }
+        if (selectedCourses.length > 0) {
+          activeFilters.push(`${selectedCourses.length} course${selectedCourses.length === 1 ? '' : 's'}`);
+        }
+        
+        if (activeFilters.length > 0) {
+          statsEl.textContent = `Showing resources for: ${activeFilters.join(', ')}`;
+        } else {
+          statsEl.textContent = 'Showing all available resources';
+        }
+        
+        // Show accordion controls
+        document.getElementById('accordionControls').style.display = 'flex';
+        
+        // Show current filter status
+        const resourcesDiv = document.getElementById('all-resources');
+        resourcesDiv.innerHTML = `
+          <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">
+            <h3>✅ Filters Applied Successfully!</h3>
+            <p><strong>Active Filters:</strong></p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+              <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                <strong>Batches:</strong><br>
+                ${selectedBatches.length === 0 ? 'All available' : selectedBatches.join(', ')}
+              </div>
+              <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
+                <strong>Semesters:</strong><br>
+                ${selectedSemesters.length === 0 ? 'All available' : selectedSemesters.join(', ')}
+              </div>
+              <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                <strong>Courses:</strong><br>
+                ${selectedCourses.length === 0 ? 'All available' : selectedCourses.length === 0 ? 'All from selected semesters' : selectedCourses.join(', ')}
+              </div>
+            </div>
+            <p style="color: #6b7280; font-style: italic;">Enter a search term above to find specific resources within these filters, or click "Apply Filters & Search" to load all resources matching these criteria.</p>
+          </div>
+        `;
+      }
+
+      // API keys are now loaded from assets/api-keys.js for centralized management
+      // Use getNextApiKey() to get API keys with automatic rotation
       let ALL_DRIVE_RESOURCES = {}; // Will be loaded from JSON
       let allFiles = []; // Store all loaded files for searching
       let isLoading = false;
       let fileCache = new Map(); // Cache for API responses
       let loadedFolders = new Set(); // Track which folders we've already loaded
+      let isAscendingSort = true; // Track semester sort order: true = 1st→8th, false = 8th→1st
 
       // DOM element cache for performance optimization
       const DOM_CACHE = {
         globalSearch: null,
         resultsStats: null,
-        batchFilter: null,
-        semesterFilter: null,
-        courseFilter: null,
         allResources: null,
         accordionControls: null,
         searchResultsContainer: null,
@@ -1015,9 +1533,6 @@
         init() {
           this.globalSearch = document.getElementById("globalSearch");
           this.resultsStats = document.getElementById("resultsStats");
-          this.batchFilter = document.getElementById("batchFilter");
-          this.semesterFilter = document.getElementById("semesterFilter");
-          this.courseFilter = document.getElementById("courseFilter");
           this.allResources = document.getElementById("all-resources");
           this.accordionControls = document.getElementById("accordionControls");
           this.searchResultsContainer = document.getElementById(
@@ -1075,6 +1590,33 @@
           DOM_CACHE.searchResultsContainer.classList.add("visible");
         } else {
           DOM_CACHE.searchResultsContainer.classList.remove("visible");
+        }
+      }
+
+      // Retro loading animation control
+      function showRetroLoading(message = "Searching academic resources...") {
+        const retroContainer = document.getElementById('retroLoadingContainer');
+        const retroText = document.getElementById('retroLoadingText');
+        const statusText = document.getElementById('retroStatusText');
+        
+        if (retroContainer && retroText) {
+          retroText.textContent = message;
+          statusText.textContent = "Exploring drive folders...";
+          retroContainer.classList.add('active');
+        }
+      }
+
+      function hideRetroLoading() {
+        const retroContainer = document.getElementById('retroLoadingContainer');
+        if (retroContainer) {
+          retroContainer.classList.remove('active');
+        }
+      }
+
+      function updateRetroLoadingStatus(status) {
+        const statusText = document.getElementById('retroStatusText');
+        if (statusText) {
+          statusText.textContent = status;
         }
       }
 
@@ -1136,20 +1678,25 @@
               const folderIdMatch = url.match(/'([^']+)'\+in\+parents/);
               const folderId = folderIdMatch ? folderIdMatch[1] : "unknown";
 
-              // Handle different error types
+              // Handle different error types with less alarming logs
               if (response.status === 500) {
+                console.warn(`⚠️ Server error for folder ${folderId} - skipping (API quota or server issue)`);
                 resolve({ files: [] });
                 return;
               } else if (response.status === 403) {
+                console.warn(`🔒 Access denied for folder ${folderId} - skipping (permission issue)`);
                 resolve({ files: [] });
                 return;
               } else if (response.status === 404) {
+                console.warn(`📁 Folder not found: ${folderId} - skipping (may be deleted or moved)`);
                 resolve({ files: [] });
                 return;
               } else if (response.status === 429) {
+                console.warn(`🐌 Rate limit hit for folder ${folderId} - skipping (try fewer API keys)`);
                 resolve({ files: [] });
                 return;
               } else if (response.status === 401) {
+                console.warn(`🔑 Authentication failed for folder ${folderId} - check API key validity`);
                 resolve({ files: [] });
                 return;
               } else {
@@ -1382,7 +1929,7 @@
       }
 
       // Smart filter change handler - only search if there's text in search bar
-      function handleFilterChange() {
+      function handleSearchChange() {
         const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
 
         // Only trigger search if there's already text in the search bar
@@ -1398,30 +1945,33 @@
 
       // Apply filters without requiring search term - shows all resources for selected filters
       async function applyFiltersOnly() {
-        const batchFilter = DOM_CACHE.batchFilter.value;
-        const semesterFilter = DOM_CACHE.semesterFilter.value;
-        const courseFilter = DOM_CACHE.courseFilter.value;
+        const batchFilters = selectedBatches;
+        const semesterFilters = selectedSemesters;
+        const courseFilters = selectedCourses;
 
         // Show all resources for the selected filters (no search term required)
         updateSearchStats("Loading all resources for selected filters...");
+        showRetroLoading("Loading filtered resources...");
         toggleSections(true);
 
         try {
           const results = await smartSearch(
             "", // Empty search term to get all results
-            semesterFilter,
-            batchFilter,
-            courseFilter,
+            semesterFilters,
+            batchFilters,
+            courseFilters,
             DOM_CACHE.resultsStats, // Use correct DOM element
             true // Flag to indicate this is a filter-only search
           );
+          hideRetroLoading();
           displayResults(results);
           updateSearchStats(
             `Showing ${results.length} resources${
-              semesterFilter || batchFilter || courseFilter ? " for selected filters" : " (all)"
+              semesterFilters.length > 0 || batchFilters.length > 0 || courseFilters.length > 0 ? " for selected filters" : " (all)"
             }`
           );
         } catch (error) {
+          hideRetroLoading();
           console.error("Apply filters error:", error);
           updateSearchStats("Failed to load resources. Please try again.");
           toggleSections(false);
@@ -1501,9 +2051,9 @@
       // Optimized search - only load data when user searches
       async function optimizedSearch() {
         const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
-        const batchFilter = DOM_CACHE.batchFilter.value;
-        const semesterFilter = DOM_CACHE.semesterFilter.value;
-        const courseFilter = DOM_CACHE.courseFilter.value;
+        const batchFilters = selectedBatches;
+        const semesterFilters = selectedSemesters;
+        const courseFilters = selectedCourses;
 
         // Always require a search term for manual search
         if (!searchTerm) {
@@ -1522,20 +2072,23 @@
         }
 
         DOM_CACHE.resultsStats.textContent = "Searching...";
+        showRetroLoading("Searching academic resources...");
         toggleSections(true);
 
         try {
           const results = await smartSearch(
             searchTerm,
-            semesterFilter,
-            batchFilter,
-            courseFilter,
+            semesterFilters,
+            batchFilters,
+            courseFilters,
             DOM_CACHE.resultsStats
           );
+          hideRetroLoading();
           displayResults(results);
           updateStats(results.length, "∞", ` (search results)`);
           DOM_CACHE.resultsStats.innerHTML = `Found ${results.length} results`;
         } catch (error) {
+          hideRetroLoading();
           DOM_CACHE.resultsStats.textContent =
             "Search failed. Please try again.";
           toggleSections(false);
@@ -1545,9 +2098,9 @@
       // Smart search implementation
       async function smartSearch(
         searchTerm,
-        semesterFilter,
-        batchFilter,
-        courseFilter,
+        semesterFilters,  // Now an array
+        batchFilters,     // Now an array
+        courseFilters,    // Now an array
         statsElement,
         isFilterOnly = false
       ) {
@@ -1561,10 +2114,14 @@
         // Smart folder organization: Group by semester, then distribute evenly
         const semesterBatches = {};
         for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
-          if (semesterFilter && semester !== semesterFilter) continue;
+          // Check if semester should be included (if filters are set and semester not in filters, skip)
+          if (semesterFilters.length > 0 && !semesterFilters.includes(semester)) continue;
+          
           semesterBatches[semester] = [];
           for (const [batchKey, batchInfo] of Object.entries(batches)) {
-            if (batchFilter && batchKey !== batchFilter) continue;
+            // Check if batch should be included (if filters are set and batch not in filters, skip)
+            if (batchFilters.length > 0 && !batchFilters.includes(batchKey)) continue;
+            
             semesterBatches[semester].push({
               semester,
               batchKey,
@@ -1596,18 +2153,24 @@
         }
 
         // Search folders in parallel batches
-        const PARALLEL_BATCH_SIZE = 40; // Optimized for better performance
+        // Dynamically adjust batch size based on number of available API keys
+        const API_KEY_COUNT = getApiKeyCount();
+        const BASE_BATCH_SIZE = 40; // Base batch size per API key
+        const PARALLEL_BATCH_SIZE = BASE_BATCH_SIZE * API_KEY_COUNT; // Scale with API keys
         const MAX_SEARCH_DEPTH = 6; // Optimized depth for balance between completeness and speed
+        
+        console.log(`Search configuration: ${API_KEY_COUNT} API keys, batch size: ${PARALLEL_BATCH_SIZE}`);
 
         // Clear results container at start
         const container = document.getElementById("all-resources");
         container.innerHTML = '<div class="live-results">Searching...</div>';
 
-        let totalFolders = 0;
-        let completedFolders = 0;
+        let totalRootFolders = 0;
+        let completedRootFolders = 0;
+        let totalFoldersSearched = 0; // Track actual folders searched including subfolders
 
-        // Count total folders
-        smartBatches.forEach((batch) => (totalFolders += batch.length));
+        // Count total root folders
+        smartBatches.forEach((batch) => (totalRootFolders += batch.length));
 
         // Process each round-robin batch
         for (const roundRobinBatch of smartBatches) {
@@ -1631,7 +2194,7 @@
                     batchKey,
                     batchInfo.label,
                     statsElement,
-                    courseFilter // Pass course filter to folder search
+                    courseFilters // Pass course filters array to folder search
                   );
                   return folderResults;
                 } catch (error) {
@@ -1649,16 +2212,18 @@
               results.push(...folderResults);
             }
 
-            completedFolders += batch.length;
+            completedRootFolders += batch.length;
             const limiterStats = apiLimiter.getStats();
 
             // Update results display in real-time after each batch
             const currentResults = removeDuplicatesOptimized(results);
             if (currentResults.length > 0) {
               displayResults(currentResults);
-              statsElement.innerHTML = `Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+              statsElement.innerHTML = `Searched ${completedRootFolders}/${totalRootFolders} drive folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests} <span style="float: right; color: #68d391; font-size: 0.9em;">${currentResults.length} results</span>`;
+              updateRetroLoadingStatus(`Found ${currentResults.length} files in ${completedRootFolders}/${totalRootFolders} folders`);
             } else {
-              statsElement.textContent = `Searching ${completedFolders}/${totalFolders} folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
+              statsElement.textContent = `Searched ${completedRootFolders}/${totalRootFolders} drive folders | Queue: ${limiterStats.queueLength} | Active: ${limiterStats.activeRequests}`;
+              updateRetroLoadingStatus(`Searching folder ${completedRootFolders}/${totalRootFolders}...`);
             }
 
             // Early termination if we have many results
@@ -1684,7 +2249,7 @@
         saveResolvedFolderCache();
 
         // Final update
-        statsElement.innerHTML = `Search complete <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
+        statsElement.innerHTML = `Search complete: explored ${totalRootFolders} drive folders and subfolders <span style="float: right; color: #68d391; font-size: 0.9em;">${flatResults.length} results</span>`;
 
         return flatResults;
       }
@@ -1804,7 +2369,7 @@
         batchKey,
         batchLabel,
         statsElement,
-        courseFilter = null,
+        courseFilters = [],
         currentDepth = 0
       ) {
         if (maxDepth >= 0 && currentDepth >= maxDepth) return [];
@@ -1825,7 +2390,7 @@
             batchKey,
             batchLabel,
             statsElement,
-            courseFilter,
+            courseFilters,
             currentDepth
           );
         }
@@ -1843,13 +2408,14 @@
             batchKey,
             batchLabel,
             statsElement,
-            courseFilter,
+            courseFilters,
             currentDepth
           );
         }
 
         try {
-          const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
+          const apiKey = getNextApiKey(); // Get next API key with rotation
+          const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${apiKey}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000&orderBy=name`;
 
           const data = await apiLimiter.makeRequest(url);
 
@@ -1867,7 +2433,7 @@
             batchKey,
             batchLabel,
             statsElement,
-            courseFilter,
+            courseFilters,
             currentDepth
           );
         } catch (error) {
@@ -1886,7 +2452,7 @@
         batchKey,
         batchLabel,
         statsElement,
-        courseFilter,
+        courseFilters,
         currentDepth
       ) {
         const results = [];
@@ -1901,23 +2467,32 @@
           const matchesSearch =
             !searchTerm || smartMatch(searchTerm, file.name, filePath);
 
-          // Course filter logic - if course filter is selected, only include files/folders related to that course
-          let matchesCourse = !courseFilter;
+          // Course filter logic - if course filters are selected, only include files/folders related to those courses
+          let matchesCourse = courseFilters.length === 0; // If no course filters, include all
           
-          if (courseFilter) {
-            // First try direct course code match
-            matchesCourse = smartMatch(courseFilter, file.name, filePath);
-            
-            // If no direct match, try to get course title from batch data and match that
-            if (!matchesCourse && window.BATCH_DATA_CACHE) {
-              for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
-                if (batchData.semesters && batchData.semesters[semester] && batchData.semesters[semester].subjects && batchData.semesters[semester].subjects[courseFilter]) {
-                  const courseTitle = batchData.semesters[semester].subjects[courseFilter].title;
-                  if (courseTitle && smartMatch(courseTitle, file.name, filePath)) {
-                    matchesCourse = true;
-                    break;
+          if (courseFilters.length > 0) {
+            // Check if file matches any of the selected courses
+            for (const courseFilter of courseFilters) {
+              // First try direct course code match
+              if (smartMatch(courseFilter, file.name, filePath)) {
+                matchesCourse = true;
+                break;
+              }
+              
+              // If no direct match, try to get course title from batch data and match that
+              if (window.BATCH_DATA_CACHE) {
+                for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
+                  if (batchData.semesters && batchData.semesters[semester] && 
+                      batchData.semesters[semester].subjects && 
+                      batchData.semesters[semester].subjects[courseFilter]) {
+                    const courseTitle = batchData.semesters[semester].subjects[courseFilter].title;
+                    if (courseTitle && smartMatch(courseTitle, file.name, filePath)) {
+                      matchesCourse = true;
+                      break;
+                    }
                   }
                 }
+                if (matchesCourse) break; // Break outer loop if match found
               }
             }
           }
@@ -1955,7 +2530,7 @@
                 batchKey,
                 batchLabel,
                 statsElement,
-                courseFilter,
+                courseFilters,
                 currentDepth + 1
               )
             );
@@ -2051,11 +2626,24 @@
           grouped[semester][batch] = tree;
         });
 
-        // Sort semesters (highest first: 8th, 7th, 6th, etc.)
+        // Sort semesters based on current sort order
         const sortedSemesters = Object.entries(grouped).sort(([a], [b]) => {
-          const numA = parseInt(a.replace(/\D/g, "")) || 0;
-          const numB = parseInt(b.replace(/\D/g, "")) || 0;
-          return numB - numA;
+          // Define semester order
+          const semesterOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', 'mba-1st', 'mba-2nd'];
+          const indexA = semesterOrder.indexOf(a);
+          const indexB = semesterOrder.indexOf(b);
+          
+          // If both semesters are in the order array, sort by their position
+          if (indexA !== -1 && indexB !== -1) {
+            return isAscendingSort ? (indexA - indexB) : (indexB - indexA);
+          }
+          
+          // If only one is in the order array, prioritize it
+          if (indexA !== -1) return isAscendingSort ? -1 : 1;
+          if (indexB !== -1) return isAscendingSort ? 1 : -1;
+          
+          // Fallback to alphabetical sort for unknown semesters
+          return isAscendingSort ? a.localeCompare(b) : b.localeCompare(a);
         });
 
         sortedSemesters.forEach(([semester, batches]) => {
@@ -2353,6 +2941,26 @@
         };
       }
 
+      // Show/hide retro loading animation
+      function showRetroLoading(mainText = 'Searching...', statusText = 'Please wait...') {
+        const container = document.getElementById('retroLoadingContainer');
+        const mainTextEl = document.getElementById('retroLoadingText');
+        const statusTextEl = document.getElementById('retroStatusText');
+        
+        if (container && mainTextEl && statusTextEl) {
+          mainTextEl.textContent = mainText;
+          statusTextEl.textContent = statusText;
+          container.classList.add('active');
+        }
+      }
+
+      function hideRetroLoading() {
+        const container = document.getElementById('retroLoadingContainer');
+        if (container) {
+          container.classList.remove('active');
+        }
+      }
+
       // Page initialization
       window.addEventListener("DOMContentLoaded", async () => {
         // Initialize DOM cache
@@ -2370,8 +2978,8 @@
         try {
           await loadDriveMapping();
           
-          // Populate batch filter options dynamically
-          await populateBatchOptions();
+          // Initialize the new filter system
+          await initializeFilters();
           
           updateCacheStats(); // Update again after loading mapping
         } catch (error) {
@@ -2482,6 +3090,30 @@
           .forEach((icon) => {
             icon.textContent = "▶";
           });
+      }
+
+      // Toggle semester sort order
+      function toggleSemesterSort() {
+        isAscendingSort = !isAscendingSort;
+        const sortBtn = document.getElementById('sortToggleBtn');
+        
+        if (isAscendingSort) {
+          sortBtn.innerHTML = '📊 Ascending Order';
+          sortBtn.title = 'Currently showing semesters in ascending order (1st to 8th). Click to reverse.';
+        } else {
+          sortBtn.innerHTML = '📊 Descending Order';
+          sortBtn.title = 'Currently showing semesters in descending order (8th to 1st). Click to reverse.';
+        }
+        
+        // Re-display results with new sort order if there are current results
+        const resultsContainer = document.getElementById('all-resources');
+        if (resultsContainer && resultsContainer.children.length > 0) {
+          // Get current search term and re-run search
+          const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
+          if (searchTerm) {
+            optimizedSearch();
+          }
+        }
       }
     </script>
   </body>

@@ -108,7 +108,21 @@ async function getSubjectDataByCode(courseCode) {
           // Merge data from this batch
           subjectData.title = subjectInfo.title || subjectData.title;
           subjectData.description = subjectInfo.description || subjectData.description;
-          subjectData.current_teacher = subjectInfo.teacher || subjectData.current_teacher;
+          
+          // Handle both old and new teacher format
+          let teacherInfo = '';
+          if (subjectInfo.teachers && typeof subjectInfo.teachers === 'object') {
+            // New format: {A: "name", B: "name", C: "name"}
+            const teacherSections = [];
+            if (subjectInfo.teachers.A) teacherSections.push(`A: ${subjectInfo.teachers.A}`);
+            if (subjectInfo.teachers.B) teacherSections.push(`B: ${subjectInfo.teachers.B}`);
+            if (subjectInfo.teachers.C) teacherSections.push(`C: ${subjectInfo.teachers.C}`);
+            teacherInfo = teacherSections.join(', ');
+          } else if (subjectInfo.teacher) {
+            // Old format: single teacher string
+            teacherInfo = subjectInfo.teacher;
+          }
+          subjectData.current_teacher = teacherInfo || subjectData.current_teacher;
           
           // Merge links
           if (subjectInfo.links) {
@@ -131,11 +145,27 @@ async function getSubjectDataByCode(courseCode) {
           if (!subjectData.batches) {
             subjectData.batches = [];
           }
+          
+          // Handle both old and new teacher format for batch info
+          let batchTeacherInfo = '';
+          if (subjectInfo.teachers && typeof subjectInfo.teachers === 'object') {
+            // New format: {A: "name", B: "name", C: "name"}
+            const teacherSections = [];
+            if (subjectInfo.teachers.A) teacherSections.push(`A: ${subjectInfo.teachers.A}`);
+            if (subjectInfo.teachers.B) teacherSections.push(`B: ${subjectInfo.teachers.B}`);
+            if (subjectInfo.teachers.C) teacherSections.push(`C: ${subjectInfo.teachers.C}`);
+            batchTeacherInfo = teacherSections.join(', ');
+          } else if (subjectInfo.teacher) {
+            // Old format: single teacher string
+            batchTeacherInfo = subjectInfo.teacher;
+          }
+          
           subjectData.batches.push({
             batch: batchNumber,
             batchName: batchData.batch_name,
             semester: semesterKey,
-            teacher: subjectInfo.teacher || ""
+            teacher: batchTeacherInfo,
+            teachers: subjectInfo.teachers || {} // Include full teachers object for detailed access
           });
         }
       }
@@ -323,3 +353,44 @@ async function getCourseDriverFolders(courseCode) {
 
 // Export the new function
 window.getCourseDriverFolders = getCourseDriverFolders;
+
+/**
+ * Get all teacher data organized by batches, semesters, and courses
+ * This replaces the hardcoded teacher data in course-teachers.html
+ */
+async function getAllTeacherData() {
+  await loadAllBatchData();
+  
+  const teacherData = {};
+  
+  for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
+    if (batchData.semesters) {
+      teacherData[batchNumber] = {
+        batchName: batchData.batch_name,
+        semesters: {}
+      };
+      
+      for (const [semesterKey, semesterData] of Object.entries(batchData.semesters)) {
+        if (semesterData.subjects) {
+          teacherData[batchNumber].semesters[semesterKey] = {
+            semesterName: `${semesterKey.charAt(0).toUpperCase() + semesterKey.slice(1)} Semester`,
+            courses: {}
+          };
+          
+          for (const [courseCode, subjectInfo] of Object.entries(semesterData.subjects)) {
+            teacherData[batchNumber].semesters[semesterKey].courses[courseCode] = {
+              title: subjectInfo.title,
+              code: courseCode,
+              teachers: subjectInfo.teachers || {}
+            };
+          }
+        }
+      }
+    }
+  }
+  
+  return teacherData;
+}
+
+// Export the getAllTeacherData function
+window.getAllTeacherData = getAllTeacherData;

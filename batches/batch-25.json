@@ -1,8 +1,5 @@
 {
   "batch_name": "25th Batch",
-  "batch_year": "2025-2029",
-  "last_updated": "2025-09-14",
-  "contact_person": "",
   "drive_folders": {
     "1st_semester": "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
     "2nd_semester": "1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
@@ -13,27 +10,17 @@
     "7th_semester": "1_cGrDFivmX1Bkw2iLnP_KKriNMBOfJGx",
     "8th_semester": "1dHSV2wI96GMIRyk_31fA2RaHbeAydGVo"
   },
-  "faculty_reference": {
-    "last_updated": "2025-09-04",
-    "source": "Official DU Accounting & Information Systems Department Faculty List",
-    "chairman": "Md. Maksudur Rahman Sarker",
-    "key_professors": [
-      "Dr. Riazur Rahman Chowdhury",
-      "Dr. Dhiman Kumar Chowdhury",
-      "Dr. Mahmuda Akter",
-      "Dr. Mahfuzul Hoque",
-      "Sadia Afroze",
-      "Dr. Mohammad Tareq"
-    ],
-    "note": "Complete faculty list with contact details available in faculty-mapping.json"
-  },
   "semesters": {
     "1st": {
       "subjects": {
         "1101": {
           "code": "1101",
           "title": "Introduction to Financial Accounting",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Dr Mohammed Mehadi Masud Mazumder",
+            "B": "Al-Amin",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [
@@ -46,18 +33,20 @@
               "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
             ],
             "books_manuals": [],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
               "https://drive.google.com/drive/folders/1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1102": {
           "code": "1102",
           "title": "Introduction to Business",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Md. Mahadi Hasan",
+            "B": "Tanzina Haque",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -66,17 +55,19 @@
               "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
             ],
             "books_manuals": [],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1103": {
           "code": "1103",
           "title": "Computer Concepts",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Tahmina Ahmed",
+            "B": "Dr. Dewan Mahboob Hossain",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -85,39 +76,41 @@
               "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
             ],
             "books_manuals": [],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1104": {
           "code": "1104",
           "title": "Business Mathematics",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Md. Abdul Hakim",
+            "B": "Md. Mazharul Anwar",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1105": {
           "code": "1105",
           "title": "Business Communication",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Ms. Hasina Begum",
+            "B": "Ahmed Rizvan Hasan",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -128,8 +121,8 @@
           "code": "1201",
           "title": "Intermediate Accounting",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Al-Amin",
+            "B": "Shah Alam",
             "C": ""
           },
           "links": {
@@ -145,19 +138,17 @@
             "books_manuals": [
               "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
             ],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1202": {
           "code": "1202",
           "title": "Microeconomics",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Minhaj Ferdous",
+            "B": "Md. Mahadi Hasan",
             "C": ""
           },
           "links": {
@@ -171,15 +162,11 @@
             "books_manuals": [
               "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
             ],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj",
-              "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8"
-            ],
-            "question_papers": [
+              "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8",
               "https://docs.google.com/document/d/class_test_example",
-              "https://docs.google.com/document/d/midterm_example"
-            ],
-            "assignments": [
+              "https://docs.google.com/document/d/midterm_example",
               "https://drive.google.com/drive/folders/previous_questions_folder"
             ]
           }
@@ -188,8 +175,8 @@
           "code": "1203",
           "title": "Management & Organizational Behavior",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Ms. Hasina Begum",
+            "B": "Ahmed Rizvan Hasan",
             "C": ""
           },
           "links": {
@@ -204,19 +191,17 @@
             "books_manuals": [
               "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
             ],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1204": {
           "code": "1204",
           "title": "Mathematics for Business Decisions-II",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Abdul Hakim",
+            "B": "Md. Mazharul Anwar",
             "C": ""
           },
           "links": {
@@ -224,17 +209,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1205": {
           "code": "1205",
           "title": "Bangladesh Studies",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Mohammed Almujaddade Alfasane",
+            "B": "Rumana Ahmed",
             "C": ""
           },
           "links": {
@@ -242,9 +225,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -254,76 +235,81 @@
         "2101": {
           "code": "2101",
           "title": "Advanced Financial Accounting-I",
-          "description": "Partnership accounting, corporate accounting, and financial statement analysis",
-          "teacher": "",
+          "teachers": {
+            "A": "Dr. Md. Jamil Sharif, ACMA",
+            "B": "Dr. Ranjan Kumar Mitra",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2102": {
           "code": "2102",
           "title": "Macroeconomics",
-          "description": "National income, economic policies, and macroeconomic theories",
-          "teacher": "",
+          "teachers": {
+            "A": "Shah Alam",
+            "B": "Mohammad Saif Uddin Bhuiyah",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2103": {
           "code": "2103",
           "title": "Programming and Database Management",
-          "description": "Programming fundamentals, database design, and data management systems",
-          "teacher": "",
+          "teachers": {
+            "A": "Kawsar Jahan",
+            "B": "Sir Jagadish",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2104": {
           "code": "2104",
           "title": "General Science & Environment",
-          "description": "Environmental science, sustainable development, and ecological principles",
-          "teacher": "",
+          "teachers": {
+            "A": "Dr. Tahmina Khatun",
+            "B": "Hasina Begum",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2105": {
           "code": "2105",
           "title": "Business Statistics-I",
-          "description": "Statistical methods, data analysis, and business research techniques",
-          "teacher": "",
+          "teachers": {
+            "A": "Ms. Sadia Afroze",
+            "B": "Mohammad Saif Uddin Bhuiyah",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -333,76 +319,81 @@
         "2201": {
           "code": "2201",
           "title": "Advanced Financial Accounting-II",
-          "description": "Advanced corporate accounting, consolidation, and financial reporting",
-          "teacher": "",
+          "teachers": {
+            "A": "Mamtaz Uddin Ahmed",
+            "B": "Dr. Md. Mushfiqur Rahman",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2202": {
           "code": "2202",
           "title": "Financial Management",
-          "description": "Capital budgeting, working capital management, and financial analysis",
-          "teacher": "",
+          "teachers": {
+            "A": "Dr. Minhaj Ferdous",
+            "B": "Ahmed Rizvan Hasan",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2203": {
           "code": "2203",
           "title": "Cost Accounting",
-          "description": "Cost allocation, variance analysis, and management accounting",
-          "teacher": "",
+          "teachers": {
+            "A": "Md. Mazharul Anwar",
+            "B": "Kawsar Jahan",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2204": {
           "code": "2204",
           "title": "Marketing",
-          "description": "Marketing principles, consumer behavior, and promotional strategies",
-          "teacher": "",
+          "teachers": {
+            "A": "Md. Rezaul Karim",
+            "B": "Dr. Tahmina Khatun",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2205": {
           "code": "2205",
           "title": "Business Statistics-II",
-          "description": "Advanced statistical methods and business research applications",
-          "teacher": "",
+          "teachers": {
+            "A": "Shah Alam",
+            "B": "Md. Ahasan Uddin",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -412,76 +403,81 @@
         "3101": {
           "code": "3101",
           "title": "Management Accounting",
-          "description": "Cost analysis, budgeting, performance measurement, and managerial decision-making",
-          "teacher": "",
+          "teachers": {
+            "A": "Dr. Md. Musfiqur Rahman",
+            "B": "Shah Alam",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3102": {
           "code": "3102",
           "title": "Banking and Insurance",
-          "description": "Banking principles, insurance fundamentals, financial services, and risk management",
-          "teacher": "",
+          "teachers": {
+            "A": "Bilkis Akhter",
+            "B": "Mohammad Saif Uddin Bhuiyah",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3103": {
           "code": "3103",
           "title": "Audit and Assurance",
-          "description": "Auditing standards, internal controls, risk assessment, and assurance services",
-          "teacher": "",
+          "teachers": {
+            "A": "Dr. Md. Jamil Sharif, ACMA",
+            "B": "Md. Rezaul Karim",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3104": {
           "code": "3104",
           "title": "Income Tax: Laws and Practice",
-          "description": "Income tax laws, regulations, compliance procedures, and practical applications",
-          "teacher": "",
+          "teachers": {
+            "A": "Ahmed Rizvan Hasan",
+            "B": "Md. Mahadi Hasan",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3105": {
           "code": "3105",
           "title": "Business Laws",
-          "description": "Contract law, company law, commercial legislation, and legal principles for business",
-          "teacher": "",
+          "teachers": {
+            "A": "Md. Ahasan Uddin",
+            "B": "Hasina Begum",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -491,76 +487,81 @@
         "3201": {
           "code": "3201",
           "title": "Forensic Accounting and Fraud Investigation",
-          "description": "Fraud detection, forensic accounting techniques, and investigation procedures",
-          "teacher": "",
+          "teachers": {
+            "A": "Mamtaz Uddin Ahmed",
+            "B": "Tanzina Haque",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3202": {
           "code": "3202",
           "title": "Corporate Finance",
-          "description": "Corporate financial management, capital structure, and financial decision-making",
-          "teacher": "",
+          "teachers": {
+            "A": "Dr. Ranjan Kumar Mitra",
+            "B": "Md. Nazim Uddin Bhuiyan",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3203": {
           "code": "3203",
           "title": "Accounting Information Systems",
-          "description": "Computerized accounting systems, ERP software, and information technology in accounting",
-          "teacher": "",
+          "teachers": {
+            "A": "Dr. Md. Jamil Sharif, ACMA",
+            "B": "Md. Rezaul Karim",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3204": {
           "code": "3204",
           "title": "VAT and Cross-border Taxation",
-          "description": "Value Added Tax regulations, cross-border taxation, and international tax compliance",
-          "teacher": "",
+          "teachers": {
+            "A": "Dr. Riazur Rahman Chowdhury",
+            "B": "Ms. Sadia Afroze",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3205": {
           "code": "3205",
           "title": "Corporate Laws, Governance and Secretarial Practices",
-          "description": "Corporate governance principles, company law, and secretarial practice standards",
-          "teacher": "",
+          "teachers": {
+            "A": "Dr. Dhiman Kumar Chowdhury",
+            "B": "Dr. Mohammad Tareq",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -570,76 +571,81 @@
         "4101": {
           "code": "4101",
           "title": "Advanced Management Accounting",
-          "description": "Advanced cost accounting, budgeting, performance measurement, and strategic management accounting",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4102": {
           "code": "4102",
           "title": "Financial Market and Investment Analysis",
-          "description": "Capital markets, investment strategies, portfolio management, and financial analysis",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4103": {
           "code": "4103",
           "title": "IT Governance and Information System Audit",
-          "description": "IT governance frameworks, information system controls, and audit procedures for technology",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4104": {
           "code": "4104",
           "title": "Supply Chain and Operation Management",
-          "description": "Supply chain optimization, operations strategy, logistics management, and process improvement",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4105": {
           "code": "4105",
           "title": "Public Sector Accounting and Financial Management",
-          "description": "Government accounting principles, public financial management, and budgetary control systems",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -649,76 +655,81 @@
         "4201": {
           "code": "4201",
           "title": "Accounting Theory",
-          "description": "Theoretical foundations of accounting, conceptual frameworks, and accounting philosophy",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4202": {
           "code": "4202",
           "title": "Business Analysis and Valuation",
-          "description": "Financial analysis techniques, business valuation methods, and investment appraisal",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4203": {
           "code": "4203",
           "title": "Data Analytics",
-          "description": "Data analysis techniques, statistical methods, and business intelligence tools for decision-making",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4204": {
           "code": "4204",
           "title": "Strategic Management",
-          "description": "Strategic planning, competitive analysis, organizational strategy, and business policy",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4205": {
           "code": "4205",
           "title": "Research Methodology",
-          "description": "Research design, data collection methods, statistical analysis, and academic writing",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -728,46 +739,49 @@
         "6101": {
           "code": "6101",
           "title": "Advanced Financial Accounting",
-          "description": "Advanced accounting principles, complex financial reporting, and international standards",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "6102": {
           "code": "6102",
           "title": "Corporate Governance and Accountability",
-          "description": "Corporate governance frameworks, board accountability, and stakeholder management",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "6103": {
           "code": "6103",
           "title": "Advanced Research Methodology",
-          "description": "Advanced research design, quantitative and qualitative methods, and statistical analysis",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -777,31 +791,33 @@
         "6201": {
           "code": "6201",
           "title": "Contemporary Issues in Accounting",
-          "description": "Current developments in accounting standards, emerging issues, and professional practice",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "6202": {
           "code": "6202",
           "title": "Advanced Cost & Management Accounting",
-          "description": "Advanced costing techniques, strategic cost management, and performance measurement",
-          "teacher": "",
+          "teachers": {
+            "A": "",
+            "B": "",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }

@@ -4,7 +4,7 @@
     "1st_semester": "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
     "2nd_semester": "1qQs3-YK5TDBkWNOIwS5fj113TB5h1tPu",
     "3rd_semester": "1cD9UZpwr4F4u79N6iI4rJk_J6jVocnGX",
-    "4th_semester": "1G2KfcJhwNg2arCpn22pGnqYmTMNUzIo",
+    "4th_semester": "1G2KfcJhwNg2arCpn22pGnqYmTMNU83VZ",
     "5th_semester": "1xU30Tj4q6oXZWb17ubqszqwLVBi-a6N_",
     "6th_semester": "1cSYiB69iMz2czYOHZAlI7nzVniD4bmH9",
     "7th_semester": "1_cGrDFivmX1Bkw2iLnP_KKriNMBOfJGx",
@@ -16,7 +16,11 @@
         "1101": {
           "code": "1101",
           "title": "Introduction to Financial Accounting",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Mamtaz Uddin Ahmed",
+            "B": "Dr. Mahmuda Akter",
+            "C": "Al-Amin"
+          },
           "links": {
             "class_updates": "",
             "notes": [
@@ -29,16 +33,17 @@
               "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
             ],
             "books_manuals": [],
-            "question_bank": [
-              "https://drive.google.com/drive/folders/1if_tJp5_wFGut07jmvAUUQXt9hapoxmu",
-              "https://drive.google.com/drive/folders/1iZ17xAyMEc4arkDx7pBuuqVj7ZIjQMWu"
-            ]
+            "question_bank": []
           }
         },
         "1102": {
           "code": "1102",
           "title": "Introduction to Business",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Dr. Yousuf Kamal",
+            "B": "Hasina Begum",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -47,17 +52,19 @@
               "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
             ],
             "books_manuals": [],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1103": {
           "code": "1103",
           "title": "Computer Concepts",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Dr. Riazur Rahman Chowdhury",
+            "B": "Dr Mohammed Mehadi Masud Mazumder",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
@@ -66,39 +73,41 @@
               "https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO"
             ],
             "books_manuals": [],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1hbZPTPxzgyrwVzeUVCljT72E6Scsx303"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1104": {
           "code": "1104",
           "title": "Business Mathematics",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Md. Abdul Hakim",
+            "B": "Md. Mazharul Anwar",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1105": {
           "code": "1105",
           "title": "Business Communication",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Moshahida Sultana",
+            "B": "Ahmed Rizvan Hasan",
+            "C": ""
+          },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -108,7 +117,11 @@
         "1201": {
           "code": "1201",
           "title": "Intermediate Accounting",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Mamtaz Uddin Ahmed",
+            "B": "Al-Amin",
+            "C": "Shah Alam"
+          },
           "links": {
             "class_updates": "",
             "notes": [
@@ -122,17 +135,19 @@
             "books_manuals": [
               "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
             ],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/17Wd_QVFQyb4V-eY-GvzmSOCt2Dywcb7_"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1202": {
           "code": "1202",
           "title": "Microeconomics",
-          "teachers": { "A": "", "B": "", "C": "" },
+          "teachers": {
+            "A": "Md. Rezaul Karim",
+            "B": "Md. Mahadi Hasan",
+            "C": ""
+          },
           "links": {
             "class_updates": "https://docs.google.com/document/d/1example_doc_id/edit",
             "notes": [
@@ -144,15 +159,11 @@
             "books_manuals": [
               "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
             ],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj",
-              "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8"
-            ],
-            "question_papers": [
+              "https://drive.google.com/drive/folders/1uAP0SsHed-KFZmHWP2Kvr-8VSa2nEja8",
               "https://docs.google.com/document/d/class_test_example",
-              "https://docs.google.com/document/d/midterm_example"
-            ],
-            "assignments": [
+              "https://docs.google.com/document/d/midterm_example",
               "https://drive.google.com/drive/folders/previous_questions_folder"
             ]
           }
@@ -161,8 +172,8 @@
           "code": "1203",
           "title": "Management & Organizational Behavior",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Mohammad Saif Uddin Bhuiyah",
+            "B": "Ms. Hasina Begum",
             "C": ""
           },
           "links": {
@@ -177,19 +188,17 @@
             "books_manuals": [
               "https://drive.google.com/drive/folders/1TPB_qo0BhrUTjSj5Vv92wap73MaTb9IU"
             ],
-            "previous_materials": [
+            "question_bank": [
               "https://drive.google.com/drive/folders/1PSQngE3zPIOhrct_iZfwjMhUpSgKPonj"
-            ],
-            "question_papers": [],
-            "assignments": []
+            ]
           }
         },
         "1204": {
           "code": "1204",
           "title": "Mathematics for Business Decisions-II",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Abdul Hakim",
+            "B": "Md. Mazharul Anwar",
             "C": ""
           },
           "links": {
@@ -197,17 +206,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "1205": {
           "code": "1205",
           "title": "Bangladesh Studies",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Mohammed Almujaddade Alfasane",
+            "B": "Rumana Ahmed",
             "C": ""
           },
           "links": {
@@ -215,9 +222,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -228,8 +233,8 @@
           "code": "2101",
           "title": "Advanced Financial Accounting-I",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Mamtaz Uddin Ahmed",
+            "B": "Dr. Ranjan Kumar Mitra",
             "C": ""
           },
           "links": {
@@ -237,35 +242,31 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2102": {
           "code": "2102",
           "title": "Macroeconomics",
           "teachers": {
-            "A": "",
-            "B": "",
-            "C": ""
+            "A": "Mohammad Saif Uddin Bhuiyah",
+            "B": "Shah Alam",
+            "C": "Md. Mahadi Hasan"
           },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2103": {
           "code": "2103",
           "title": "Programming and Database Management",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Kawsar Jahan",
+            "B": "Sir Jagadish",
             "C": ""
           },
           "links": {
@@ -273,17 +274,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2104": {
           "code": "2104",
           "title": "General Science & Environment",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Tahmina Khatun",
+            "B": "Hasina Begum",
             "C": ""
           },
           "links": {
@@ -291,17 +290,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2105": {
           "code": "2105",
           "title": "Business Statistics-I",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Ms. Sadia Afroze",
+            "B": "Md. Rezaul Karim",
             "C": ""
           },
           "links": {
@@ -309,9 +306,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -322,26 +317,24 @@
           "code": "2201",
           "title": "Advanced Financial Accounting-II",
           "teachers": {
-            "A": "",
-            "B": "",
-            "C": ""
+            "A": "Md. Mahadi Hasan",
+            "B": "Dr. Md. Mushfiqur Rahman",
+            "C": "Bilkis Akhter"
           },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2202": {
           "code": "2202",
           "title": "Financial Management",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Md. Monzur Morshed",
+            "B": "Ahmed Rizvan Hasan",
             "C": ""
           },
           "links": {
@@ -349,17 +342,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2203": {
           "code": "2203",
           "title": "Cost Accounting",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Mazharul Anwar",
+            "B": "Ishter Mahal",
             "C": ""
           },
           "links": {
@@ -367,17 +358,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2204": {
           "code": "2204",
           "title": "Marketing",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Rezaul Karim",
+            "B": "Mohammad Saif Uddin Bhuiyah",
             "C": ""
           },
           "links": {
@@ -385,17 +374,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "2205": {
           "code": "2205",
           "title": "Business Statistics-II",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Shah Alam",
+            "B": "Md. Ahasan Uddin",
             "C": ""
           },
           "links": {
@@ -403,9 +390,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -416,8 +401,8 @@
           "code": "3101",
           "title": "Management Accounting",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Md. Musfiqur Rahman",
+            "B": "Shah Alam",
             "C": ""
           },
           "links": {
@@ -425,35 +410,31 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3102": {
           "code": "3102",
           "title": "Banking and Insurance",
           "teachers": {
-            "A": "",
-            "B": "",
-            "C": ""
+            "A": "Bilkis Akhter",
+            "B": "Mohammad Saif Uddin Bhuiyah",
+            "C": "Md. Hashem"
           },
           "links": {
             "class_updates": "",
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3103": {
           "code": "3103",
           "title": "Audit and Assurance",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Md. Jamil Sharif, ACMA",
+            "B": "Md. Rezaul Karim",
             "C": ""
           },
           "links": {
@@ -461,17 +442,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3104": {
           "code": "3104",
           "title": "Income Tax: Laws and Practice",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Ahmed Rizvan Hasan",
+            "B": "Md. Mahadi Hasan",
             "C": ""
           },
           "links": {
@@ -479,17 +458,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3105": {
           "code": "3105",
           "title": "Business Laws",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Md. Ahasan Uddin",
+            "B": "Hasina Begum",
             "C": ""
           },
           "links": {
@@ -497,9 +474,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -510,8 +485,8 @@
           "code": "3201",
           "title": "Forensic Accounting and Fraud Investigation",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Mamtaz Uddin Ahmed",
+            "B": "Tanzina Haque",
             "C": ""
           },
           "links": {
@@ -519,17 +494,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3202": {
           "code": "3202",
           "title": "Corporate Finance",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Ranjan Kumar Mitra",
+            "B": "Md. Nazim Uddin Bhuiyan",
             "C": ""
           },
           "links": {
@@ -537,17 +510,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3203": {
           "code": "3203",
           "title": "Accounting Information Systems",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Md. Jamil Sharif, ACMA",
+            "B": "Md. Rezaul Karim",
             "C": ""
           },
           "links": {
@@ -555,17 +526,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3204": {
           "code": "3204",
           "title": "VAT and Cross-border Taxation",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Riazur Rahman Chowdhury",
+            "B": "Ms. Sadia Afroze",
             "C": ""
           },
           "links": {
@@ -573,17 +542,15 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "3205": {
           "code": "3205",
           "title": "Corporate Laws, Governance and Secretarial Practices",
           "teachers": {
-            "A": "",
-            "B": "",
+            "A": "Dr. Dhiman Kumar Chowdhury",
+            "B": "Dr. Mohammad Tareq",
             "C": ""
           },
           "links": {
@@ -591,9 +558,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -613,9 +578,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4102": {
@@ -631,9 +594,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4103": {
@@ -649,9 +610,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4104": {
@@ -667,9 +626,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4105": {
@@ -685,9 +642,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -707,9 +662,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4202": {
@@ -725,9 +678,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4203": {
@@ -743,9 +694,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4204": {
@@ -761,9 +710,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "4205": {
@@ -779,9 +726,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -801,9 +746,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "6102": {
@@ -819,9 +762,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "6103": {
@@ -837,9 +778,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
@@ -859,9 +798,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         },
         "6202": {
@@ -877,9 +814,7 @@
             "notes": [],
             "slides_lectures": [],
             "books_manuals": [],
-            "previous_materials": [],
-            "question_papers": [],
-            "assignments": []
+            "question_bank": []
           }
         }
       }
