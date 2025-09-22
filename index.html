@@ -1169,18 +1169,11 @@
         semesterCheckboxList.innerHTML = '';
         courseCheckboxList.innerHTML = '';
         
-        // Show semester row if any batches are selected OR if no batches selected (all batches)
-        if (selectedBatches.length > 0) {
-          // Show semester row with smooth transition
-          setTimeout(() => {
-            semesterRow.classList.add('show');
-          }, 100);
-        } else {
-          // No batches selected means "all batches" - still show semester filter
-          setTimeout(() => {
-            semesterRow.classList.add('show');
-          }, 100);
-        }
+        // Always show semester row (whether batches are selected or not)
+        // No batches selected means "all batches" so semester filter should still be available
+        setTimeout(() => {
+          semesterRow.classList.add('show');
+        }, 50);
         
         // Hide course row until semesters are selected
         courseRow.classList.remove('show');
