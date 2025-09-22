@@ -239,22 +239,23 @@
         transform: rotate(180deg);
       }
 
-      .checkbox-dropdown {
+      .filter-dropdown-content {
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.3s ease;
         border-top: 1px solid #e5e7eb;
-        position: absolute; /* Changed to absolute positioning */
-        top: 100%; /* Position below the header */
+        position: absolute;
+        top: 100%;
         left: 0;
         right: 0;
         background: white;
         border-radius: 0 0 8px 8px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* Added shadow for better visibility */
-        z-index: 20; /* Higher z-index than container */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        border: 1px solid #e1e5e9;
       }
 
-      .checkbox-dropdown.open {
+      .filter-dropdown-content.show {
         max-height: 200px;
         overflow-y: auto;
       }
@@ -370,18 +371,24 @@
       .search-filters {
         display: flex;
         flex-direction: column;
-        gap: 16px;
-        max-width: 600px;
+        gap: 10px;
+        max-width: 500px;
         margin: 0 auto;
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 12px;
-        border: 1px solid #e9ecef;
+        padding: 16px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e1e5e9;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
 
       .filter-row {
         position: relative;
         width: 100%;
+        margin-bottom: 8px;
+      }
+
+      .filter-row:last-of-type {
+        margin-bottom: 0;
       }
 
       .filter-dropdown {
@@ -391,34 +398,33 @@
 
       .filter-button {
         width: 100%;
-        padding: 12px 16px;
+        padding: 10px 14px;
         background: white;
-        border: 2px solid #e1e5e9;
-        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-size: 14px;
+        font-size: 13px;
         color: #374151;
       }
 
       .filter-button:hover {
         border-color: #3b82f6;
-        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
       }
 
       .filter-button.active {
         border-color: #3b82f6;
-        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        background: #f8faff;
       }
 
       .filter-button-text {
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 2px;
+        align-items: center;
+        gap: 8px;
       }
 
       .filter-label {
@@ -427,13 +433,17 @@
       }
 
       .filter-count {
-        font-size: 12px;
+        font-size: 11px;
         color: #6b7280;
+        background: #f3f4f6;
+        padding: 2px 6px;
+        border-radius: 10px;
       }
 
       .filter-arrow {
         transition: transform 0.2s ease;
         color: #6b7280;
+        font-size: 12px;
       }
 
       .filter-button.active .filter-arrow {
@@ -447,12 +457,12 @@
         right: 0;
         background: white;
         border: 1px solid #e1e5e9;
-        border-radius: 8px;
+        border-radius: 6px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        max-height: 240px;
+        max-height: 200px;
         overflow-y: auto;
         z-index: 1000;
-        margin-top: 4px;
+        margin-top: 2px;
         display: none;
       }
 
@@ -463,10 +473,10 @@
       .filter-option {
         display: flex;
         align-items: center;
-        padding: 10px 16px;
+        padding: 8px 12px;
         cursor: pointer;
         transition: background 0.2s ease;
-        border-bottom: 1px solid #f3f4f6;
+        border-bottom: 1px solid #f1f3f4;
       }
 
       .filter-option:last-child {
@@ -478,7 +488,7 @@
       }
 
       .filter-option input[type="checkbox"] {
-        margin-right: 12px;
+        margin-right: 10px;
         transform: scale(1.1);
         cursor: pointer;
       }
@@ -486,7 +496,7 @@
       .filter-option label {
         cursor: pointer;
         flex: 1;
-        font-size: 14px;
+        font-size: 13px;
         color: #374151;
       }
 
@@ -654,24 +664,17 @@
 
       .cache-btn,
       .apply-filters-btn {
-        background: #3b82f6;
+        background: #059669;
         color: white;
         border: none;
         padding: 8px 16px;
         border-radius: 6px;
         cursor: pointer;
-        font-size: 14px;
+        font-size: 13px;
+        font-weight: 500;
         transition: background 0.3s ease;
-      }
-
-      .cache-btn:hover,
-      .apply-filters-btn:hover {
-        background: #2563eb;
-      }
-
-      .apply-filters-btn {
-        background: #059669;
-        margin-left: 10px;
+        margin-top: 12px;
+        width: 100%;
       }
 
       .apply-filters-btn:hover {
@@ -1170,12 +1173,15 @@
 
       // Handle checkbox change
       function handleFilterChange(filterType, value, isChecked) {
+        console.log('handleFilterChange called:', filterType, value, isChecked);
+        
         if (filterType === 'batch') {
           if (isChecked) {
             selectedBatches.push(value);
           } else {
             selectedBatches = selectedBatches.filter(b => b !== value);
           }
+          console.log('selectedBatches:', selectedBatches);
           updateBatchCount();
           populateSemesters();
         } else if (filterType === 'semester') {
@@ -1184,16 +1190,26 @@
           } else {
             selectedSemesters = selectedSemesters.filter(s => s !== value);
           }
+          console.log('selectedSemesters:', selectedSemesters);
           updateSemesterCount();
-          populateCourses();
+          populateCourses(); // This should show the course filter
         } else if (filterType === 'course') {
           if (isChecked) {
             selectedCourses.push(value);
           } else {
             selectedCourses = selectedCourses.filter(c => c !== value);
           }
+          console.log('selectedCourses:', selectedCourses);
           updateCourseCount();
         }
+      }
+
+      // Get selected checkbox values (for backward compatibility)
+      function getSelectedCheckboxValues(filterType) {
+        if (filterType === 'batchFilter') return selectedBatches;
+        if (filterType === 'semesterFilter') return selectedSemesters;
+        if (filterType === 'courseFilter') return selectedCourses;
+        return [];
       }
 
       // Update count displays
@@ -1246,10 +1262,16 @@
             const option = document.createElement('div');
             option.className = 'filter-option';
             option.innerHTML = `
-              <input type="checkbox" id="batch_${batchNum}" value="${batchNum}" 
-                     onchange="handleFilterChange('batch', '${batchNum}', this.checked)">
+              <input type="checkbox" id="batch_${batchNum}" value="${batchNum}">
               <label for="batch_${batchNum}">${batchName}</label>
             `;
+            
+            // Add event listener to checkbox
+            const checkbox = option.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', function() {
+              handleFilterChange('batch', batchNum.toString(), this.checked);
+            });
+            
             container.appendChild(option);
           });
           
@@ -1300,10 +1322,16 @@
             const option = document.createElement('div');
             option.className = 'filter-option';
             option.innerHTML = `
-              <input type="checkbox" id="semester_${semester}" value="${semester}" 
-                     onchange="handleFilterChange('semester', '${semester}', this.checked)">
+              <input type="checkbox" id="semester_${semester}" value="${semester}">
               <label for="semester_${semester}">${displayName}</label>
             `;
+            
+            // Add event listener to checkbox
+            const checkbox = option.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', function() {
+              handleFilterChange('semester', semester, this.checked);
+            });
+            
             container.appendChild(option);
           });
           
@@ -1318,6 +1346,8 @@
       async function populateCourses() {
         const courseRow = document.getElementById('courseRow');
         
+        console.log('populateCourses called, selectedSemesters:', selectedSemesters);
+        
         if (selectedSemesters.length === 0) {
           courseRow.style.display = 'none';
           updateCourseCount();
@@ -1325,6 +1355,7 @@
         }
         
         courseRow.style.display = 'block';
+        console.log('Course row should now be visible');
         
         try {
           await loadAllBatchData();
@@ -1364,10 +1395,16 @@
             const option = document.createElement('div');
             option.className = 'filter-option';
             option.innerHTML = `
-              <input type="checkbox" id="course_${course.code}" value="${course.code}" 
-                     onchange="handleFilterChange('course', '${course.code}', this.checked)">
+              <input type="checkbox" id="course_${course.code}" value="${course.code}">
               <label for="course_${course.code}" title="Available in: ${Array.from(course.semesters).join(', ')}">${course.code} - ${course.title}</label>
             `;
+            
+            // Add event listener to checkbox
+            const checkbox = option.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', function() {
+              handleFilterChange('course', course.code, this.checked);
+            });
+            
             container.appendChild(option);
           });
           
@@ -1392,30 +1429,6 @@
         }
       }
 
-      // Apply filters without search term
-      function applyFiltersOnly() {
-        console.log('Applying filters:', {
-          batches: selectedBatches,
-          semesters: selectedSemesters,
-          courses: selectedCourses
-        });
-        
-        // Show results container
-        const resultsContainer = document.getElementById('searchResultsContainer');
-        resultsContainer.classList.add('visible');
-        
-        // Update results stats
-        const statsEl = document.getElementById('resultsStats');
-        statsEl.textContent = 'Applying filters...';
-        
-        // Show loading
-        showRetroLoading('Applying filters...', 'Loading resources for selected filters...');
-        
-        // Apply filters after a short delay to show loading
-        setTimeout(() => {
-          showFilteredResources();
-        }, 500);
-      }
       // Initialize filters when page loads
       async function initializeFilters() {
         try {
@@ -1916,7 +1929,7 @@
       }
 
       // Smart filter change handler - only search if there's text in search bar
-      function handleFilterChange() {
+      function handleSearchChange() {
         const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
 
         // Only trigger search if there's already text in the search bar
@@ -1932,9 +1945,9 @@
 
       // Apply filters without requiring search term - shows all resources for selected filters
       async function applyFiltersOnly() {
-        const batchFilters = getSelectedCheckboxValues('batchFilter');
-        const semesterFilters = getSelectedCheckboxValues('semesterFilter');
-        const courseFilters = getSelectedCheckboxValues('courseFilter');
+        const batchFilters = selectedBatches;
+        const semesterFilters = selectedSemesters;
+        const courseFilters = selectedCourses;
 
         // Show all resources for the selected filters (no search term required)
         updateSearchStats("Loading all resources for selected filters...");
@@ -2038,9 +2051,9 @@
       // Optimized search - only load data when user searches
       async function optimizedSearch() {
         const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
-        const batchFilters = getSelectedCheckboxValues('batchFilter');
-        const semesterFilters = getSelectedCheckboxValues('semesterFilter');
-        const courseFilters = getSelectedCheckboxValues('courseFilter');
+        const batchFilters = selectedBatches;
+        const semesterFilters = selectedSemesters;
+        const courseFilters = selectedCourses;
 
         // Always require a search term for manual search
         if (!searchTerm) {
