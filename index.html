@@ -735,8 +735,11 @@
               id="batchFilter"
               class="filter-select"
               onchange="updateSemesterOptions()"
+              multiple
+              size="1"
+              style="height: auto; min-height: 40px;"
             >
-              <option value="">Select Batch</option>
+              <option value="">All Batches</option>
               <!-- Batch options will be populated dynamically -->
             </select>
           </div>
@@ -747,9 +750,12 @@
               id="semesterFilter"
               class="filter-select"
               onchange="updateCourseOptions()"
+              multiple
+              size="1"
+              style="height: auto; min-height: 40px;"
               disabled
             >
-              <option value="">Select Semester</option>
+              <option value="">All Semesters</option>
             </select>
           </div>
 
@@ -817,6 +823,14 @@
           >
             🗂️ Minimize Batches
           </button>
+          <button
+            class="control-btn"
+            onclick="toggleSemesterSort()"
+            title="Toggle semester sort order"
+            id="sortToggleBtn"
+          >
+            📊 1st→8th Order
+          </button>
         </div>
       </div>
 
@@ -827,7 +841,18 @@
     <div data-include="./assets/footer.html"></div>
 
     <script>
-      // Function to populate batch filter with available batches
+      // Helper function to get selected values from multi-select dropdown
+      function getSelectedValues(selectElement) {
+        const selectedValues = Array.from(selectElement.selectedOptions)
+          .map(option => option.value)
+          .filter(value => value !== ""); // Remove empty default option
+        return selectedValues.length > 0 ? selectedValues : []; // Return empty array if none selected
+      }
+
+      // Helper function to check if any option is selected in multi-select
+      function hasSelection(selectElement) {
+        return getSelectedValues(selectElement).length > 0;
+      }
       async function populateBatchOptions() {
         const batchSelect = document.getElementById('batchFilter');
         
@@ -864,7 +889,7 @@
         }
       }
 
-      // Function to update semester options based on selected batch
+      // Function to update semester options based on selected batches
       async function updateSemesterOptions() {
         const batchSelect = document.getElementById('batchFilter');
         const semesterSelect = document.getElementById('semesterFilter');
@@ -872,16 +897,16 @@
         const semesterRow = document.getElementById('semesterRow');
         const courseRow = document.getElementById('courseRow');
         
-        const selectedBatch = batchSelect.value;
+        const selectedBatches = getSelectedValues(batchSelect);
         
         // Clear and disable semester and course dropdowns
-        semesterSelect.innerHTML = '<option value="">Select Semester</option>';
-        courseSelect.innerHTML = '<option value="">Select Course</option>';
-        semesterSelect.disabled = !selectedBatch;
+        semesterSelect.innerHTML = '<option value="">All Semesters</option>';
+        courseSelect.innerHTML = '<option value="">All Courses</option>';
+        semesterSelect.disabled = selectedBatches.length === 0;
         courseSelect.disabled = true;
         
         // Hide/show semester row based on batch selection
-        if (!selectedBatch) {
+        if (selectedBatches.length === 0) {
           semesterRow.classList.remove('show');
           courseRow.classList.remove('show');
           return;
@@ -895,20 +920,28 @@
         try {
           // Load batch data dynamically from batch JSON files
           await loadAllBatchData();
-          const batchData = window.BATCH_DATA_CACHE.get(selectedBatch);
           
-          if (!batchData || !batchData.semesters) {
-            console.warn(`No semester data found for batch ${selectedBatch}`);
+          // Collect all available semesters from selected batches
+          const availableSemesters = new Set();
+          
+          selectedBatches.forEach(selectedBatch => {
+            const batchData = window.BATCH_DATA_CACHE.get(selectedBatch);
+            if (batchData && batchData.semesters) {
+              Object.keys(batchData.semesters).forEach(semester => {
+                availableSemesters.add(semester);
+              });
+            }
+          });
+          
+          if (availableSemesters.size === 0) {
+            console.warn(`No semester data found for batches ${selectedBatches.join(', ')}`);
             semesterSelect.disabled = true;
             return;
           }
           
-          // Get available semesters from the batch data
-          const availableSemesters = Object.keys(batchData.semesters);
-          
           // Sort semesters in logical order
           const semesterOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', 'mba-1st', 'mba-2nd'];
-          const sortedSemesters = availableSemesters.sort((a, b) => {
+          const sortedSemesters = Array.from(availableSemesters).sort((a, b) => {
             return semesterOrder.indexOf(a) - semesterOrder.indexOf(b);
           });
           
@@ -1000,6 +1033,7 @@
       let isLoading = false;
       let fileCache = new Map(); // Cache for API responses
       let loadedFolders = new Set(); // Track which folders we've already loaded
+      let isAscendingSort = true; // Track semester sort order: true = 1st→8th, false = 8th→1st
 
       // DOM element cache for performance optimization
       const DOM_CACHE = {
@@ -1399,8 +1433,8 @@
 
       // Apply filters without requiring search term - shows all resources for selected filters
       async function applyFiltersOnly() {
-        const batchFilter = DOM_CACHE.batchFilter.value;
-        const semesterFilter = DOM_CACHE.semesterFilter.value;
+        const batchFilters = getSelectedValues(DOM_CACHE.batchFilter);
+        const semesterFilters = getSelectedValues(DOM_CACHE.semesterFilter);
         const courseFilter = DOM_CACHE.courseFilter.value;
 
         // Show all resources for the selected filters (no search term required)
@@ -1410,8 +1444,8 @@
         try {
           const results = await smartSearch(
             "", // Empty search term to get all results
-            semesterFilter,
-            batchFilter,
+            semesterFilters,
+            batchFilters,
             courseFilter,
             DOM_CACHE.resultsStats, // Use correct DOM element
             true // Flag to indicate this is a filter-only search
@@ -1419,7 +1453,7 @@
           displayResults(results);
           updateSearchStats(
             `Showing ${results.length} resources${
-              semesterFilter || batchFilter || courseFilter ? " for selected filters" : " (all)"
+              semesterFilters.length > 0 || batchFilters.length > 0 || courseFilter ? " for selected filters" : " (all)"
             }`
           );
         } catch (error) {
@@ -1502,8 +1536,8 @@
       // Optimized search - only load data when user searches
       async function optimizedSearch() {
         const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
-        const batchFilter = DOM_CACHE.batchFilter.value;
-        const semesterFilter = DOM_CACHE.semesterFilter.value;
+        const batchFilters = getSelectedValues(DOM_CACHE.batchFilter);
+        const semesterFilters = getSelectedValues(DOM_CACHE.semesterFilter);
         const courseFilter = DOM_CACHE.courseFilter.value;
 
         // Always require a search term for manual search
@@ -1528,8 +1562,8 @@
         try {
           const results = await smartSearch(
             searchTerm,
-            semesterFilter,
-            batchFilter,
+            semesterFilters,
+            batchFilters,
             courseFilter,
             DOM_CACHE.resultsStats
           );
@@ -1546,8 +1580,8 @@
       // Smart search implementation
       async function smartSearch(
         searchTerm,
-        semesterFilter,
-        batchFilter,
+        semesterFilters,  // Now an array
+        batchFilters,     // Now an array
         courseFilter,
         statsElement,
         isFilterOnly = false
@@ -1562,10 +1596,14 @@
         // Smart folder organization: Group by semester, then distribute evenly
         const semesterBatches = {};
         for (const [semester, batches] of Object.entries(ALL_DRIVE_RESOURCES)) {
-          if (semesterFilter && semester !== semesterFilter) continue;
+          // Check if semester should be included (if filters are set and semester not in filters, skip)
+          if (semesterFilters.length > 0 && !semesterFilters.includes(semester)) continue;
+          
           semesterBatches[semester] = [];
           for (const [batchKey, batchInfo] of Object.entries(batches)) {
-            if (batchFilter && batchKey !== batchFilter) continue;
+            // Check if batch should be included (if filters are set and batch not in filters, skip)
+            if (batchFilters.length > 0 && !batchFilters.includes(batchKey)) continue;
+            
             semesterBatches[semester].push({
               semester,
               batchKey,
@@ -2059,11 +2097,24 @@
           grouped[semester][batch] = tree;
         });
 
-        // Sort semesters (highest first: 8th, 7th, 6th, etc.)
+        // Sort semesters based on current sort order
         const sortedSemesters = Object.entries(grouped).sort(([a], [b]) => {
-          const numA = parseInt(a.replace(/\D/g, "")) || 0;
-          const numB = parseInt(b.replace(/\D/g, "")) || 0;
-          return numB - numA;
+          // Define semester order
+          const semesterOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', 'mba-1st', 'mba-2nd'];
+          const indexA = semesterOrder.indexOf(a);
+          const indexB = semesterOrder.indexOf(b);
+          
+          // If both semesters are in the order array, sort by their position
+          if (indexA !== -1 && indexB !== -1) {
+            return isAscendingSort ? (indexA - indexB) : (indexB - indexA);
+          }
+          
+          // If only one is in the order array, prioritize it
+          if (indexA !== -1) return isAscendingSort ? -1 : 1;
+          if (indexB !== -1) return isAscendingSort ? 1 : -1;
+          
+          // Fallback to alphabetical sort for unknown semesters
+          return isAscendingSort ? a.localeCompare(b) : b.localeCompare(a);
         });
 
         sortedSemesters.forEach(([semester, batches]) => {
@@ -2490,6 +2541,30 @@
           .forEach((icon) => {
             icon.textContent = "▶";
           });
+      }
+
+      // Toggle semester sort order
+      function toggleSemesterSort() {
+        isAscendingSort = !isAscendingSort;
+        const sortBtn = document.getElementById('sortToggleBtn');
+        
+        if (isAscendingSort) {
+          sortBtn.innerHTML = '📊 1st→8th Order';
+          sortBtn.title = 'Currently showing 1st to 8th semester order. Click to reverse.';
+        } else {
+          sortBtn.innerHTML = '📊 8th→1st Order';
+          sortBtn.title = 'Currently showing 8th to 1st semester order. Click to reverse.';
+        }
+        
+        // Re-display results with new sort order if there are current results
+        const resultsContainer = document.getElementById('all-resources');
+        if (resultsContainer && resultsContainer.children.length > 0) {
+          // Get current search term and re-run search
+          const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
+          if (searchTerm) {
+            optimizedSearch();
+          }
+        }
       }
     </script>
   </body>
