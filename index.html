@@ -266,21 +266,30 @@
       .checkbox-item {
         display: flex;
         align-items: center;
-        padding: 8px 12px;
+        padding: 12px 16px;
         border-radius: 6px;
         cursor: pointer;
         transition: background 0.2s ease;
         user-select: none;
+        min-height: 44px; /* Better touch target for mobile */
+        border-bottom: 1px solid #f3f4f6;
       }
 
       .checkbox-item:hover {
         background: #f3f4f6;
       }
 
+      .checkbox-item:last-child {
+        border-bottom: none;
+      }
+
       .checkbox-item input[type="checkbox"] {
-        margin-right: 10px;
-        transform: scale(1.1);
+        margin-right: 12px;
+        transform: scale(1.2); /* Larger for easier clicking */
         cursor: pointer;
+        width: 18px;
+        height: 18px;
+        accent-color: #2563eb;
       }
 
       .checkbox-item label {
@@ -288,12 +297,15 @@
         flex-grow: 1;
         font-size: 14px;
         color: #374151;
+        line-height: 1.4;
+        margin: 0; /* Remove default margins */
       }
 
       .checkbox-item.all-option {
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 2px solid #e5e7eb;
         margin-bottom: 4px;
         font-weight: 500;
+        background: #f8fafc;
       }
 
       /* Retro Loading Animation (Simple XP-style bar) */
@@ -1026,28 +1038,13 @@
     <script>
       // Helper function to get selected values from checkbox filters
       function getSelectedCheckboxValues(containerId) {
-        const checkboxes = document.querySelectorAll(`#${containerId}CheckboxList input[type="checkbox"]:not(.all-checkbox):checked`);
+        const checkboxes = document.querySelectorAll(`#${containerId}CheckboxList input[type="checkbox"]:checked`);
         return Array.from(checkboxes).map(cb => cb.value).filter(value => value !== "");
       }
 
       // Helper function to check if any option is selected in checkbox filter
       function hasCheckboxSelection(containerId) {
         return getSelectedCheckboxValues(containerId).length > 0;
-      }
-
-      // Helper function to check if "All" is selected for a filter
-      function isAllSelected(filterId) {
-        const allCheckbox = document.querySelector(`#${filterId}CheckboxList .all-checkbox`);
-        return allCheckbox ? allCheckbox.checked : false;
-      }
-
-      // Helper function to get effective selected values (handles "All" checkbox)
-      function getEffectiveSelectedValues(filterId) {
-        if (isAllSelected(filterId)) {
-          // If "All" is selected, return empty array to indicate "all items"
-          return [];
-        }
-        return getSelectedCheckboxValues(filterId);
       }
 
       // Toggle checkbox filter dropdown
@@ -1075,14 +1072,8 @@
         }
       }
 
-      // Handle "All" checkbox toggle
-      function handleAllCheckbox(filterId, allCheckbox) {
-        const checkboxes = document.querySelectorAll(`#${filterId}CheckboxList input[type="checkbox"]:not(.all-checkbox)`);
-        
-        if (allCheckbox.checked) {
-          checkboxes.forEach(cb => cb.checked = false);
-        }
-        
+      // Handle checkbox change with event delegation
+      function handleCheckboxChange(filterId, value, isChecked) {
         updateSelectedCount(filterId);
         
         // Trigger appropriate update function
@@ -1093,24 +1084,24 @@
         }
       }
 
-      // Handle individual checkbox change
-      function handleCheckboxChange(filterId) {
-        const allCheckbox = document.querySelector(`#${filterId}CheckboxList .all-checkbox`);
-        const selectedValues = getSelectedCheckboxValues(filterId);
-        
-        // Uncheck "All" if any individual option is selected
-        if (selectedValues.length > 0 && allCheckbox) {
-          allCheckbox.checked = false;
-        }
-        
-        updateSelectedCount(filterId);
-        
-        // Trigger appropriate update function
-        if (filterId === 'batchFilter') {
-          updateSemesterOptions();
-        } else if (filterId === 'semesterFilter') {
-          updateCourseOptions();
-        }
+      // Set up event delegation for checkbox containers
+      function setupCheckboxEventListeners() {
+        ['batchFilter', 'semesterFilter', 'courseFilter'].forEach(filterId => {
+          const container = document.getElementById(`${filterId}CheckboxList`);
+          if (container) {
+            // Remove existing listeners
+            container.replaceWith(container.cloneNode(true));
+            const newContainer = document.getElementById(`${filterId}CheckboxList`);
+            
+            newContainer.addEventListener('click', function(e) {
+              if (e.target.type === 'checkbox') {
+                setTimeout(() => {
+                  handleCheckboxChange(filterId, e.target.value, e.target.checked);
+                }, 10);
+              }
+            });
+          }
+        });
       }
       async function populateBatchOptions() {
         const batchCheckboxList = document.getElementById('batchCheckboxList');
@@ -1128,24 +1119,13 @@
           // Clear existing checkboxes
           batchCheckboxList.innerHTML = '';
           
-          // Add "All Batches" option
-          const allItem = document.createElement('div');
-          allItem.className = 'checkbox-item all-option';
-          allItem.innerHTML = `
-            <input type="checkbox" class="all-checkbox" id="batchAll" value="" 
-                   onchange="handleAllCheckbox('batchFilter', this)" checked>
-            <label for="batchAll">All Batches</label>
-          `;
-          batchCheckboxList.appendChild(allItem);
-          
-          // Populate batch checkboxes
+          // Populate batch checkboxes (no "All" option)
           availableBatches.forEach(batchNumber => {
             const batchData = window.BATCH_DATA_CACHE.get(batchNumber.toString());
             const item = document.createElement('div');
             item.className = 'checkbox-item';
             item.innerHTML = `
-              <input type="checkbox" id="batch${batchNumber}" value="${batchNumber}" 
-                     onchange="handleCheckboxChange('batchFilter')">
+              <input type="checkbox" id="batch${batchNumber}" value="${batchNumber}">
               <label for="batch${batchNumber}">${batchData?.batch_name || `${batchNumber}th Batch`}</label>
             `;
             batchCheckboxList.appendChild(item);
@@ -1158,29 +1138,22 @@
           // Clear existing checkboxes
           batchCheckboxList.innerHTML = '';
           
-          // Add "All Batches" option
-          const allItem = document.createElement('div');
-          allItem.className = 'checkbox-item all-option';
-          allItem.innerHTML = `
-            <input type="checkbox" class="all-checkbox" id="batchAll" value="" 
-                   onchange="handleAllCheckbox('batchFilter', this)" checked>
-            <label for="batchAll">All Batches</label>
-          `;
-          batchCheckboxList.appendChild(allItem);
-          
           // Add fallback options if batch loading fails
           const fallbackBatches = ['31', '30', '29', '28', '27', '26', '25', '24'];
           fallbackBatches.forEach(batch => {
             const item = document.createElement('div');
             item.className = 'checkbox-item';
             item.innerHTML = `
-              <input type="checkbox" id="batch${batch}" value="${batch}" 
-                     onchange="handleCheckboxChange('batchFilter')">
+              <input type="checkbox" id="batch${batch}" value="${batch}">
               <label for="batch${batch}">${batch}th Batch</label>
             `;
             batchCheckboxList.appendChild(item);
           });
         }
+        
+        // Setup event listeners after populating
+        setupCheckboxEventListeners();
+        updateSelectedCount('batchFilter');
       }
 
       // Function to update semester options based on selected batches
@@ -1191,33 +1164,36 @@
         const courseRow = document.getElementById('courseRow');
         
         const selectedBatches = getSelectedCheckboxValues('batchFilter');
-        const isAllBatches = isAllSelected('batchFilter');
         
         // Clear semester and course checkboxes
         semesterCheckboxList.innerHTML = '';
         courseCheckboxList.innerHTML = '';
         
-        // Show semester row if batches are selected (including "All Batches")
-        if (selectedBatches.length > 0 || isAllBatches) {
+        // Show semester row if any batches are selected OR if no batches selected (all batches)
+        if (selectedBatches.length > 0) {
           // Show semester row with smooth transition
           setTimeout(() => {
             semesterRow.classList.add('show');
           }, 100);
         } else {
-          semesterRow.classList.remove('show');
-          courseRow.classList.remove('show');
-          return;
+          // No batches selected means "all batches" - still show semester filter
+          setTimeout(() => {
+            semesterRow.classList.add('show');
+          }, 100);
         }
+        
+        // Hide course row until semesters are selected
+        courseRow.classList.remove('show');
         
         try {
           // Load batch data dynamically from batch JSON files
           await loadAllBatchData();
           
-          // Collect all available semesters from selected batches
+          // Collect all available semesters from selected batches (or all if none selected)
           const availableSemesters = new Set();
           
-          if (isAllBatches) {
-            // If "All Batches" is selected, include all batches
+          if (selectedBatches.length === 0) {
+            // No batches selected = all batches
             window.BATCH_DATA_CACHE.forEach((batchData, batchKey) => {
               if (batchData && batchData.semesters) {
                 Object.keys(batchData.semesters).forEach(semester => {
@@ -1248,17 +1224,7 @@
             return semesterOrder.indexOf(a) - semesterOrder.indexOf(b);
           });
           
-          // Add "All Semesters" option
-          const allItem = document.createElement('div');
-          allItem.className = 'checkbox-item all-option';
-          allItem.innerHTML = `
-            <input type="checkbox" class="all-checkbox" id="semesterAll" value="" 
-                   onchange="handleAllCheckbox('semesterFilter', this)" checked>
-            <label for="semesterAll">All Semesters</label>
-          `;
-          semesterCheckboxList.appendChild(allItem);
-          
-          // Populate semester checkboxes
+          // Populate semester checkboxes (no "All" option)
           sortedSemesters.forEach(semester => {
             const item = document.createElement('div');
             item.className = 'checkbox-item';
@@ -1272,12 +1238,15 @@
             }
             
             item.innerHTML = `
-              <input type="checkbox" id="semester${semester}" value="${semester}" 
-                     onchange="handleCheckboxChange('semesterFilter')">
+              <input type="checkbox" id="semester${semester}" value="${semester}">
               <label for="semester${semester}">${displayName}</label>
             `;
             semesterCheckboxList.appendChild(item);
           });
+          
+          // Setup event listeners and update count
+          setupCheckboxEventListeners();
+          updateSelectedCount('semesterFilter');
           
         } catch (error) {
           console.error('Error loading semester options:', error);
@@ -1291,14 +1260,12 @@
         
         const selectedBatches = getSelectedCheckboxValues('batchFilter');
         const selectedSemesters = getSelectedCheckboxValues('semesterFilter');
-        const isAllBatches = isAllSelected('batchFilter');
-        const isAllSemesters = isAllSelected('semesterFilter');
         
         // Clear course checkboxes
         courseCheckboxList.innerHTML = '';
         
-        // Show course row if semesters and batches are selected
-        if ((selectedSemesters.length > 0 || isAllSemesters) && (selectedBatches.length > 0 || isAllBatches)) {
+        // Show course row if semesters are selected
+        if (selectedSemesters.length > 0) {
           // Show course row with smooth transition
           setTimeout(() => {
             courseRow.classList.add('show');
@@ -1315,20 +1282,16 @@
           // Collect all available courses from selected batches and semesters
           const availableCourses = new Map(); // code -> course info
           
-          // Determine which batches to include
-          const batchesToProcess = isAllBatches ? 
+          // Determine which batches to include (all if none selected)
+          const batchesToProcess = selectedBatches.length === 0 ? 
             Array.from(window.BATCH_DATA_CACHE.keys()) : 
             selectedBatches;
           
           batchesToProcess.forEach(batchNumber => {
             const batchData = window.BATCH_DATA_CACHE.get(batchNumber);
             if (batchData && batchData.semesters) {
-              // Determine which semesters to include
-              const semestersToProcess = isAllSemesters ?
-                Object.keys(batchData.semesters) :
-                selectedSemesters;
-                
-              semestersToProcess.forEach(semester => {
+              // Only process selected semesters
+              selectedSemesters.forEach(semester => {
                 if (batchData.semesters[semester] && batchData.semesters[semester].subjects) {
                   const subjects = batchData.semesters[semester].subjects;
                   Object.entries(subjects).forEach(([code, courseInfo]) => {
@@ -1356,27 +1319,20 @@
           // Sort courses by course code
           const sortedCourses = Array.from(availableCourses.values()).sort((a, b) => a.code.localeCompare(b.code));
           
-          // Add "All Courses" option
-          const allItem = document.createElement('div');
-          allItem.className = 'checkbox-item all-option';
-          allItem.innerHTML = `
-            <input type="checkbox" class="all-checkbox" id="courseAll" value="" 
-                   onchange="handleAllCheckbox('courseFilter', this)" checked>
-            <label for="courseAll">All Courses</label>
-          `;
-          courseCheckboxList.appendChild(allItem);
-          
-          // Populate course checkboxes
+          // Populate course checkboxes (no "All" option)
           sortedCourses.forEach(course => {
             const item = document.createElement('div');
             item.className = 'checkbox-item';
             item.innerHTML = `
-              <input type="checkbox" id="course${course.code}" value="${course.code}" 
-                     onchange="handleCheckboxChange('courseFilter')">
+              <input type="checkbox" id="course${course.code}" value="${course.code}">
               <label for="course${course.code}" title="Available in ${Array.from(course.semesters).join(', ')} semesters">${course.code} - ${course.title || 'Unknown Course'}</label>
             `;
             courseCheckboxList.appendChild(item);
           });
+          
+          // Setup event listeners and update count
+          setupCheckboxEventListeners();
+          updateSelectedCount('courseFilter');
           
         } catch (error) {
           console.error('Error loading course options:', error);
@@ -2831,6 +2787,9 @@
           
           // Populate batch filter options dynamically
           await populateBatchOptions();
+          
+          // Since no batches selected means "all batches", show semester options immediately
+          await updateSemesterOptions();
           
           updateCacheStats(); // Update again after loading mapping
         } catch (error) {
