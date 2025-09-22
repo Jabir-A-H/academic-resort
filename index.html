@@ -189,6 +189,104 @@
         margin-right: auto;
       }
 
+      /* Checkbox Filter Container */
+      .checkbox-filter-container {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: white;
+        position: relative;
+      }
+
+      .filter-header {
+        padding: 12px 16px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f9fafb;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+        user-select: none;
+      }
+
+      .filter-header:hover {
+        background: #f3f4f6;
+      }
+
+      .filter-label {
+        font-weight: 500;
+        color: #374151;
+        font-size: 14px;
+      }
+
+      .selected-count {
+        font-size: 12px;
+        color: #6b7280;
+        background: #e5e7eb;
+        padding: 2px 8px;
+        border-radius: 12px;
+      }
+
+      .dropdown-arrow {
+        font-size: 12px;
+        color: #6b7280;
+        transition: transform 0.2s ease;
+      }
+
+      .filter-header.open .dropdown-arrow {
+        transform: rotate(180deg);
+      }
+
+      .checkbox-dropdown {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        border-top: 1px solid #e5e7eb;
+      }
+
+      .checkbox-dropdown.open {
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .checkbox-list {
+        padding: 8px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        user-select: none;
+      }
+
+      .checkbox-item:hover {
+        background: #f3f4f6;
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        margin-right: 10px;
+        transform: scale(1.1);
+        cursor: pointer;
+      }
+
+      .checkbox-item label {
+        cursor: pointer;
+        flex-grow: 1;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .checkbox-item.all-option {
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+        font-weight: 500;
+      }
+
       /* Individual filter rows */
       .filter-row {
         display: flex;
@@ -731,44 +829,50 @@
         <div class="search-filters">
           <!-- Batch Filter Row (Always visible) -->
           <div class="filter-row">
-            <select
-              id="batchFilter"
-              class="filter-select"
-              onchange="updateSemesterOptions()"
-              multiple
-              size="1"
-              style="height: auto; min-height: 40px;"
-            >
-              <option value="">All Batches</option>
-              <!-- Batch options will be populated dynamically -->
-            </select>
+            <div class="checkbox-filter-container">
+              <div class="filter-header" onclick="toggleFilterDropdown('batchFilter')">
+                <span class="filter-label">📚 Select Batches</span>
+                <span class="selected-count" id="batchSelectedCount">(All)</span>
+                <span class="dropdown-arrow">▼</span>
+              </div>
+              <div class="checkbox-dropdown" id="batchFilterDropdown">
+                <div class="checkbox-list" id="batchCheckboxList">
+                  <!-- Batch checkboxes will be populated dynamically -->
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Semester Filter Row (Hidden until batch selected) -->
           <div class="filter-row" id="semesterRow">
-            <select
-              id="semesterFilter"
-              class="filter-select"
-              onchange="updateCourseOptions()"
-              multiple
-              size="1"
-              style="height: auto; min-height: 40px;"
-              disabled
-            >
-              <option value="">All Semesters</option>
-            </select>
+            <div class="checkbox-filter-container">
+              <div class="filter-header" onclick="toggleFilterDropdown('semesterFilter')">
+                <span class="filter-label">🎓 Select Semesters</span>
+                <span class="selected-count" id="semesterSelectedCount">(All)</span>
+                <span class="dropdown-arrow">▼</span>
+              </div>
+              <div class="checkbox-dropdown" id="semesterFilterDropdown">
+                <div class="checkbox-list" id="semesterCheckboxList">
+                  <!-- Semester checkboxes will be populated dynamically -->
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Course Filter Row (Hidden until semester selected) -->
           <div class="filter-row" id="courseRow">
-            <select
-              id="courseFilter"
-              class="filter-select"
-              onchange="handleFilterChange()"
-              disabled
-            >
-              <option value="">Select Course</option>
-            </select>
+            <div class="checkbox-filter-container">
+              <div class="filter-header" onclick="toggleFilterDropdown('courseFilter')">
+                <span class="filter-label">📖 Select Courses</span>
+                <span class="selected-count" id="courseSelectedCount">(All)</span>
+                <span class="dropdown-arrow">▼</span>
+              </div>
+              <div class="checkbox-dropdown" id="courseFilterDropdown">
+                <div class="checkbox-list" id="courseCheckboxList">
+                  <!-- Course checkboxes will be populated dynamically -->
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Apply Filters Button -->
@@ -829,7 +933,7 @@
             title="Toggle semester sort order"
             id="sortToggleBtn"
           >
-            📊 1st→8th Order
+            📊 Ascending Order
           </button>
         </div>
       </div>
@@ -841,20 +945,81 @@
     <div data-include="./assets/footer.html"></div>
 
     <script>
-      // Helper function to get selected values from multi-select dropdown
-      function getSelectedValues(selectElement) {
-        const selectedValues = Array.from(selectElement.selectedOptions)
-          .map(option => option.value)
-          .filter(value => value !== ""); // Remove empty default option
-        return selectedValues.length > 0 ? selectedValues : []; // Return empty array if none selected
+      // Helper function to get selected values from checkbox filters
+      function getSelectedCheckboxValues(containerId) {
+        const checkboxes = document.querySelectorAll(`#${containerId}CheckboxList input[type="checkbox"]:not(.all-checkbox):checked`);
+        return Array.from(checkboxes).map(cb => cb.value).filter(value => value !== "");
       }
 
-      // Helper function to check if any option is selected in multi-select
-      function hasSelection(selectElement) {
-        return getSelectedValues(selectElement).length > 0;
+      // Helper function to check if any option is selected in checkbox filter
+      function hasCheckboxSelection(containerId) {
+        return getSelectedCheckboxValues(containerId).length > 0;
+      }
+
+      // Toggle checkbox filter dropdown
+      function toggleFilterDropdown(filterId) {
+        const dropdown = document.getElementById(`${filterId}Dropdown`);
+        const header = dropdown.previousElementSibling;
+        
+        dropdown.classList.toggle('open');
+        header.classList.toggle('open');
+      }
+
+      // Update selected count display
+      function updateSelectedCount(filterId) {
+        const selectedValues = getSelectedCheckboxValues(filterId);
+        const countElement = document.getElementById(`${filterId}SelectedCount`);
+        
+        if (selectedValues.length === 0) {
+          countElement.textContent = '(All)';
+          countElement.style.background = '#e5e7eb';
+          countElement.style.color = '#6b7280';
+        } else {
+          countElement.textContent = `(${selectedValues.length})`;
+          countElement.style.background = '#dbeafe';
+          countElement.style.color = '#1d4ed8';
+        }
+      }
+
+      // Handle "All" checkbox toggle
+      function handleAllCheckbox(filterId, allCheckbox) {
+        const checkboxes = document.querySelectorAll(`#${filterId}CheckboxList input[type="checkbox"]:not(.all-checkbox)`);
+        
+        if (allCheckbox.checked) {
+          checkboxes.forEach(cb => cb.checked = false);
+        }
+        
+        updateSelectedCount(filterId);
+        
+        // Trigger appropriate update function
+        if (filterId === 'batchFilter') {
+          updateSemesterOptions();
+        } else if (filterId === 'semesterFilter') {
+          updateCourseOptions();
+        }
+      }
+
+      // Handle individual checkbox change
+      function handleCheckboxChange(filterId) {
+        const allCheckbox = document.querySelector(`#${filterId}CheckboxList .all-checkbox`);
+        const selectedValues = getSelectedCheckboxValues(filterId);
+        
+        // Uncheck "All" if any individual option is selected
+        if (selectedValues.length > 0 && allCheckbox) {
+          allCheckbox.checked = false;
+        }
+        
+        updateSelectedCount(filterId);
+        
+        // Trigger appropriate update function
+        if (filterId === 'batchFilter') {
+          updateSemesterOptions();
+        } else if (filterId === 'semesterFilter') {
+          updateCourseOptions();
+        }
       }
       async function populateBatchOptions() {
-        const batchSelect = document.getElementById('batchFilter');
+        const batchCheckboxList = document.getElementById('batchCheckboxList');
         
         try {
           // Load all batch data
@@ -866,44 +1031,76 @@
             .filter(batch => !isNaN(batch))
             .sort((a, b) => b - a); // Descending order
           
-          // Populate batch dropdown
+          // Clear existing checkboxes
+          batchCheckboxList.innerHTML = '';
+          
+          // Add "All Batches" option
+          const allItem = document.createElement('div');
+          allItem.className = 'checkbox-item all-option';
+          allItem.innerHTML = `
+            <input type="checkbox" class="all-checkbox" id="batchAll" value="" 
+                   onchange="handleAllCheckbox('batchFilter', this)" checked>
+            <label for="batchAll">All Batches</label>
+          `;
+          batchCheckboxList.appendChild(allItem);
+          
+          // Populate batch checkboxes
           availableBatches.forEach(batchNumber => {
             const batchData = window.BATCH_DATA_CACHE.get(batchNumber.toString());
-            const option = document.createElement('option');
-            option.value = batchNumber.toString();
-            option.textContent = batchData?.batch_name || `${batchNumber}th Batch`;
-            batchSelect.appendChild(option);
+            const item = document.createElement('div');
+            item.className = 'checkbox-item';
+            item.innerHTML = `
+              <input type="checkbox" id="batch${batchNumber}" value="${batchNumber}" 
+                     onchange="handleCheckboxChange('batchFilter')">
+              <label for="batch${batchNumber}">${batchData?.batch_name || `${batchNumber}th Batch`}</label>
+            `;
+            batchCheckboxList.appendChild(item);
           });
           
           console.log('Batch options populated:', availableBatches);
         } catch (error) {
           console.error('Error populating batch options:', error);
+          
+          // Clear existing checkboxes
+          batchCheckboxList.innerHTML = '';
+          
+          // Add "All Batches" option
+          const allItem = document.createElement('div');
+          allItem.className = 'checkbox-item all-option';
+          allItem.innerHTML = `
+            <input type="checkbox" class="all-checkbox" id="batchAll" value="" 
+                   onchange="handleAllCheckbox('batchFilter', this)" checked>
+            <label for="batchAll">All Batches</label>
+          `;
+          batchCheckboxList.appendChild(allItem);
+          
           // Add fallback options if batch loading fails
           const fallbackBatches = ['31', '30', '29', '28', '27', '26', '25', '24'];
           fallbackBatches.forEach(batch => {
-            const option = document.createElement('option');
-            option.value = batch;
-            option.textContent = `${batch}th Batch`;
-            batchSelect.appendChild(option);
+            const item = document.createElement('div');
+            item.className = 'checkbox-item';
+            item.innerHTML = `
+              <input type="checkbox" id="batch${batch}" value="${batch}" 
+                     onchange="handleCheckboxChange('batchFilter')">
+              <label for="batch${batch}">${batch}th Batch</label>
+            `;
+            batchCheckboxList.appendChild(item);
           });
         }
       }
 
       // Function to update semester options based on selected batches
       async function updateSemesterOptions() {
-        const batchSelect = document.getElementById('batchFilter');
-        const semesterSelect = document.getElementById('semesterFilter');
-        const courseSelect = document.getElementById('courseFilter');
+        const semesterCheckboxList = document.getElementById('semesterCheckboxList');
+        const courseCheckboxList = document.getElementById('courseCheckboxList');
         const semesterRow = document.getElementById('semesterRow');
         const courseRow = document.getElementById('courseRow');
         
-        const selectedBatches = getSelectedValues(batchSelect);
+        const selectedBatches = getSelectedCheckboxValues('batchFilter');
         
-        // Clear and disable semester and course dropdowns
-        semesterSelect.innerHTML = '<option value="">All Semesters</option>';
-        courseSelect.innerHTML = '<option value="">All Courses</option>';
-        semesterSelect.disabled = selectedBatches.length === 0;
-        courseSelect.disabled = true;
+        // Clear semester and course checkboxes
+        semesterCheckboxList.innerHTML = '';
+        courseCheckboxList.innerHTML = '';
         
         // Hide/show semester row based on batch selection
         if (selectedBatches.length === 0) {
@@ -935,7 +1132,6 @@
           
           if (availableSemesters.size === 0) {
             console.warn(`No semester data found for batches ${selectedBatches.join(', ')}`);
-            semesterSelect.disabled = true;
             return;
           }
           
@@ -945,10 +1141,20 @@
             return semesterOrder.indexOf(a) - semesterOrder.indexOf(b);
           });
           
-          // Populate semester dropdown
+          // Add "All Semesters" option
+          const allItem = document.createElement('div');
+          allItem.className = 'checkbox-item all-option';
+          allItem.innerHTML = `
+            <input type="checkbox" class="all-checkbox" id="semesterAll" value="" 
+                   onchange="handleAllCheckbox('semesterFilter', this)" checked>
+            <label for="semesterAll">All Semesters</label>
+          `;
+          semesterCheckboxList.appendChild(allItem);
+          
+          // Populate semester checkboxes
           sortedSemesters.forEach(semester => {
-            const option = document.createElement('option');
-            option.value = semester;
+            const item = document.createElement('div');
+            item.className = 'checkbox-item';
             
             // Format semester name for display
             let displayName = semester;
@@ -958,33 +1164,32 @@
               displayName = semester.replace(/\b\w/g, l => l.toUpperCase()) + ' Semester';
             }
             
-            option.textContent = displayName;
-            semesterSelect.appendChild(option);
+            item.innerHTML = `
+              <input type="checkbox" id="semester${semester}" value="${semester}" 
+                     onchange="handleCheckboxChange('semesterFilter')">
+              <label for="semester${semester}">${displayName}</label>
+            `;
+            semesterCheckboxList.appendChild(item);
           });
           
-          semesterSelect.disabled = false;
         } catch (error) {
           console.error('Error loading semester options:', error);
-          semesterSelect.disabled = true;
         }
       }
       
-      // Function to update course options based on selected semester
+      // Function to update course options based on selected semesters and batches
       async function updateCourseOptions() {
-        const batchSelect = document.getElementById('batchFilter');
-        const semesterSelect = document.getElementById('semesterFilter');
-        const courseSelect = document.getElementById('courseFilter');
+        const courseCheckboxList = document.getElementById('courseCheckboxList');
         const courseRow = document.getElementById('courseRow');
         
-        const selectedBatch = batchSelect.value;
-        const selectedSemester = semesterSelect.value;
+        const selectedBatches = getSelectedCheckboxValues('batchFilter');
+        const selectedSemesters = getSelectedCheckboxValues('semesterFilter');
         
-        // Clear and disable course dropdown
-        courseSelect.innerHTML = '<option value="">Select Course</option>';
-        courseSelect.disabled = !selectedSemester;
+        // Clear course checkboxes
+        courseCheckboxList.innerHTML = '';
         
-        // Hide/show course row based on semester selection
-        if (!selectedSemester || !selectedBatch) {
+        // Hide/show course row based on selections
+        if (selectedSemesters.length === 0 || selectedBatches.length === 0) {
           courseRow.classList.remove('show');
           return;
         }
@@ -997,32 +1202,65 @@
         try {
           // Load batch data dynamically from batch JSON files
           await loadAllBatchData();
-          const batchData = window.BATCH_DATA_CACHE.get(selectedBatch);
           
-          if (!batchData || !batchData.semesters || !batchData.semesters[selectedSemester] || !batchData.semesters[selectedSemester].subjects) {
-            console.warn(`No course data found for batch ${selectedBatch}, semester ${selectedSemester}`);
-            courseSelect.disabled = true;
+          // Collect all available courses from selected batches and semesters
+          const availableCourses = new Map(); // code -> course info
+          
+          selectedBatches.forEach(batchNumber => {
+            const batchData = window.BATCH_DATA_CACHE.get(batchNumber);
+            if (batchData && batchData.semesters) {
+              selectedSemesters.forEach(semester => {
+                if (batchData.semesters[semester] && batchData.semesters[semester].subjects) {
+                  const subjects = batchData.semesters[semester].subjects;
+                  Object.entries(subjects).forEach(([code, courseInfo]) => {
+                    if (!availableCourses.has(code)) {
+                      availableCourses.set(code, {
+                        code,
+                        title: courseInfo.title,
+                        semesters: new Set(),
+                        batches: new Set()
+                      });
+                    }
+                    availableCourses.get(code).semesters.add(semester);
+                    availableCourses.get(code).batches.add(batchNumber);
+                  });
+                }
+              });
+            }
+          });
+          
+          if (availableCourses.size === 0) {
+            console.warn(`No course data found for selected batches and semesters`);
             return;
           }
           
-          // Get available courses from the batch data
-          const courses = batchData.semesters[selectedSemester].subjects;
-          
           // Sort courses by course code
-          const sortedCourses = Object.entries(courses).sort(([a], [b]) => a.localeCompare(b));
+          const sortedCourses = Array.from(availableCourses.values()).sort((a, b) => a.code.localeCompare(b.code));
           
-          // Populate course dropdown
-          sortedCourses.forEach(([code, courseInfo]) => {
-            const option = document.createElement('option');
-            option.value = code;
-            option.textContent = `${code} - ${courseInfo.title || 'Unknown Course'}`;
-            courseSelect.appendChild(option);
+          // Add "All Courses" option
+          const allItem = document.createElement('div');
+          allItem.className = 'checkbox-item all-option';
+          allItem.innerHTML = `
+            <input type="checkbox" class="all-checkbox" id="courseAll" value="" 
+                   onchange="handleAllCheckbox('courseFilter', this)" checked>
+            <label for="courseAll">All Courses</label>
+          `;
+          courseCheckboxList.appendChild(allItem);
+          
+          // Populate course checkboxes
+          sortedCourses.forEach(course => {
+            const item = document.createElement('div');
+            item.className = 'checkbox-item';
+            item.innerHTML = `
+              <input type="checkbox" id="course${course.code}" value="${course.code}" 
+                     onchange="handleCheckboxChange('courseFilter')">
+              <label for="course${course.code}" title="Available in ${Array.from(course.semesters).join(', ')} semesters">${course.code} - ${course.title || 'Unknown Course'}</label>
+            `;
+            courseCheckboxList.appendChild(item);
           });
           
-          courseSelect.disabled = false;
         } catch (error) {
           console.error('Error loading course options:', error);
-          courseSelect.disabled = true;
         }
       }
 
@@ -1438,9 +1676,9 @@
 
       // Apply filters without requiring search term - shows all resources for selected filters
       async function applyFiltersOnly() {
-        const batchFilters = getSelectedValues(DOM_CACHE.batchFilter);
-        const semesterFilters = getSelectedValues(DOM_CACHE.semesterFilter);
-        const courseFilter = DOM_CACHE.courseFilter.value;
+        const batchFilters = getSelectedCheckboxValues('batchFilter');
+        const semesterFilters = getSelectedCheckboxValues('semesterFilter');
+        const courseFilters = getSelectedCheckboxValues('courseFilter');
 
         // Show all resources for the selected filters (no search term required)
         updateSearchStats("Loading all resources for selected filters...");
@@ -1451,14 +1689,14 @@
             "", // Empty search term to get all results
             semesterFilters,
             batchFilters,
-            courseFilter,
+            courseFilters,
             DOM_CACHE.resultsStats, // Use correct DOM element
             true // Flag to indicate this is a filter-only search
           );
           displayResults(results);
           updateSearchStats(
             `Showing ${results.length} resources${
-              semesterFilters.length > 0 || batchFilters.length > 0 || courseFilter ? " for selected filters" : " (all)"
+              semesterFilters.length > 0 || batchFilters.length > 0 || courseFilters.length > 0 ? " for selected filters" : " (all)"
             }`
           );
         } catch (error) {
@@ -1541,9 +1779,9 @@
       // Optimized search - only load data when user searches
       async function optimizedSearch() {
         const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
-        const batchFilters = getSelectedValues(DOM_CACHE.batchFilter);
-        const semesterFilters = getSelectedValues(DOM_CACHE.semesterFilter);
-        const courseFilter = DOM_CACHE.courseFilter.value;
+        const batchFilters = getSelectedCheckboxValues('batchFilter');
+        const semesterFilters = getSelectedCheckboxValues('semesterFilter');
+        const courseFilters = getSelectedCheckboxValues('courseFilter');
 
         // Always require a search term for manual search
         if (!searchTerm) {
@@ -1569,7 +1807,7 @@
             searchTerm,
             semesterFilters,
             batchFilters,
-            courseFilter,
+            courseFilters,
             DOM_CACHE.resultsStats
           );
           displayResults(results);
@@ -1587,7 +1825,7 @@
         searchTerm,
         semesterFilters,  // Now an array
         batchFilters,     // Now an array
-        courseFilter,
+        courseFilters,    // Now an array
         statsElement,
         isFilterOnly = false
       ) {
@@ -2554,11 +2792,11 @@
         const sortBtn = document.getElementById('sortToggleBtn');
         
         if (isAscendingSort) {
-          sortBtn.innerHTML = '📊 1st→8th Order';
-          sortBtn.title = 'Currently showing 1st to 8th semester order. Click to reverse.';
+          sortBtn.innerHTML = '📊 Ascending Order';
+          sortBtn.title = 'Currently showing semesters in ascending order (1st to 8th). Click to reverse.';
         } else {
-          sortBtn.innerHTML = '📊 8th→1st Order';
-          sortBtn.title = 'Currently showing 8th to 1st semester order. Click to reverse.';
+          sortBtn.innerHTML = '📊 Descending Order';
+          sortBtn.title = 'Currently showing semesters in descending order (8th to 1st). Click to reverse.';
         }
         
         // Re-display results with new sort order if there are current results
