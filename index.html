@@ -1445,9 +1445,6 @@
       const DOM_CACHE = {
         globalSearch: null,
         resultsStats: null,
-        batchFilter: null,
-        semesterFilter: null,
-        courseFilter: null,
         allResources: null,
         accordionControls: null,
         searchResultsContainer: null,
@@ -1456,9 +1453,6 @@
         init() {
           this.globalSearch = document.getElementById("globalSearch");
           this.resultsStats = document.getElementById("resultsStats");
-          this.batchFilter = document.getElementById("batchFilter");
-          this.semesterFilter = document.getElementById("semesterFilter");
-          this.courseFilter = document.getElementById("courseFilter");
           this.allResources = document.getElementById("all-resources");
           this.accordionControls = document.getElementById("accordionControls");
           this.searchResultsContainer = document.getElementById(
@@ -2120,7 +2114,7 @@
                     batchKey,
                     batchInfo.label,
                     statsElement,
-                    courseFilter // Pass course filter to folder search
+                    courseFilters // Pass course filters array to folder search
                   );
                   return folderResults;
                 } catch (error) {
@@ -2295,7 +2289,7 @@
         batchKey,
         batchLabel,
         statsElement,
-        courseFilter = null,
+        courseFilters = [],
         currentDepth = 0
       ) {
         if (maxDepth >= 0 && currentDepth >= maxDepth) return [];
@@ -2316,7 +2310,7 @@
             batchKey,
             batchLabel,
             statsElement,
-            courseFilter,
+            courseFilters,
             currentDepth
           );
         }
@@ -2334,7 +2328,7 @@
             batchKey,
             batchLabel,
             statsElement,
-            courseFilter,
+            courseFilters,
             currentDepth
           );
         }
@@ -2359,7 +2353,7 @@
             batchKey,
             batchLabel,
             statsElement,
-            courseFilter,
+            courseFilters,
             currentDepth
           );
         } catch (error) {
@@ -2378,7 +2372,7 @@
         batchKey,
         batchLabel,
         statsElement,
-        courseFilter,
+        courseFilters,
         currentDepth
       ) {
         const results = [];
@@ -2393,23 +2387,32 @@
           const matchesSearch =
             !searchTerm || smartMatch(searchTerm, file.name, filePath);
 
-          // Course filter logic - if course filter is selected, only include files/folders related to that course
-          let matchesCourse = !courseFilter;
+          // Course filter logic - if course filters are selected, only include files/folders related to those courses
+          let matchesCourse = courseFilters.length === 0; // If no course filters, include all
           
-          if (courseFilter) {
-            // First try direct course code match
-            matchesCourse = smartMatch(courseFilter, file.name, filePath);
-            
-            // If no direct match, try to get course title from batch data and match that
-            if (!matchesCourse && window.BATCH_DATA_CACHE) {
-              for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
-                if (batchData.semesters && batchData.semesters[semester] && batchData.semesters[semester].subjects && batchData.semesters[semester].subjects[courseFilter]) {
-                  const courseTitle = batchData.semesters[semester].subjects[courseFilter].title;
-                  if (courseTitle && smartMatch(courseTitle, file.name, filePath)) {
-                    matchesCourse = true;
-                    break;
+          if (courseFilters.length > 0) {
+            // Check if file matches any of the selected courses
+            for (const courseFilter of courseFilters) {
+              // First try direct course code match
+              if (smartMatch(courseFilter, file.name, filePath)) {
+                matchesCourse = true;
+                break;
+              }
+              
+              // If no direct match, try to get course title from batch data and match that
+              if (window.BATCH_DATA_CACHE) {
+                for (const [batchNumber, batchData] of window.BATCH_DATA_CACHE.entries()) {
+                  if (batchData.semesters && batchData.semesters[semester] && 
+                      batchData.semesters[semester].subjects && 
+                      batchData.semesters[semester].subjects[courseFilter]) {
+                    const courseTitle = batchData.semesters[semester].subjects[courseFilter].title;
+                    if (courseTitle && smartMatch(courseTitle, file.name, filePath)) {
+                      matchesCourse = true;
+                      break;
+                    }
                   }
                 }
+                if (matchesCourse) break; // Break outer loop if match found
               }
             }
           }
@@ -2447,7 +2450,7 @@
                 batchKey,
                 batchLabel,
                 statsElement,
-                courseFilter,
+                courseFilters,
                 currentDepth + 1
               )
             );
