@@ -1171,20 +1171,25 @@
               const folderIdMatch = url.match(/'([^']+)'\+in\+parents/);
               const folderId = folderIdMatch ? folderIdMatch[1] : "unknown";
 
-              // Handle different error types
+              // Handle different error types with less alarming logs
               if (response.status === 500) {
+                console.warn(`⚠️ Server error for folder ${folderId} - skipping (API quota or server issue)`);
                 resolve({ files: [] });
                 return;
               } else if (response.status === 403) {
+                console.warn(`🔒 Access denied for folder ${folderId} - skipping (permission issue)`);
                 resolve({ files: [] });
                 return;
               } else if (response.status === 404) {
+                console.warn(`📁 Folder not found: ${folderId} - skipping (may be deleted or moved)`);
                 resolve({ files: [] });
                 return;
               } else if (response.status === 429) {
+                console.warn(`🐌 Rate limit hit for folder ${folderId} - skipping (try fewer API keys)`);
                 resolve({ files: [] });
                 return;
               } else if (response.status === 401) {
+                console.warn(`🔑 Authentication failed for folder ${folderId} - check API key validity`);
                 resolve({ files: [] });
                 return;
               } else {
