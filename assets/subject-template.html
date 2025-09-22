@@ -75,9 +75,6 @@
       // Create standardized sections
       createStandardizedSections(config);
 
-      // Initialize collapsible sections
-      initializeCollapsibleSections();
-
       // Load drive content
       loadDriveContent(config);
 
@@ -98,11 +95,11 @@
         return;
       }
 
-      // Populate sections with subject-specific drive links
-      populateSubjectLinks(subjectData);
+      // Populate course overview section
+      populateCourseOverview(subjectData);
       
-      // Load drive folder contents for the new drive folders section
-      await loadCourseDriveFolders(config.code);
+      // Create batch-based sections
+      await createBatchSections(subjectData, config.code);
     } catch (error) {
       console.error("Error loading subject content:", error);
       showPlaceholderContent();
@@ -292,80 +289,21 @@
 
   function showPlaceholderContent() {
     // Show placeholder content when data loading fails
-    const sections = [
-      'class-updates-content',
-      'books-content',
-      'current-questions-content',
-      'previous-questions-content'
-    ];
-    
-    sections.forEach(sectionId => {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.innerHTML = '<div class="placeholder-link">Content will be available soon</div>';
-      }
-    });
-  }
-
-  function populateSubjectLinks(subjectData) {
-    if (!subjectData.links) return;
-
-    const links = subjectData.links;
-
-    // Class Updates - Simple document link
-    const classUpdatesContent = document.getElementById(
-      "class-updates-content"
-    );
-    if (classUpdatesContent && links.class_updates) {
-      if (links.class_updates && links.class_updates !== "") {
-        classUpdatesContent.innerHTML = `
-          <a href="${links.class_updates}" target="_blank" rel="noopener" class="document-link">
-            <span class="doc-icon">📄</span>
-            Latest Class Updates & Announcements
-          </a>
-        `;
-      } else {
-        classUpdatesContent.innerHTML = `
-          <div class="placeholder-link">
-            Latest Class Updates & Announcements (Coming soon)
+    const container = document.getElementById('batch-sections-container');
+    if (container) {
+      container.innerHTML = `
+        <div class="placeholder-content">
+          <div class="placeholder-icon">📚</div>
+          <div class="placeholder-text">
+            <h3>Course Information Unavailable</h3>
+            <p>Unable to load course data at this time. Please check your connection and try again later.</p>
           </div>
-        `;
-      }
+        </div>
+      `;
     }
-
-    // Books and Manuals - Only in Additional Resources now
-    const booksContent = document.getElementById("books-content");
-    if (booksContent && links.books_manuals) {
-      booksContent.innerHTML =
-        createLinksFromArray(links.books_manuals) ||
-        "No books/manuals available yet.";
-    }
-
-    // Current Questions (from question_papers field)
-    const currentQuestionsContent = document.getElementById(
-      "current-questions-content"
-    );
-    if (currentQuestionsContent && links.question_papers) {
-      currentQuestionsContent.innerHTML =
-        createLinksFromArray(links.question_papers) ||
-        "No current questions available yet.";
-    }
-
-    // Previous Questions (from assignments field)
-    const previousQuestionsContent = document.getElementById(
-      "previous-questions-content"
-    );
-    if (previousQuestionsContent && links.assignments) {
-      previousQuestionsContent.innerHTML =
-        createLinksFromArray(links.assignments) ||
-        "No previous questions available yet.";
-    }
-
-    // Update course details with current batch and teacher
-    updateCourseDetails(subjectData);
   }
 
-  function updateCourseDetails(subjectData) {
+  function populateCourseOverview(subjectData) {
     // Update compact course teachers section
     const compactTeachers = document.getElementById('course-teachers-compact');
     if (compactTeachers && subjectData) {
@@ -373,7 +311,7 @@
         const teachersContent = subjectData.batches.map(batch => {
           const teacherName = batch.teacher || "To be announced";
           const batchId = `batch-${batch.batch}`;
-          return `<span class="teacher-tag" data-batch="${batch.batch}" onclick="toggleBatchFilter('${batch.batch}')" id="${batchId}">${batch.batchName || `${batch.batch}th Batch`}: ${teacherName}</span>`;
+          return `<span class="teacher-tag" data-batch="${batch.batch}" id="${batchId}">${batch.batchName || `${batch.batch}th Batch`}: ${teacherName}</span>`;
         }).join('');
         
         compactTeachers.innerHTML = teachersContent;
@@ -383,27 +321,233 @@
     }
   }
 
-  // Global state for batch filtering
-  window.currentBatchFilter = null;
+  async function createBatchSections(subjectData, courseCode) {
+    const container = document.getElementById('batch-sections-container');
+    if (!container) return;
 
-  // Batch filtering functionality
-  window.toggleBatchFilter = function(batchNumber) {
-    const teacherTags = document.querySelectorAll('.teacher-tag[data-batch]');
-    const currentTag = document.getElementById(`batch-${batchNumber}`);
+    if (!subjectData.batches || subjectData.batches.length === 0) {
+      container.innerHTML = `
+        <div class="placeholder-content">
+          <div class="placeholder-icon">📋</div>
+          <div class="placeholder-text">
+            <h3>Course Information Coming Soon</h3>
+            <p>Batch-specific resources and materials will be available once course data is loaded.</p>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // Load batch data for this course
+    const batchSectionsHTML = await Promise.all(
+      subjectData.batches.map(async (batchInfo) => {
+        return await createBatchSection(batchInfo, courseCode);
+      })
+    );
+
+    container.innerHTML = batchSectionsHTML.join('');
     
-    if (window.currentBatchFilter === batchNumber) {
-      // Deactivate filter - show all
-      window.currentBatchFilter = null;
-      teacherTags.forEach(tag => tag.classList.remove('active'));
-      showAllBatchContent();
-    } else {
-      // Activate filter for this batch
-      window.currentBatchFilter = batchNumber;
-      teacherTags.forEach(tag => tag.classList.remove('active'));
-      if (currentTag) currentTag.classList.add('active');
-      filterContentByBatch(batchNumber);
+    // Initialize all batch sections as collapsed except the first one
+    initializeBatchSections();
+  }
+
+  async function createBatchSection(batchInfo, courseCode) {
+    const batchNumber = batchInfo.batch;
+    const batchName = batchInfo.batchName || `${batchNumber}th Batch`;
+    const teacherInfo = batchInfo.teacher || "Teacher to be announced";
+    
+    // Get batch-specific data
+    const batchData = await getBatchInfo(batchNumber);
+    const subjectInfo = batchData?.semesters?.[batchInfo.semester]?.subjects?.[courseCode];
+    
+    const batchId = `batch-${batchNumber}`;
+    
+    return `
+      <div class="batch-section google-card" id="${batchId}">
+        <div class="batch-header" onclick="toggleBatchSection('${batchId}')">
+          <div class="batch-title-area">
+            <h3 class="batch-title">${batchName}</h3>
+            <div class="batch-teacher">👤 ${teacherInfo}</div>
+          </div>
+          <span class="toggle-icon batch-toggle">▼</span>
+        </div>
+        <div class="batch-content">
+          ${createBatchResourceSections(subjectInfo, batchNumber)}
+        </div>
+      </div>
+    `;
+  }
+
+  function createBatchResourceSections(subjectInfo, batchNumber) {
+    if (!subjectInfo || !subjectInfo.links) {
+      return `
+        <div class="batch-placeholder">
+          <div class="placeholder-icon">📚</div>
+          <div class="placeholder-text">
+            <p>Resources for this batch will be available soon.</p>
+            <p>Check back later or contact your instructor for more information.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    const links = subjectInfo.links;
+    let sectionsHTML = '';
+
+    // Class Updates
+    if (links.class_updates) {
+      sectionsHTML += `
+        <div class="resource-subsection">
+          <h4 class="resource-title">📢 Class Updates</h4>
+          <div class="resource-content">
+            ${createDocumentLink(links.class_updates, "Class Updates Document")}
+          </div>
+        </div>
+      `;
+    }
+
+    // Study Materials (Notes, Slides, Books)
+    const studyMaterials = [];
+    if (links.notes && links.notes.length > 0) {
+      studyMaterials.push({
+        title: "📝 Personal Notes",
+        links: links.notes
+      });
+    }
+    if (links.slides_lectures && links.slides_lectures.length > 0) {
+      studyMaterials.push({
+        title: "📊 Slides & Lectures", 
+        links: links.slides_lectures
+      });
+    }
+    if (links.books_manuals && links.books_manuals.length > 0) {
+      studyMaterials.push({
+        title: "📚 Books & Manuals",
+        links: links.books_manuals
+      });
+    }
+
+    if (studyMaterials.length > 0) {
+      sectionsHTML += `
+        <div class="resource-subsection">
+          <h4 class="resource-title">📚 Study Materials</h4>
+          <div class="resource-content">
+            ${studyMaterials.map(material => `
+              <div class="material-group">
+                <div class="material-group-title">${material.title}</div>
+                <div class="material-links">
+                  ${createLinksFromArray(material.links)}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Questions and Examinations
+    const questionTypes = [];
+    if (links.question_papers && links.question_papers.length > 0) {
+      questionTypes.push({
+        title: "📝 Question Papers",
+        links: links.question_papers
+      });
+    }
+    if (links.question_bank && links.question_bank.length > 0) {
+      questionTypes.push({
+        title: "📋 Question Bank",
+        links: links.question_bank
+      });
+    }
+    if (links.assignments && links.assignments.length > 0) {
+      questionTypes.push({
+        title: "📄 Assignments",
+        links: links.assignments
+      });
+    }
+
+    if (questionTypes.length > 0) {
+      sectionsHTML += `
+        <div class="resource-subsection">
+          <h4 class="resource-title">📝 Questions & Examinations</h4>
+          <div class="resource-content">
+            ${questionTypes.map(type => `
+              <div class="material-group">
+                <div class="material-group-title">${type.title}</div>
+                <div class="material-links">
+                  ${createLinksFromArray(type.links)}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Additional Materials
+    if (links.previous_materials && links.previous_materials.length > 0) {
+      sectionsHTML += `
+        <div class="resource-subsection">
+          <h4 class="resource-title">📁 Previous Materials</h4>
+          <div class="resource-content">
+            ${createLinksFromArray(links.previous_materials)}
+          </div>
+        </div>
+      `;
+    }
+
+    return sectionsHTML || `
+      <div class="batch-placeholder">
+        <div class="placeholder-icon">📚</div>
+        <div class="placeholder-text">
+          <p>No specific resources available for this batch yet.</p>
+          <p>General course materials may be available in other batches.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function initializeBatchSections() {
+    const batchSections = document.querySelectorAll('.batch-section');
+    batchSections.forEach((section, index) => {
+      const content = section.querySelector('.batch-content');
+      const toggle = section.querySelector('.toggle-icon');
+      
+      if (content && toggle) {
+        // Expand first batch, collapse others
+        if (index === 0) {
+          content.style.display = 'block';
+          toggle.textContent = '▲';
+          section.classList.add('expanded');
+        } else {
+          content.style.display = 'none';
+          toggle.textContent = '▼';
+          section.classList.remove('expanded');
+        }
+      }
+    });
+  }
+
+  window.toggleBatchSection = function(batchId) {
+    try {
+      const section = document.getElementById(batchId);
+      if (!section) return;
+
+      const content = section.querySelector('.batch-content');
+      const toggle = section.querySelector('.toggle-icon');
+
+      if (content && toggle) {
+        const isExpanded = content.style.display !== 'none';
+        content.style.display = isExpanded ? 'none' : 'block';
+        toggle.textContent = isExpanded ? '▼' : '▲';
+        section.classList.toggle('expanded', !isExpanded);
+      }
+    } catch (error) {
+      console.error('Error toggling batch section:', error);
     }
   };
+
+
 
   function showAllBatchContent() {
     // Show all drive folders and content
@@ -526,10 +670,15 @@
     if (!container) return;
 
     container.innerHTML = `
-      <!-- Course Teachers - Compact Forum Style -->
+      <!-- Course Overview - Compact Forum Style -->
       <div class="google-card compact-overview" id="overview">
         <div class="compact-header">
-          <h2>👥 Course Teachers</h2>
+          <h2>📋 Course Overview</h2>
+          <div class="course-meta">
+            <span class="course-code-badge">${config.code}</span>
+            <span class="divider">•</span>
+            <span class="course-title">${config.title}</span>
+          </div>
         </div>
         <div class="course-info-compact">
           <div class="course-teachers-compact" id="course-teachers-compact">
@@ -538,149 +687,20 @@
         </div>
       </div>
 
-      <!-- Drive Folders Section -->
-      <div class="google-card collapsible-section" id="drive-folders">
-        <div class="section-header" onclick="toggleSection('drive-folders')">
-          <h2 class="section-title">📁 Study Materials</h2>
-          <span class="toggle-icon google-toggle">▲</span>
-        </div>
-        <div class="section-content">
-          <div id="drive-folders-content">
-            <div class="loading-state">Loading drive folders...</div>
+      <!-- Batch Resources Section -->
+      <div class="google-card" id="batch-resources">
+        <div class="batch-resources-header">
+          <h2 class="section-title">📚 Course Resources by Batch</h2>
+          <div class="batch-description">
+            Select a batch to view its specific materials, updates, and question papers. Each batch may have different teachers and resources.
           </div>
         </div>
-      </div>
-
-      <!-- Study Materials Section -->
-      <div class="google-card collapsible-section" id="study">
-        <div class="section-header" onclick="toggleSection('study')">
-          <h2 class="section-title">📚 Additional Resources</h2>
-          <span class="toggle-icon google-toggle">▼</span>
-        </div>
-        <div class="section-content">
-          <div class="subsection collapsible-subsection" id="class-updates">
-            <div class="subsection-header" onclick="toggleSubsection('class-updates')">
-              <h3 class="subsection-title">📢 Class Updates</h3>
-              <span class="toggle-icon google-toggle-small">▲</span>
-            </div>
-            <div class="subsection-content">
-              <div class="subsection-description">Latest class updates and announcements</div>
-              <div class="resource-content" id="class-updates-content">
-                <div class="loading-state">Loading content...</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="subsection collapsible-subsection" id="books-manuals">
-            <div class="subsection-header" onclick="toggleSubsection('books-manuals')">
-              <h3 class="subsection-title">📚 Books and Manuals</h3>
-              <span class="toggle-icon google-toggle-small">▲</span>
-            </div>
-            <div class="subsection-content">
-              <div class="subsection-description">Textbooks, reference materials, and official manuals</div>
-              <div class="resource-content" id="books-content">
-                <div class="loading-state">Loading content...</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Questions Section -->
-      <div class="google-card collapsible-section" id="questions">
-        <div class="section-header" onclick="toggleSection('questions')">
-          <h2 class="section-title">📝 Questions & Examinations</h2>
-          <span class="toggle-icon google-toggle">▲</span>
-        </div>
-        <div class="section-content">
-          <div class="subsection collapsible-subsection" id="current-questions">
-            <div class="subsection-header" onclick="toggleSubsection('current-questions')">
-              <h3 class="subsection-title">📝 Current Questions</h3>
-              <span class="toggle-icon google-toggle-small">▲</span>
-            </div>
-            <div class="subsection-content">
-              <div class="subsection-description">Recent exam questions and practice materials</div>
-              <div class="resource-content" id="current-questions-content">
-                <div class="loading-state">Loading content...</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="subsection collapsible-subsection" id="previous-questions">
-            <div class="subsection-header" onclick="toggleSubsection('previous-questions')">
-              <h3 class="subsection-title">📋 Previous Questions</h3>
-              <span class="toggle-icon google-toggle-small">▼</span>
-            </div>
-            <div class="subsection-content">
-              <div class="subsection-description">Historical exam questions and answer keys</div>
-              <div class="resource-content" id="previous-questions-content">
-                <div class="loading-state">Loading content...</div>
-              </div>
-            </div>
-          </div>
+        <div id="batch-sections-container">
+          <div class="loading-state">Loading batch information...</div>
         </div>
       </div>
 
     `;
-  }
-
-  function initializeCollapsibleSections() {
-    try {
-      // Drive folders section: expanded by default
-      const driveFoldersSection = document.getElementById('drive-folders');
-      if (driveFoldersSection) {
-        const content = driveFoldersSection.querySelector('.section-content');
-        const icon = driveFoldersSection.querySelector('.toggle-icon');
-        if (content && icon) {
-          content.style.display = 'block';
-          icon.textContent = '▲';
-        }
-      }
-
-      // Additional resources section: collapsed by default 
-      const studySection = document.getElementById('study');
-      if (studySection) {
-        const content = studySection.querySelector('.section-content');
-        const icon = studySection.querySelector('.toggle-icon');
-        if (content && icon) {
-          content.style.display = 'none';
-          icon.textContent = '▼';
-        }
-      }
-
-      // Questions section: expanded by default
-      const questionsSection = document.getElementById('questions');
-      if (questionsSection) {
-        const content = questionsSection.querySelector('.section-content');
-        const icon = questionsSection.querySelector('.toggle-icon');
-        if (content && icon) {
-          content.style.display = 'block';
-          icon.textContent = '▲';
-        }
-      }
-
-      // Subsections: All expanded except "Previous" ones
-      const subsections = document.querySelectorAll(".collapsible-subsection");
-      subsections.forEach((subsection) => {
-        const content = subsection.querySelector(".subsection-content");
-        const icon = subsection.querySelector(".toggle-icon");
-        const isPreviousSection = subsection.id.includes("previous");
-
-        if (content && icon) {
-          if (isPreviousSection) {
-            // Keep previous sections collapsed
-            content.style.display = "none";
-            icon.textContent = "▼";
-          } else {
-            // All other subsections expanded
-            content.style.display = "block";
-            icon.textContent = "▲";
-          }
-        }
-      });
-    } catch (error) {
-      console.error("Error initializing collapsible sections:", error);
-    }
   }
 
   // Add CSS for Google-style subject pages
@@ -1320,6 +1340,177 @@
 
       .toc-content a:hover {
         text-decoration: underline;
+      }
+
+      /* Batch-specific styles */
+      .batch-resources-header {
+        padding: 20px 24px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e8eaed;
+      }
+
+      .batch-resources-header .section-title {
+        font-size: 20px;
+        font-weight: 500;
+        color: #202124;
+        margin: 0 0 8px 0;
+      }
+
+      .batch-description {
+        font-size: 14px;
+        color: #5f6368;
+        line-height: 1.4;
+      }
+
+      .batch-section {
+        margin-bottom: 16px;
+        border: 1px solid #e8eaed;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+      }
+
+      .batch-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: #fafbfc;
+        border-bottom: 1px solid #e8eaed;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .batch-header:hover {
+        background: #f1f3f4;
+      }
+
+      .batch-title-area {
+        flex-grow: 1;
+      }
+
+      .batch-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #202124;
+        margin: 0 0 4px 0;
+      }
+
+      .batch-teacher {
+        font-size: 14px;
+        color: #5f6368;
+        margin: 0;
+      }
+
+      .batch-toggle {
+        font-size: 16px;
+        color: #5f6368;
+        transition: transform 0.2s ease;
+        font-weight: bold;
+      }
+
+      .batch-content {
+        padding: 20px;
+        background: white;
+        border-top: 1px solid #f0f0f0;
+      }
+
+      .resource-subsection {
+        margin-bottom: 24px;
+      }
+
+      .resource-subsection:last-child {
+        margin-bottom: 0;
+      }
+
+      .resource-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #202124;
+        margin: 0 0 12px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .resource-content {
+        margin-left: 24px;
+      }
+
+      .material-group {
+        margin-bottom: 16px;
+      }
+
+      .material-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .material-group-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #5f6368;
+        margin-bottom: 8px;
+      }
+
+      .material-links {
+        margin-left: 16px;
+      }
+
+      .material-links .drive-link {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .material-links .drive-link:last-child {
+        margin-bottom: 0;
+      }
+
+      .batch-placeholder,
+      .placeholder-content {
+        text-align: center;
+        padding: 40px 20px;
+        color: #5f6368;
+      }
+
+      .placeholder-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.7;
+      }
+
+      .placeholder-text h3 {
+        font-size: 18px;
+        font-weight: 500;
+        color: #202124;
+        margin: 0 0 8px 0;
+      }
+
+      .placeholder-text p {
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0 0 8px 0;
+      }
+
+      .placeholder-text p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Teacher tag styling */
+      .teacher-tag {
+        display: inline-block;
+        background: #e8f0fe;
+        color: #1a73e8;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 13px;
+        font-weight: 500;
+        margin: 4px 8px 4px 0;
+        transition: all 0.2s ease;
+      }
+
+      .teacher-tag:hover {
+        background: #d2e3fc;
+        transform: translateY(-1px);
       }
 
       /* Mobile Responsive */
