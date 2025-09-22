@@ -9,12 +9,12 @@ Visit: [jabir-a-h.github.io/academic-resort](https://jabir-a-h.github.io/academi
 
 ### 🔍 Advanced Search & Filtering
 - **Multi-dimensional filtering** across batches, semesters, and courses
-- **Real-time search** with sub-50ms response times
+- **Real-time search** with responsive performance
 - **Progressive disclosure** - smart dropdown population based on selections
 - **Mobile-optimized** touch-friendly interface
 
 ### 📚 Comprehensive Coverage
-- **50+ course pages** with standardized templates
+- **58+ course pages** with standardized templates
 - **8 active batches** (24th-31st) with complete academic data
 - **Teacher profiles** with official faculty integration
 - **Google Drive integration** for seamless resource access
@@ -22,8 +22,8 @@ Visit: [jabir-a-h.github.io/academic-resort](https://jabir-a-h.github.io/academi
 ### 🚀 Performance Excellence
 - **83% file reduction** through architectural optimization
 - **Template-based generation** for consistent user experience
-- **Multi-API key rotation** ensuring 99% uptime
-- **Progressive Web App** features with offline capabilities
+- **Multi-API key rotation** ensuring reliable uptime
+- **Responsive design** with modern web standards
 
 ---
 
@@ -37,16 +37,16 @@ Visit: [jabir-a-h.github.io/academic-resort](https://jabir-a-h.github.io/academi
 
 ### Advanced Architecture
 - **Static Website** - Client-side only, no backend server required
-- **GitHub Pages** - Free hosting with automatic CI/CD deployment
+- **GitHub Pages** - Free hosting with automatic deployment
 - **Google Drive API** - Multi-key rotation system for reliable content fetching
 - **Batch JSON System** - Consolidated data architecture with 83% file reduction
 - **Template Engine** - Dynamic course page generation from standardized templates
-- **Progressive Web App** - Responsive design, intelligent caching, offline capabilities
+- **Responsive Design** - Modern CSS with mobile-first approach
 
 ### Performance Optimizations
-- **Sub-50ms filtering** across complex datasets
-- **Intelligent caching** with 24-hour localStorage persistence
-- **Progressive loading** for optimal Core Web Vitals
+- **Fast filtering** across complex datasets
+- **Intelligent caching** with localStorage persistence
+- **Progressive loading** for optimal user experience
 - **Mobile-first responsive** design with touch optimization
 
 

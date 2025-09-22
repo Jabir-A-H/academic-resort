@@ -17,12 +17,10 @@
     <main class="container">
       <div class="page-intro">
         <h1 class="page-title">1st Semester - Getting Started</h1>
-        <p>
-          <b>
-            Explore comprehensive resources for all 1st Semester courses. Each
-            subject has its own dedicated page with organized materials,
-            question banks, and teacher-specific resources.
-          </b>
+        <p class="page-description">
+          Explore comprehensive resources for all 1st Semester courses. Each
+          subject has its own dedicated page with organized materials,
+          question banks, and teacher-specific resources.
         </p>
 
         <!-- Subject Cards -->
@@ -71,7 +69,9 @@
               <span class="subject-icon">💻</span>
             </div>
             <h3>Computer Concepts & Applications</h3>
-            <p>Computer literacy, software applications, and digital skills</p>
+            <p>
+              Computer literacy, software applications, and digital skills
+            </p>
             <div class="subject-meta">
               <span class="resource-count">35+ Resources</span>
               <span class="question-count">20+ Questions</span>
@@ -87,7 +87,9 @@
               <span class="subject-icon">📊</span>
             </div>
             <h3>Mathematics for Business Decisions-I</h3>
-            <p>Mathematical concepts, statistics, and quantitative methods</p>
+            <p>
+              Mathematical concepts, statistics, and quantitative methods
+            </p>
             <div class="subject-meta">
               <span class="resource-count">45+ Resources</span>
               <span class="question-count">40+ Questions</span>
@@ -113,8 +115,8 @@
           </a>
         </div>
 
-        <!-- Quick Navigation -->
-        <div class="quick-nav">
+        <!-- Quick Access -->
+        <div class="nav-section">
           <h3>Quick Access</h3>
           <div class="nav-buttons">
             <a href="course-teachers.html?semester=1st" class="nav-btn">
@@ -128,585 +130,253 @@
           </div>
         </div>
 
-        <!-- Traditional Table of Contents for Batch Archives -->
-        <div class="toc-accordion">
-          <div class="toc-header" onclick="toggleTOC()">
-            <h4 class="font-weight-semibold">Batch Archives</h4>
-            <span class="toc-toggle" id="toc-toggle">▼</span>
+        <!-- Additional Resources Section -->
+        <div class="additional-resources">
+          <h3>Additional Resources</h3>
+          <div class="resource-grid">
+            <div class="resource-item">
+              <h4>📚 Study Materials</h4>
+              <p>Access comprehensive study materials and notes for all 1st semester courses.</p>
+            </div>
+            <div class="resource-item">
+              <h4>📝 Past Papers</h4>
+              <p>Practice with previous year question papers and sample questions.</p>
+            </div>
+            <div class="resource-item">
+              <h4>📋 Course Syllabus</h4>
+              <p>Download official course syllabi and curriculum details.</p>
+            </div>
           </div>
-          <ul class="small toc-content" id="table-of-contents">
-            <!-- Will be populated dynamically -->
-          </ul>
         </div>
       </div>
 
-      <!-- Simple batch list -->
-      <div id="batches-container">
-        <section class="drive-batch-container" id="batch-30">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>30th Batch</h2>
-              <button
-                class="root-folder-btn"
-                onclick="window.open('https://drive.google.com/drive/folders/1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat', '_blank')"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-30"></div>
-              <ul id="drive-list-30" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="drive-batch-container" id="batch-29">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>29th Batch</h2>
-              <button
-                class="root-folder-btn"
-                onclick="window.open('https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO', '_blank')"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-29"></div>
-              <ul id="drive-list-29" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="drive-batch-container" id="batch-28">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>28th Batch</h2>
-              <button
-                class="root-folder-btn"
-                id="root-btn-28"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-28"></div>
-              <ul id="drive-list-28" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="drive-batch-container" id="batch-27">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>27th Batch</h2>
-              <button
-                class="root-folder-btn"
-                id="root-btn-27"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-27"></div>
-              <ul id="drive-list-27" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="drive-batch-container" id="batch-26">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>26th Batch</h2>
-              <button
-                class="root-folder-btn"
-                id="root-btn-26"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-26"></div>
-              <ul id="drive-list-26" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
+      <!-- Batch Information Section -->
+      <div class="batch-info-section">
+        <h3>Batch Information</h3>
+        <p>This semester structure applies to all active batches (24th-31st). Use the teacher profiles page to find specific teacher assignments for your batch.</p>
+        <div class="batch-links">
+          <a href="course-teachers.html?semester=1st" class="batch-link">
+            <span class="icon">👥</span>
+            View Teachers by Batch
+          </a>
+          <a href="../index.html" class="batch-link">
+            <span class="icon">🔍</span>
+            Search All Resources
+          </a>
+        </div>
       </div>
     </main>
 
-    <div data-include="../assets/footer.html"></div>
-
-    <script>
-      // Batch folders - loaded from JSON
-      let batches = {};
-
-      // API key restricted to jabir-a-h.github.io domain in Google Cloud Console
-      // API keys are now loaded from api-keys.js for centralized management
-      // Use getNextApiKey() to get API keys with automatic rotation
-
-      // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
-
-      // Cache configuration
-      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-      const CACHE_VERSION = "v1"; // Increment this to force cache refresh on updates
-
-      // Get cache key for a folder
-      function getCacheKey(folderId, depth = 0) {
-        return `driveCache_1st_${CACHE_VERSION}_${folderId}_${depth}`;
+    <!-- Add custom styles for the new sections -->
+    <style>
+      .page-description {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--muted);
+        margin-bottom: 2rem;
+        font-weight: var(--font-weight-medium);
       }
 
-      // Get global cache metadata key
-      function getGlobalCacheKey() {
-        return `driveCacheMetadata_1st_${CACHE_VERSION}`;
+      .additional-resources {
+        margin: 2rem 0;
+        padding: 2rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
       }
 
-      // Save data to persistent cache with timestamp
-      function saveToPersistentCache(folderId, data, depth = 0) {
-        try {
-          const cacheKey = getCacheKey(folderId, depth);
-          const cacheData = {
-            data: data,
-            timestamp: Date.now(),
-            version: CACHE_VERSION,
-          };
-          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+      .additional-resources h3 {
+        margin-bottom: 1.5rem;
+        color: var(--text);
+        font-weight: var(--font-weight-semibold);
+        font-size: 1.25rem;
+      }
 
-          // Update metadata
-          updateCacheMetadata(cacheKey);
-        } catch (error) {
-          console.warn("Failed to save to persistent cache:", error);
+      .resource-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .resource-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        transition: var(--transition-normal);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .resource-item:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+        border-color: var(--brand);
+      }
+
+      .resource-item h4 {
+        margin-bottom: 0.75rem;
+        color: var(--brand);
+        font-weight: var(--font-weight-medium);
+        font-size: 1.1rem;
+      }
+
+      .resource-item p {
+        color: var(--muted);
+        line-height: 1.5;
+        margin: 0;
+        font-size: 0.95rem;
+      }
+
+      .batch-info-section {
+        margin: 2rem 0;
+        padding: 2rem;
+        background: white;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .batch-info-section h3 {
+        margin-bottom: 1rem;
+        color: var(--text);
+        font-weight: var(--font-weight-semibold);
+        font-size: 1.25rem;
+      }
+
+      .batch-info-section p {
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+      }
+
+      .batch-links {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .batch-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--brand);
+        color: white;
+        text-decoration: none;
+        border-radius: var(--radius-lg);
+        transition: var(--transition-normal);
+        font-weight: var(--font-weight-medium);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .batch-link:hover {
+        background: var(--blue-700);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .batch-link .icon {
+        font-size: 1.1em;
+      }
+
+      /* Enhanced responsive design */
+      @media (max-width: 768px) {
+        .batch-links {
+          flex-direction: column;
+        }
+        
+        .batch-link {
+          justify-content: center;
+        }
+
+        .resource-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .additional-resources,
+        .batch-info-section {
+          padding: 1.5rem;
+          margin: 1.5rem 0;
         }
       }
 
-      // Load data from persistent cache
-      function loadFromPersistentCache(folderId, depth = 0) {
-        try {
-          const cacheKey = getCacheKey(folderId, depth);
-          const cached = localStorage.getItem(cacheKey);
-
-          if (!cached) return null;
-
-          const cacheData = JSON.parse(cached);
-          const age = Date.now() - cacheData.timestamp;
-
-          // Check if cache is expired or version mismatch
-          if (age > CACHE_DURATION || cacheData.version !== CACHE_VERSION) {
-            localStorage.removeItem(cacheKey);
-            removeCacheFromMetadata(cacheKey);
-            return null;
-          }
-
-          return cacheData.data;
-        } catch (error) {
-          console.warn("Failed to load from persistent cache:", error);
-          return null;
-        }
+      /* Improved subject cards for better visual hierarchy */
+      .subjects-grid {
+        margin-bottom: 2rem;
       }
 
-      // Update cache metadata for cleanup
-      function updateCacheMetadata(cacheKey) {
-        try {
-          const metaKey = getGlobalCacheKey();
-          let metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-
-          if (!metadata.keys.includes(cacheKey)) {
-            metadata.keys.push(cacheKey);
-          }
-          metadata.lastUpdated = Date.now();
-
-          localStorage.setItem(metaKey, JSON.stringify(metadata));
-        } catch (error) {
-          console.warn("Failed to update cache metadata:", error);
-        }
+      .subject-card {
+        position: relative;
+        overflow: hidden;
       }
 
-      // Remove cache key from metadata
-      function removeCacheFromMetadata(cacheKey) {
-        try {
-          const metaKey = getGlobalCacheKey();
-          let metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-          metadata.keys = metadata.keys.filter((key) => key !== cacheKey);
-          localStorage.setItem(metaKey, JSON.stringify(metadata));
-        } catch (error) {
-          console.warn("Failed to remove from cache metadata:", error);
-        }
+      .subject-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: var(--transition-normal);
       }
 
-      // Clean expired cache entries
-      function cleanExpiredCache() {
-        try {
-          const metaKey = getGlobalCacheKey();
-          let metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-
-          // Only run cleanup once per hour
-          if (Date.now() - metadata.lastCleanup < 60 * 60 * 1000) return;
-
-          const validKeys = [];
-
-          metadata.keys.forEach((cacheKey) => {
-            try {
-              const cached = localStorage.getItem(cacheKey);
-              if (cached) {
-                const cacheData = JSON.parse(cached);
-                const age = Date.now() - cacheData.timestamp;
-
-                if (
-                  age <= CACHE_DURATION &&
-                  cacheData.version === CACHE_VERSION
-                ) {
-                  validKeys.push(cacheKey);
-                } else {
-                  localStorage.removeItem(cacheKey);
-                }
-              }
-            } catch (error) {
-              // Remove invalid cache entries
-              localStorage.removeItem(cacheKey);
-            }
-          });
-
-          metadata.keys = validKeys;
-          metadata.lastCleanup = Date.now();
-          localStorage.setItem(metaKey, JSON.stringify(metadata));
-        } catch (error) {
-          console.warn("Cache cleanup failed:", error);
-        }
+      .subject-card:hover::after {
+        transform: scaleX(1);
       }
 
-      // Get cache statistics
-      function getCacheStats() {
-        try {
-          const metaKey = getGlobalCacheKey();
-          const metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-
-          let totalSize = 0;
-          let validEntries = 0;
-
-          metadata.keys.forEach((cacheKey) => {
-            const cached = localStorage.getItem(cacheKey);
-            if (cached) {
-              totalSize += cached.length;
-              validEntries++;
-            }
-          });
-
-          return {
-            entries: validEntries,
-            sizeKB: Math.round(totalSize / 1024),
-            lastUpdated: metadata.lastUpdated
-              ? new Date(metadata.lastUpdated).toLocaleString()
-              : "Never",
-          };
-        } catch (error) {
-          return { entries: 0, sizeKB: 0, lastUpdated: "Error" };
-        }
+      /* Navigation section improvements */
+      .nav-section {
+        margin: 2rem 0;
       }
 
-      // Clear all cache data (useful for debugging or forcing refresh)
-      function clearAllCache() {
-        try {
-          const metaKey = getGlobalCacheKey();
-          const metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-
-          // Remove all cache entries
-          metadata.keys.forEach((cacheKey) => {
-            localStorage.removeItem(cacheKey);
-          });
-
-          // Clear metadata
-          localStorage.removeItem(metaKey);
-
-          console.log("🗑️ All 1st semester cache data cleared");
-          return true;
-        } catch (error) {
-          console.error("Failed to clear cache:", error);
-          return false;
-        }
+      .nav-section h3 {
+        margin-bottom: 1rem;
+        color: var(--text);
+        font-weight: var(--font-weight-semibold);
       }
 
-      // Make cache management functions available globally for debugging
-      window.firstSemesterCache = {
-        stats: getCacheStats,
-        clear: clearAllCache,
-        cleanup: cleanExpiredCache,
-      };
-
-      // === END CACHE SYSTEM ===
-
-      // Load mapping from batch JSON files
-      async function loadBatchMapping() {
-        try {
-          // Use the batch loader utility to get drive folder mapping for 1st semester
-          const mapping = await getDriveFolderMapping();
-          
-          // Extract 1st semester batches
-          if (mapping["1st"]) {
-            Object.entries(mapping["1st"]).forEach(
-              ([batchKey, batchData]) => {
-                batches[batchKey] = batchData.folderId;
-              }
-            );
-          }
-
-          return batches;
-        } catch (error) {
-          console.error("Error loading batch mapping:", error);
-          // Fallback to basic structure if batch loading fails
-          batches = {
-            30: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
-            29: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
-          };
-          return batches;
-        }
+      .nav-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
       }
 
-      // Toggle Table of Contents accordion
-      function toggleTOC() {
-        const tocContent = document.getElementById("table-of-contents");
-        const tocToggle = document.getElementById("toc-toggle");
-
-        if (tocContent.style.display === "none") {
-          tocContent.style.display = "block";
-          tocToggle.textContent = "▲";
-        } else {
-          tocContent.style.display = "none";
-          tocToggle.textContent = "▼";
-        }
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.75rem;
+        background: var(--blue-600);
+        color: white;
+        text-decoration: none;
+        border-radius: var(--radius-lg);
+        transition: var(--transition-normal);
+        font-weight: var(--font-weight-medium);
+        box-shadow: var(--shadow-sm);
       }
 
-      // Load Drive folder contents
-      async function loadBatch(batchNum, folderId) {
-        const spinner = document.getElementById(`spinner-${batchNum}`);
-        const list = document.getElementById(`drive-list-${batchNum}`);
-
-        spinner.style.display = "block";
-
-        // Check persistent cache first (24-hour localStorage)
-        let cachedFiles = loadFromPersistentCache(folderId, 0);
-
-        if (cachedFiles) {
-          console.log(`📋 Using cached data for batch ${batchNum}`);
-          renderBatchFiles(cachedFiles, list, batchNum);
-          spinner.style.display = "none";
-          return;
-        }
-
-        try {
-          console.log(`🌐 Loading fresh data for batch ${batchNum}`);
-          const response = await fetch(
-            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)`
-          );
-
-          if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
-          }
-
-          const data = await response.json();
-
-          // Save to persistent cache
-          saveToPersistentCache(folderId, data.files || []);
-
-          renderBatchFiles(data.files, list, batchNum);
-        } catch (error) {
-          list.innerHTML = `<li class="error-message">Error loading files: ${error.message}</li>`;
-        }
-
-        spinner.style.display = "none";
+      .nav-btn:hover {
+        background: var(--blue-700);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
       }
 
-      // Helper function to render batch files
-      function renderBatchFiles(files, list, batchNum) {
-        list.innerHTML = "";
-
-        if (files) {
-          // Sort files alphabetically by name
-          files.sort((a, b) => a.name.localeCompare(b.name));
-
-          files.forEach((file) => {
-            const li = document.createElement("li");
-            li.className = "drive-list-item";
-
-            if (file.mimeType === "application/vnd.google-apps.folder") {
-              // Folder with expand action only
-              li.innerHTML = `
-                <div class="folder-item">
-                  <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="folder-link">
-                    📁 ${file.name}
-                  </a>
-                  <div class="folder-actions">
-                    <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
-                      ▼
-                    </button>
-                  </div>
-                </div>
-                <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
-              `;
-            } else {
-              li.innerHTML = `<a href="${
-                file.webViewLink ||
-                `https://drive.google.com/file/d/${file.id}/view`
-              }" target="_blank">📄 ${file.name}</a>`;
-            }
-
-            list.appendChild(li);
-          });
-        }
+      .nav-btn .icon {
+        font-size: 1.2em;
       }
 
-      // Toggle folder expansion with caching
-      async function toggleFolderExpansion(folderId, button) {
-        const subfolderList = document.getElementById(`subfolder-${folderId}`);
-
-        if (subfolderList.style.display === "none") {
-          // Expand folder
-          button.innerHTML = "▲";
-          button.title = "Collapse folder contents";
-          subfolderList.style.display = "block";
-
-          // Load folder contents if not already loaded
-          if (subfolderList.children.length === 0) {
-            subfolderList.innerHTML = '<li class="loading">Loading...</li>';
-
-            // Check persistent cache first
-            const cachedFiles = loadFromPersistentCache(folderId);
-            if (cachedFiles) {
-              console.log(`📋 Using cached data for folder ${folderId}`);
-              renderSubfolderFiles(cachedFiles, subfolderList);
-              return;
-            }
-
-            try {
-              console.log(`🌐 Loading fresh data for folder ${folderId}`);
-              const response = await fetch(
-                `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)`
-              );
-
-              if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
-              }
-
-              const data = await response.json();
-
-              // Save to persistent cache
-              saveToPersistentCache(folderId, data.files || []);
-
-              renderSubfolderFiles(data.files, subfolderList);
-            } catch (error) {
-              subfolderList.innerHTML = `<li class="error">Error loading: ${error.message}</li>`;
-            }
-          }
-        } else {
-          // Collapse folder
-          button.innerHTML = "▼";
-          button.title = "Expand folder contents";
-          subfolderList.style.display = "none";
+      @media (max-width: 640px) {
+        .nav-buttons {
+          flex-direction: column;
+        }
+        
+        .nav-btn {
+          justify-content: center;
         }
       }
-
-      // Helper function to render subfolder files
-      function renderSubfolderFiles(files, subfolderList) {
-        subfolderList.innerHTML = "";
-
-        if (files && files.length > 0) {
-          // Sort files alphabetically by name
-          files.sort((a, b) => a.name.localeCompare(b.name));
-
-          files.forEach((file) => {
-            const li = document.createElement("li");
-            li.className = "subfolder-item";
-
-            if (file.mimeType === "application/vnd.google-apps.folder") {
-              // Nested folder with its own dropdown
-              li.innerHTML = `
-                <div class="folder-item">
-                  <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="folder-link">
-                    📁 ${file.name}
-                  </a>
-                  <div class="folder-actions">
-                    <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
-                      ▼
-                    </button>
-                  </div>
-                </div>
-                <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
-              `;
-            } else {
-              li.innerHTML = `
-                <a href="${
-                  file.webViewLink ||
-                  `https://drive.google.com/file/d/${file.id}/view`
-                }" target="_blank">
-                  📄 ${file.name}
-                </a>
-              `;
-            }
-
-            subfolderList.appendChild(li);
-          });
-        } else {
-          subfolderList.innerHTML = '<li class="empty">No files found</li>';
-        }
-      }
-
-      // Initialize
-      window.addEventListener("DOMContentLoaded", async () => {
-        // Add spinners
-        document.querySelectorAll(".drive-spinner").forEach((spinner) => {
-          spinner.innerHTML = '<div class="loading-spinner"></div>';
-        });
-
-        // Clean expired cache on page load
-        cleanExpiredCache();
-
-        // Display cache status
-        const stats = getCacheStats();
-        if (stats.totalEntries > 0) {
-          console.log(`📊 Cache Status:`, stats);
-        }
-
-        // Load mapping first, then load all batches
-        await loadBatchMapping();
-
-        // Populate table of contents
-        const toc = document.getElementById("table-of-contents");
-        const batchKeys = Object.keys(batches).sort(
-          (a, b) => parseInt(b) - parseInt(a)
-        ); // Sort descending
-        toc.innerHTML = batchKeys
-          .map(
-            (batchNum) =>
-              `<li><a href="#batch-${batchNum}">${batchNum}th Batch</a></li>`
-          )
-          .join("");
-
-        // Set up root folder buttons for batches loaded from JSON
-        Object.entries(batches).forEach(([batchNum, folderId]) => {
-          const rootBtn = document.getElementById(`root-btn-${batchNum}`);
-          if (rootBtn) {
-            rootBtn.onclick = () =>
-              window.open(
-                `https://drive.google.com/drive/folders/${folderId}`,
-                "_blank"
-              );
-          }
-          loadBatch(batchNum, folderId);
-        });
-      });
-    </script>
+    </style>
   </body>
 </html>
