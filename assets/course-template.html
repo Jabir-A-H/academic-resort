@@ -178,9 +178,10 @@
         const folderId = extractFolderId(link);
         if (folderId) {
           const linkTitle = links.length > 1 ? `${title} ${index + 1}` : title;
+          const fullUrl = link.includes('drive.google.com') ? link : `https://drive.google.com/drive/folders/${folderId}`;
           linksHtml += `
             <div class="folder-item">
-              <a href="${link}" target="_blank" class="folder-link">
+              <a href="${fullUrl}" target="_blank" class="folder-link">
                 📁 ${linkTitle}
               </a>
               <div class="folder-actions">
@@ -214,12 +215,25 @@
     `;
   }
 
-  // Extract Google Drive folder ID from URL
+  // Extract Google Drive folder ID from URL or return ID if already a folder ID
   function extractFolderId(driveUrl) {
     if (!driveUrl || typeof driveUrl !== 'string') return null;
     
+    // Remove leading/trailing whitespace
+    driveUrl = driveUrl.trim();
+    
+    // Check if it's a complete Google Drive folder URL
     const match = driveUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
-    return match ? match[1] : null;
+    if (match) {
+      return match[1];
+    }
+    
+    // Check if it's already a folder ID (alphanumeric with underscores and hyphens)
+    if (/^[a-zA-Z0-9_-]+$/.test(driveUrl) && driveUrl.length > 20) {
+      return driveUrl;
+    }
+    
+    return null;
   }
 
   // Toggle folder expansion with API loading (similar to 1st semester page)
