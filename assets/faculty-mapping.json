@@ -1,0 +1,10 @@
+{
+  "faculty": {
+    "professors": [],
+    "associateProfessors": [],
+    "assistantProfessors": [],
+    "lecturers": [],
+    "honoraryProfessors": [],
+    "guestTeachers": []
+  }
+}

@@ -1658,13 +1658,8 @@
           // Populate dropdowns
           populateDropdowns();
 
-          // Initial render - start with course view
-          renderCourseView(allCourses, document.getElementById("view-course"));
-          
-          // Set initial view to course
-          document.getElementById("view-batch").style.display = "none";
-          document.getElementById("view-course").style.display = "block";
-          document.getElementById("view-teacher").style.display = "none";
+          // Initial render
+          renderBatchView(allBatches, document.getElementById("view-batch"));
 
           // Add event listeners
           document
