@@ -757,9 +757,7 @@
       let allTeachers = new Map(); // teacherName -> { courses: Set, batches: Set, semesters: Set }
       let allCourses = new Map(); // courseName -> { batches: Set, teachers: Set, semesters: Set }
 
-      // Faculty position and order mapping (based on official DU Accounting Department page)
-      // Faculty data will be loaded from external JSON file
-      let facultyData = {};
+      // All faculty information is now read from batch JSON files directly
 
       // Function to normalize teacher names (remove titles/honorifics for matching)
       function normalizeName(name) {
@@ -803,78 +801,16 @@
         return normalized;
       }
 
-      // Function to load faculty data from external JSON file
-      async function loadFacultyData() {
-        try {
-          const response = await fetch("../assets/faculty-mapping.json");
-          const data = await response.json();
-
-          // Transform the JSON structure to the format expected by the page
-          facultyData = {};
-          const categories = [
-            "professors",
-            "associateProfessors",
-            "assistantProfessors",
-            "lecturers",
-            "honoraryProfessors",
-            "guestTeachers",
-          ];
-
-          categories.forEach((category) => {
-            if (data.faculty && data.faculty[category]) {
-              data.faculty[category].forEach((faculty) => {
-                // Add main name
-                facultyData[faculty.name] = {
-                  position: faculty.position,
-                  order: faculty.order,
-                  cleanName: faculty.cleanName,
-                };
-
-                // Add alternative names if they exist
-                if (faculty.alternativeNames) {
-                  faculty.alternativeNames.forEach((altName) => {
-                    facultyData[altName] = {
-                      position: faculty.position,
-                      order: faculty.order,
-                      cleanName: faculty.cleanName,
-                    };
-                  });
-                }
-              });
-            }
-          });
-
-          console.log(
-            "Faculty data loaded successfully:",
-            Object.keys(facultyData).length,
-            "entries"
-          );
-        } catch (error) {
-          console.error("Error loading faculty data:", error);
-          // Fallback to empty object if loading fails
-          facultyData = {};
-        }
-      }
+      // Faculty information is now derived from batch data only
+      // No need for external faculty mapping file
 
       // Function to get faculty info with improved name matching
       function getFacultyInfo(teacherName) {
-        // First try direct match
-        if (facultyData[teacherName]) {
-          return facultyData[teacherName];
-        }
-
-        // Try normalized name matching
-        const normalizedInput = normalizeName(teacherName);
-        for (const [key, value] of Object.entries(facultyData)) {
-          if (normalizeName(key) === normalizedInput) {
-            return value;
-          }
-        }
-
-        // Fallback to default
+        // Since all faculty data now comes from batch files,
+        // we provide a consistent default for all teachers
         return {
           position: "Faculty",
-          order: 1000,
+          order: 1000, // Default ordering
           cleanName: normalizeName(teacherName) || teacherName,
         };
       }
@@ -1649,10 +1585,7 @@
       // Initialize page
       document.addEventListener("DOMContentLoaded", async () => {
         try {
-          // Load faculty data first
-          await loadFacultyData();
-
-          // Load teacher data from batch JSON files instead of hardcoded archive
+          // Load teacher data from batch JSON files - no external faculty mapping needed
           allBatches = await loadTeacherDataFromBatches();
 
           // Populate dropdowns
