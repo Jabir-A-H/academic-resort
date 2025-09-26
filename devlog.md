@@ -361,10 +361,10 @@ class DriveAPIManager {
 **Original Structure (August 2025):**
 ```
 academic-resort/
-├── pages/course-teachers.html    
+├── semester/course-teachers.html    
 ├── assets/faculty-mapping.json   
 ├── assets/styles.css            
-└── assets/includes/header.html  
+└── assets/header.html  
 ```
 
 **Current Advanced Structure (September 2025):**
@@ -520,10 +520,10 @@ academic-resort/
 ### File Structure Evolution & Organization
 **Original Structure (August 2025):**
 ```
-pages/course-teachers.html     // Main page with embedded JavaScript
+semester/course-teachers.html     // Main page with embedded JavaScript
 assets/faculty-mapping.json   // External faculty data
 assets/styles.css             // Shared styles across the site
-assets/includes/header.html  // Reusable navigation component
+assets/header.html  // Reusable navigation component
 ```
 
 **Current Advanced Structure (September 2025):**
@@ -610,7 +610,7 @@ class APIManager {
 - `course-teachers.html` — Main page, UI, and logic
 - `assets/faculty-mapping.json` — Official faculty data
 - `assets/styles.css` — Shared styles
-- `assets/includes/header.html` — Sidebar navigation
+- `assets/header.html` — Sidebar navigation
 
 ---
 

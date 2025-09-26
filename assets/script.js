@@ -6,11 +6,8 @@ function fixRelativePaths(html) {
   let pathPrefix = '';
   
   // Determine path prefix based on page depth
-  if (currentPath.includes('/pages/subjects/')) {
-    // We're in a subject page (2 levels deep from root)
-    pathPrefix = '../../';
-  } else if (currentPath.includes('/pages/') || currentPath.includes('/semester/') || currentPath.includes('/courses/')) {
-    // We're in a regular page (1 level deep from root)
+  if (currentPath.includes('/semester/') || currentPath.includes('/courses/')) {
+    // We're in a semester or course page (1 level deep from root)
     pathPrefix = '../';
   } else {
     // We're at root level
@@ -20,10 +17,8 @@ function fixRelativePaths(html) {
   // Fix href paths in navigation links - ensure they use absolute paths from root
   // Replace relative paths with corrected paths
   html = html.replace(/href="\.\.\/index\.html"/g, `href="${pathPrefix}index.html"`);
-  html = html.replace(/href="\.\.\/pages\//g, `href="${pathPrefix}pages/`);
-  
-  // Fix any doubled paths that might occur
-  html = html.replace(/pages\/pages\//g, 'pages/');
+  html = html.replace(/href="\.\.\/semester\//g, `href="${pathPrefix}semester/`);
+  html = html.replace(/href="\.\.\/courses\//g, `href="${pathPrefix}courses/`);
   
   return html;
 }
