@@ -30,16 +30,16 @@
           <div class="teachers-filters-top">
             <div class="view-tabs">
               <button 
-                class="view-tab active" 
+                class="view-tab" 
                 data-view="batch" 
                 id="batchTab"
                 title="View teachers organized by batch"
               >
-                <span class="tab-icon">🎓</span>
+                <span class="tab-icon">📊</span>
                 <span class="tab-label">Batch</span>
               </button>
               <button 
-                class="view-tab" 
+                class="view-tab active" 
                 data-view="course" 
                 id="courseTab"
                 title="View teachers organized by course"
@@ -53,7 +53,7 @@
                 id="teacherTab"
                 title="View teachers with their details"
               >
-                <span class="tab-icon">👨‍🏫</span>
+                <span class="tab-icon">📋</span>
                 <span class="tab-label">Teacher</span>
               </button>
             </div>
@@ -1596,7 +1596,7 @@
         const courseSelect = document.getElementById("courseSelect");
 
         const selectedBatch = batchSelect.value;
-        const selectedView = activeTab ? activeTab.dataset.view : "batch";
+        const selectedView = activeTab ? activeTab.dataset.view : "course";
         const selectedTeacher = teacherSelect.value;
         const selectedCourse = courseSelect.value;
 
@@ -1658,8 +1658,13 @@
           // Populate dropdowns
           populateDropdowns();
 
-          // Initial render
-          renderBatchView(allBatches, document.getElementById("view-batch"));
+          // Initial render - start with course view
+          renderCourseView(allCourses, document.getElementById("view-course"));
+          
+          // Set initial view to course
+          document.getElementById("view-batch").style.display = "none";
+          document.getElementById("view-course").style.display = "block";
+          document.getElementById("view-teacher").style.display = "none";
 
           // Add event listeners
           document
