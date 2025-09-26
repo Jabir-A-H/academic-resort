@@ -2877,6 +2877,11 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-sm);
   font-family: 'Courier New', monospace;
+  display: inline-block;
+  width: auto;
+  min-width: fit-content;
+  max-width: max-content;
+  margin-bottom: var(--space-sm);
 }
 
 .subject-icon {
@@ -2890,7 +2895,7 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
 }
 
 .subject-card h3 {
-  margin: 0 0 var(--space-md) 0;
+  margin: 0;
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   color: var(--text);
@@ -3001,12 +3006,20 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
     padding: var(--space-lg);
   }
   
+  .subject-code {
+    display: inline-block;
+    width: auto;
+    max-width: fit-content;
+    margin-bottom: var(--space-sm);
+  }
+  
   .subject-icon {
     font-size: 2rem;
   }
   
   .subject-card h3 {
     font-size: var(--font-size-lg);
+    margin-top: 0;
   }
   
   .nav-buttons {
