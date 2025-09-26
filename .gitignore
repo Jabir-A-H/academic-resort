@@ -1,1 +1,34 @@
+# Lighthouse reports
 /.lh
+
+# Build artifacts and temporary files
+/dist/
+*.min.css
+*.min.js
+build-stats.json
+
+# Development tools
+node_modules/
+.npm/
+.cache/
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary optimization scripts
+/tmp/
+*.tmp
+*.bak
