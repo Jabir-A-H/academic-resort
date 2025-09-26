@@ -28,13 +28,34 @@
         <div class="teachers-filters">
           <!-- Top Row: View Type and Reset -->
           <div class="teachers-filters-top">
-            <div class="filter-group">
-              <label for="viewSelect">View by:</label>
-              <select id="viewSelect" class="filter-dropdown">
-                <option value="batch">Batch</option>
-                <option value="course">Course</option>
-                <option value="teacher">Teacher</option>
-              </select>
+            <div class="view-tabs">
+              <button 
+                class="view-tab active" 
+                data-view="batch" 
+                id="batchTab"
+                title="View teachers organized by batch"
+              >
+                <span class="tab-icon">🎓</span>
+                <span class="tab-label">Batch</span>
+              </button>
+              <button 
+                class="view-tab" 
+                data-view="course" 
+                id="courseTab"
+                title="View teachers organized by course"
+              >
+                <span class="tab-icon">📚</span>
+                <span class="tab-label">Course</span>
+              </button>
+              <button 
+                class="view-tab" 
+                data-view="teacher" 
+                id="teacherTab"
+                title="View teachers with their details"
+              >
+                <span class="tab-icon">👨‍🏫</span>
+                <span class="tab-label">Teacher</span>
+              </button>
             </div>
 
             <button
@@ -1555,15 +1576,27 @@
         handleFilterChange();
       }
 
+      // Handle tab switching
+      function handleTabSwitch(selectedView) {
+        // Update active tab
+        document.querySelectorAll('.view-tab').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        document.querySelector(`[data-view="${selectedView}"]`).classList.add('active');
+        
+        // Trigger filter change to update the view
+        handleFilterChange();
+      }
+
       // Handle filter changes
       function handleFilterChange() {
         const batchSelect = document.getElementById("batchSelect");
-        const viewSelect = document.getElementById("viewSelect");
+        const activeTab = document.querySelector(".view-tab.active");
         const teacherSelect = document.getElementById("teacherSelect");
         const courseSelect = document.getElementById("courseSelect");
 
         const selectedBatch = batchSelect.value;
-        const selectedView = viewSelect.value;
+        const selectedView = activeTab ? activeTab.dataset.view : "batch";
         const selectedTeacher = teacherSelect.value;
         const selectedCourse = courseSelect.value;
 
@@ -1635,9 +1668,15 @@
           document
             .getElementById("semesterSelect")
             .addEventListener("change", handleFilterChange);
-          document
-            .getElementById("viewSelect")
-            .addEventListener("change", handleFilterChange);
+          
+          // Add tab click event listeners
+          document.querySelectorAll('.view-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+              const view = this.dataset.view;
+              handleTabSwitch(view);
+            });
+          });
+          
           document
             .getElementById("teacherSelect")
             .addEventListener("change", handleFilterChange);
