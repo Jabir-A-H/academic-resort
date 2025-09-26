@@ -8,6 +8,9 @@
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
     <script src="../assets/api-keys.js"></script>
+    <script src="../assets/cache-utils.js"></script>
+    <script src="../assets/api-limiter.js"></script>
+    <script src="../assets/drive-utils.js"></script>
     <script src="../assets/batch-loader.js"></script>
     <script src="../assets/script.js" defer></script>
   </head>
@@ -174,209 +177,20 @@
       // API keys are now loaded from api-keys.js for centralized management
       // Use getNextApiKey() to get API keys with automatic rotation
 
-      // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
-
-      // Cache configuration
-      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-      const CACHE_VERSION = "v1"; // Increment this to force cache refresh on updates
-
-      // Get cache key for a folder
-      function getCacheKey(folderId, depth = 0) {
-        return `driveCache_7th_${CACHE_VERSION}_${folderId}_${depth}`;
-      }
-
-      // Get global cache metadata key
-      function getGlobalCacheKey() {
-        return `driveCacheMetadata_7th_${CACHE_VERSION}`;
-      }
-
-      // Save data to persistent cache with timestamp
-      function saveToPersistentCache(folderId, data, depth = 0) {
-        try {
-          const cacheKey = getCacheKey(folderId, depth);
-          const cacheData = {
-            data: data,
-            timestamp: Date.now(),
-            version: CACHE_VERSION,
-          };
-          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-
-          // Update metadata
-          updateCacheMetadata(cacheKey);
-        } catch (error) {
-          console.warn("Failed to save to persistent cache:", error);
-        }
-      }
-
-      // Load data from persistent cache
-      function loadFromPersistentCache(folderId, depth = 0) {
-        try {
-          const cacheKey = getCacheKey(folderId, depth);
-          const cached = localStorage.getItem(cacheKey);
-
-          if (!cached) return null;
-
-          const cacheData = JSON.parse(cached);
-          const age = Date.now() - cacheData.timestamp;
-
-          // Check if cache is expired or version mismatch
-          if (age > CACHE_DURATION || cacheData.version !== CACHE_VERSION) {
-            localStorage.removeItem(cacheKey);
-            removeCacheFromMetadata(cacheKey);
-            return null;
-          }
-
-          return cacheData.data;
-        } catch (error) {
-          console.warn("Failed to load from persistent cache:", error);
-          return null;
-        }
-      }
-
-      // Update cache metadata for cleanup
-      function updateCacheMetadata(cacheKey) {
-        try {
-          const metaKey = getGlobalCacheKey();
-          const metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-
-          if (!metadata.keys.includes(cacheKey)) {
-            metadata.keys.push(cacheKey);
-            metadata.lastUpdated = Date.now();
-            localStorage.setItem(metaKey, JSON.stringify(metadata));
-          }
-        } catch (error) {
-          console.warn("Failed to update cache metadata:", error);
-        }
-      }
-
-      // Remove cache key from metadata
-      function removeCacheFromMetadata(cacheKey) {
-        try {
-          const metaKey = getGlobalCacheKey();
-          const metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-
-          metadata.keys = metadata.keys.filter((key) => key !== cacheKey);
-          localStorage.setItem(metaKey, JSON.stringify(metadata));
-        } catch (error) {
-          console.warn("Failed to remove cache from metadata:", error);
-        }
-      }
-
-      // Cleanup expired cache entries
-      function cleanExpiredCache() {
-        try {
-          const metaKey = getGlobalCacheKey();
-          const metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-
-          const now = Date.now();
-          let cleanedCount = 0;
-
-          // Only run cleanup once per hour
-          if (now - metadata.lastCleanup < 60 * 60 * 1000) return;
-
-          metadata.keys.forEach((cacheKey) => {
-            const cached = localStorage.getItem(cacheKey);
-            if (cached) {
-              try {
-                const cacheData = JSON.parse(cached);
-                const age = now - cacheData.timestamp;
-
-                if (age > CACHE_DURATION || cacheData.version !== CACHE_VERSION) {
-                  localStorage.removeItem(cacheKey);
-                  cleanedCount++;
-                }
-              } catch (error) {
-                // Invalid cache entry, remove it
-                localStorage.removeItem(cacheKey);
-                cleanedCount++;
-              }
-            }
-          });
-
-          // Update metadata
-          metadata.keys = metadata.keys.filter((key) =>
-            localStorage.getItem(key)
-          );
-          metadata.lastCleanup = now;
-          localStorage.setItem(metaKey, JSON.stringify(metadata));
-
-          if (cleanedCount > 0) {
-            console.log(`🧹 Cleaned ${cleanedCount} expired cache entries`);
-          }
-        } catch (error) {
-          console.warn("Failed to clean expired cache:", error);
-        }
-      }
-
-      // Get cache statistics
-      function getCacheStats() {
-        try {
-          const metaKey = getGlobalCacheKey();
-          const metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-
-          let totalSize = 0;
-          let validEntries = 0;
-
-          metadata.keys.forEach((cacheKey) => {
-            const cached = localStorage.getItem(cacheKey);
-            if (cached) {
-              totalSize += cached.length;
-              validEntries++;
-            }
-          });
-
-          return {
-            entries: validEntries,
-            sizeKB: Math.round(totalSize / 1024),
-            lastUpdated: metadata.lastUpdated
-              ? new Date(metadata.lastUpdated).toLocaleString()
-              : "Never",
-          };
-        } catch (error) {
-          return { entries: 0, sizeKB: 0, lastUpdated: "Error" };
-        }
-      }
-
-      // Clear all cache data (useful for debugging or forcing refresh)
-      function clearAllCache() {
-        try {
-          const metaKey = getGlobalCacheKey();
-          const metadata = JSON.parse(
-            localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
-          );
-
-          // Remove all cache entries
-          metadata.keys.forEach((cacheKey) => {
-            localStorage.removeItem(cacheKey);
-          });
-
-          // Clear metadata
-          localStorage.removeItem(metaKey);
-
-          console.log("🗑️ All 7th semester cache data cleared");
-          return true;
-        } catch (error) {
-          console.error("Failed to clear cache:", error);
-          return false;
-        }
-      }
+      // === SHARED UTILITIES ===
+      // Cache management is now handled by shared CacheUtils
+      // API rate limiting is now handled by shared APILimiter
+      // Drive operations are now handled by shared DriveUtils
+      
+      // Page-specific cache prefix
+      const PAGE_PREFIX = '7TH';
 
       // Make cache management functions available globally for debugging
-      window.seventhSemesterCache = {
-        stats: getCacheStats,
-        clear: clearAllCache,
-        cleanup: cleanExpiredCache,
+      window.7thSemesterCache = {
+        stats: () => window.CacheUtils.getCacheStats(PAGE_PREFIX),
+        clear: () => window.CacheUtils.clearPageCache(PAGE_PREFIX),
+        cleanup: () => window.CacheUtils.cleanExpiredCache(PAGE_PREFIX),
       };
-
-      // === END CACHE SYSTEM ===
 
       // Load mapping from batch JSON files
       async function loadBatchMapping() {
@@ -423,15 +237,16 @@
 
         spinner.style.display = "block";
 
-        // Check persistent cache first (24-hour localStorage)
-        let cachedFiles = loadFromPersistentCache(folderId, 0);
-
-        if (cachedFiles) {
-          console.log(`📋 Using cached data for batch ${batchNum}`);
-          renderBatchFiles(cachedFiles, list, batchNum);
-          spinner.style.display = "none";
-          return;
+        try {
+          // Use shared drive utilities for fetching with caching
+          const files = await window.DriveUtils.fetchFolderContents(folderId, PAGE_PREFIX, 0);
+          renderBatchFiles(files, list, batchNum);
+        } catch (error) {
+          list.innerHTML = `<li class="error-message">Error loading files: ${error.message}</li>`;
         }
+
+        spinner.style.display = "none";
+      }
 
         try {
           console.log(`🌐 Loading fresh data for batch ${batchNum}`);
@@ -447,7 +262,7 @@
           const files = data.files || [];
 
           // Save to persistent cache
-          saveToPersistentCache(folderId, files, 0);
+          window.CacheUtils.saveToPersistentCache(folderId, files, 0, PAGE_PREFIX);
 
           renderBatchFiles(files, list, batchNum);
         } catch (error) {
@@ -511,28 +326,31 @@
           button.title = "Collapse folder contents";
           subfolderList.style.display = "block";
 
-          // Load subfolder contents if not already loaded
+          // Load folder contents if not already loaded
           if (subfolderList.children.length === 0) {
             subfolderList.innerHTML = '<li class="loading">Loading...</li>';
 
             try {
-              // Check cache first
-              let cachedSubfolderFiles = loadFromPersistentCache(folderId, 1);
-
-              if (!cachedSubfolderFiles) {
-                const response = await fetch(
-                  `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)`
-                );
-
-                if (!response.ok) {
-                  throw new Error(`Failed to fetch: ${response.statusText}`);
-                }
+              // Use shared drive utilities for fetching with caching
+              const files = await window.DriveUtils.fetchFolderContents(folderId, PAGE_PREFIX, 1);
+              renderSubfolderFiles(files, subfolderList);
+            } catch (error) {
+              subfolderList.innerHTML = `<li class="error">Error loading: ${error.message}</li>`;
+            }
+          }
+        } else {
+          // Collapse folder
+          button.innerHTML = "▼";
+          button.title = "Expand folder contents";
+          subfolderList.style.display = "none";
+        }
+      }
 
                 const data = await response.json();
                 cachedSubfolderFiles = data.files || [];
 
                 // Save to cache
-                saveToPersistentCache(folderId, cachedSubfolderFiles, 1);
+                window.CacheUtils.saveToPersistentCache(folderId, cachedSubfolderFiles, 1, PAGE_PREFIX);
               }
 
               renderSubfolderFiles(cachedSubfolderFiles, subfolderList);
@@ -594,11 +412,11 @@
       // Initialize the page
       async function initializePage() {
         // Clean expired cache entries
-        cleanExpiredCache();
+        window.CacheUtils.cleanExpiredCache(PAGE_PREFIX);
 
         // Show cache stats (for debugging)
-        const stats = getCacheStats();
-        if (stats.totalEntries > 0) {
+        const stats = window.CacheUtils.getCacheStats(PAGE_PREFIX);
+        if (stats.validKeys > 0) {
           console.log(`📊 Cache Status:`, stats);
         }
 

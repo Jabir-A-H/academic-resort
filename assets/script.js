@@ -2,17 +2,8 @@
  * Fix relative paths in included HTML based on current page depth
  */
 function fixRelativePaths(html) {
-  const currentPath = window.location.pathname;
-  let pathPrefix = '';
-  
-  // Determine path prefix based on page depth
-  if (currentPath.includes('/semester/') || currentPath.includes('/courses/')) {
-    // We're in a semester or course page (1 level deep from root)
-    pathPrefix = '../';
-  } else {
-    // We're at root level
-    pathPrefix = '';
-  }
+  // Use the shared utility for consistent path handling
+  const pathPrefix = window.DriveUtils ? window.DriveUtils.getBasePath() : '';
   
   // Fix href paths in navigation links - ensure they use absolute paths from root
   // Replace relative paths with corrected paths
