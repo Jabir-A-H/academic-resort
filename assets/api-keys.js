@@ -82,5 +82,3 @@ window.getAllApiKeys = getAllApiKeys;
 
 // For backwards compatibility, export the first API key as DRIVE_API_KEY
 window.DRIVE_API_KEY = DRIVE_API_KEYS[0];
-
-console.log(`API Keys loaded: ${DRIVE_API_KEYS.length} keys available`);

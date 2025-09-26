@@ -120,7 +120,6 @@ function setupDynamicComponents() {
     console.error('Error setting up dynamic components:', error);
     // Retry after a short delay if there was an error
     setTimeout(() => {
-      console.log('Retrying dynamic components setup...');
       setupSidebarToggle();
     }, 200);
   }
@@ -131,7 +130,6 @@ function setupDynamicComponents() {
  */
 function setupNavLinkHandlers(appHeader, navLinks) {
   if (!appHeader || !navLinks || navLinks.length === 0) {
-    console.log('Cannot setup nav link handlers - missing elements');
     return;
   }
 
@@ -166,8 +164,6 @@ function setupNavLinkHandlers(appHeader, navLinks) {
       link.classList.add('active');
     }
   });
-  
-  console.log(`Set up ${updatedNavLinks.length} navigation link handlers`);
 }
 
 function setupSidebarToggle(retryCount = 0) {
@@ -179,10 +175,7 @@ function setupSidebarToggle(retryCount = 0) {
   const appHeader = document.querySelector('.app-header');
   if (!appHeader) {
     if (retryCount < 10) { // Max 10 retries (1 second total)
-      console.log(`App header not found, retrying in 100ms... (${retryCount + 1}/10)`);
       setTimeout(() => setupSidebarToggle(retryCount + 1), 100);
-    } else {
-      console.error('App header not found after 10 retries, giving up');
     }
     return;
   }
@@ -191,20 +184,13 @@ function setupSidebarToggle(retryCount = 0) {
   const navLinks = appHeader.querySelectorAll('.nav-item');
   if (navLinks.length === 0) {
     if (retryCount < 15) { // Max 15 retries for nav links (1.5 seconds total)
-      console.log(`Navigation links not loaded yet, retrying in 100ms... (${retryCount + 1}/15)`);
       setTimeout(() => setupSidebarToggle(retryCount + 1), 100);
-    } else {
-      console.error('Navigation links not found after 15 retries, proceeding without them');
-      // Continue with setup even without nav links
     }
     return;
   }
 
-  console.log(`Found ${navLinks.length} navigation links after ${retryCount} retries`);
-
   // Prevent multiple initializations globally
   if (sidebarInitialized) {
-    console.log('Sidebar already initialized, just updating state');
     // Just ensure the header has the right classes and state
     appHeader.classList.add('sidebar');
     document.body.classList.add('has-sidebar');
@@ -228,7 +214,6 @@ function setupSidebarToggle(retryCount = 0) {
     return;
   }
 
-  console.log('Initializing sidebar for the first time');
   // Mark as initialized
   sidebarInitialized = true;
   appHeader.setAttribute('data-sidebar-initialized', '1');
@@ -288,17 +273,13 @@ function setupSidebarToggle(retryCount = 0) {
   mobileToggle.setAttribute('aria-expanded', 'false');
   mobileToggle.setAttribute('type', 'button'); // Ensure it's a button
   document.body.appendChild(mobileToggle);
-  
-  console.log('Mobile toggle created and added to body');
 
   const toggleEl = appHeader.querySelector('.menu-toggle');
   
   // Function to toggle sidebar
   const toggleSidebar = () => {
     try {
-      console.log('Toggle sidebar called');
       const expanded = document.body.classList.toggle('sidebar-expanded');
-      console.log('Sidebar expanded:', expanded);
       
       if (toggleEl) toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
       if (mobileToggle) mobileToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
@@ -338,11 +319,9 @@ function setupSidebarToggle(retryCount = 0) {
 
   // Add click listeners to both toggle buttons
   if (toggleEl) {
-    console.log('Adding click listener to desktop toggle');
     toggleEl.addEventListener('click', toggleSidebar, { passive: true });
   }
   if (mobileToggle) {
-    console.log('Adding click listener to mobile toggle');
     mobileToggle.addEventListener('click', toggleSidebar, { passive: true });
     
     // Also add touch events for better mobile responsiveness

@@ -215,25 +215,18 @@
     `;
   }
 
-  // Extract Google Drive folder ID from URL or return ID if already a folder ID
+  // Enhanced extractFolderId function (matches batch-loader.js)
   function extractFolderId(driveUrl) {
     if (!driveUrl || typeof driveUrl !== 'string') return null;
     
-    // Remove leading/trailing whitespace
-    driveUrl = driveUrl.trim();
+    // Check if it's already a folder ID (33+ chars, alphanumeric + _-)
+    if (/^[a-zA-Z0-9_-]{33,}$/.test(driveUrl.trim())) {
+      return driveUrl.trim();
+    }
     
-    // Check if it's a complete Google Drive folder URL
+    // Extract from full Google Drive URL
     const match = driveUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
-    if (match) {
-      return match[1];
-    }
-    
-    // Check if it's already a folder ID (alphanumeric with underscores and hyphens)
-    if (/^[a-zA-Z0-9_-]+$/.test(driveUrl) && driveUrl.length > 20) {
-      return driveUrl;
-    }
-    
-    return null;
+    return match ? match[1] : null;
   }
 
   // Toggle folder expansion with API loading (similar to 1st semester page)
