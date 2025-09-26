@@ -9,7 +9,7 @@ function fixRelativePaths(html) {
   if (currentPath.includes('/pages/subjects/')) {
     // We're in a subject page (2 levels deep from root)
     pathPrefix = '../../';
-  } else if (currentPath.includes('/pages/')) {
+  } else if (currentPath.includes('/pages/') || currentPath.includes('/semester/') || currentPath.includes('/courses/')) {
     // We're in a regular page (1 level deep from root)
     pathPrefix = '../';
   } else {
