@@ -1,9 +1,15 @@
 <!-- Course Page Template -->
 <script src="../assets/api-keys.js"></script>
 <script src="../assets/batch-loader.js"></script>
+<script src="../assets/cache-utils.js"></script>
+<script src="../assets/drive-utils.js"></script>
+<script src="../assets/api-limiter.js"></script>
 <script>
   // Course page configuration that will be set by each page
   window.subjectConfig = window.subjectConfig || {};
+
+  // Cache configuration for course pages
+  const PAGE_PREFIX = `course_${window.subjectConfig?.code || 'unknown'}_`;
 
   function initializeCoursePage() {
     try {
@@ -244,16 +250,9 @@
         subfolderList.innerHTML = '<li class="loading">Loading...</li>';
 
         try {
-          const response = await fetch(
-            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)`
-          );
-
-          if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
-          }
-
-          const data = await response.json();
-          renderSubfolderFiles(data.files, subfolderList);
+          // Use shared drive utilities for fetching with caching
+          const files = await window.DriveUtils.fetchFolderContents(folderId, PAGE_PREFIX, 1);
+          renderSubfolderFiles(files, subfolderList);
         } catch (error) {
           subfolderList.innerHTML = `<li class="error">Error loading: ${error.message}</li>`;
         }
