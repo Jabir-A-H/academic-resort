@@ -31,6 +31,34 @@ function toggleAdvancedOptions() {
   }
 }
 
+// Toggle apps dropdown
+function toggleAppsDropdown() {
+  const dropdown = document.getElementById("appsDropdown");
+  if (dropdown) {
+    dropdown.classList.toggle("show");
+  }
+}
+
+// Toggle filter dropdown
+function toggleFilter(filterType) {
+  const dropdown = document.getElementById(`${filterType}Dropdown`);
+  const button = dropdown?.previousElementSibling;
+  
+  if (!dropdown) return;
+  
+  // Close all other dropdowns
+  document.querySelectorAll('.filter-dropdown-content').forEach(d => {
+    if (d !== dropdown) {
+      d.classList.remove('show');
+      d.previousElementSibling?.classList.remove('active');
+    }
+  });
+  
+  // Toggle current dropdown
+  dropdown.classList.toggle('show');
+  button?.classList.toggle('active');
+}
+
 // Optimized search function (placeholder - would need full implementation)
 function optimizedSearch() {
   const searchTerm = document.getElementById('globalSearch')?.value.trim();
@@ -46,6 +74,72 @@ function optimizedSearch() {
   // For now, just log that search was triggered
   // The full search implementation would go here
 }
+
+// === UTILITY FUNCTIONS ===
+
+// Show/hide search results and quick access sections
+function toggleSections(showResults) {
+  const searchResultsContainer = document.getElementById('searchResults') || 
+                                 document.querySelector('.search-results-container');
+  if (searchResultsContainer) {
+    if (showResults) {
+      searchResultsContainer.classList.add("visible");
+    } else {
+      searchResultsContainer.classList.remove("visible");
+    }
+  }
+}
+
+// Retro loading animation control
+function showRetroLoading(message = "Searching academic resources...") {
+  const retroContainer = document.getElementById('retroLoadingContainer');
+  const retroText = document.getElementById('retroLoadingText');
+  const statusText = document.getElementById('retroStatusText');
+  
+  if (retroContainer && retroText) {
+    retroText.textContent = message;
+    if (statusText) statusText.textContent = "Exploring drive folders...";
+    retroContainer.classList.add('active');
+  }
+}
+
+function hideRetroLoading() {
+  const retroContainer = document.getElementById('retroLoadingContainer');
+  if (retroContainer) {
+    retroContainer.classList.remove('active');
+  }
+}
+
+function updateRetroLoadingStatus(status) {
+  const statusText = document.getElementById('retroStatusText');
+  if (statusText) {
+    statusText.textContent = status;
+  }
+}
+
+// === EVENT LISTENERS ===
+
+// Setup event listeners when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function(e) {
+    // Close apps dropdown
+    const dropdown = document.getElementById("appsDropdown");
+    const appsBtn = document.querySelector(".apps-btn");
+    
+    if (dropdown && !dropdown.contains(e.target) && !appsBtn?.contains(e.target)) {
+      dropdown.classList.remove("show");
+    }
+    
+    // Close filter dropdowns
+    if (!e.target.closest('.filter-dropdown')) {
+      document.querySelectorAll('.filter-dropdown-content').forEach(d => {
+        d.classList.remove('show');
+        d.previousElementSibling?.classList.remove('active');
+      });
+    }
+  });
+});
 
 /**
  * Fix relative paths in included HTML based on current page depth

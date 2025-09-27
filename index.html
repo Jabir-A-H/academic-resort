@@ -16,9 +16,6 @@
     <link rel="stylesheet" href="./assets/utilities.css" />
     <link rel="stylesheet" href="./assets/homepage.css" />
     <script src="./assets/api-keys.js"></script>
-    <script src="./assets/cache-utils.js"></script>
-    <script src="./assets/api-limiter.js"></script>
-    <script src="./assets/drive-utils.js"></script>
     <script src="./assets/batch-loader.js"></script>
     <script src="./assets/script.js" defer></script>
   </head>
@@ -1164,8 +1161,8 @@
 
       // Clear cache and reload function
       function clearCacheAndReload() {
-        const success = window.CacheUtils.clearAllWebsiteCache();
-        if (success > 0) {
+        const success = clearAllCache();
+        if (success) {
           updateSearchStats("Cache cleared! Reloading page...");
           setTimeout(() => {
             location.reload();
