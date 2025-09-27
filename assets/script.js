@@ -59,21 +59,8 @@ function toggleFilter(filterType) {
   button?.classList.toggle('active');
 }
 
-// Optimized search function (placeholder - would need full implementation)
-function optimizedSearch() {
-  const searchTerm = document.getElementById('globalSearch')?.value.trim();
-  console.log('Search triggered for:', searchTerm);
-  
-  // This is a simplified placeholder - the full search implementation
-  // would need to be restored from the original codebase
-  if (!searchTerm) {
-    console.log('No search term provided');
-    return;
-  }
-  
-  // For now, just log that search was triggered
-  // The full search implementation would go here
-}
+// Note: optimizedSearch function is implemented in index.html's inline script
+// Don't define it here to avoid conflicts
 
 // === UTILITY FUNCTIONS ===
 
