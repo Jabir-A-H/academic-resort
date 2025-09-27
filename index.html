@@ -206,8 +206,6 @@
         <div class="simple-loading-bar">
           <div class="loading-bar-fill"></div>
         </div>
-        <div class="retro-loading-text" id="retroLoadingText">Searching academic resources...</div>
-        <div class="retro-status-text" id="retroStatusText">Exploring drive folders...</div>
       </div>
       
       <div class="results-header">
@@ -720,12 +718,8 @@
       // Retro loading animation control
       function showRetroLoading(message = "Searching academic resources...") {
         const retroContainer = document.getElementById('retroLoadingContainer');
-        const retroText = document.getElementById('retroLoadingText');
-        const statusText = document.getElementById('retroStatusText');
         
-        if (retroContainer && retroText) {
-          retroText.textContent = message;
-          statusText.textContent = "Exploring drive folders...";
+        if (retroContainer) {
           retroContainer.classList.add('active');
         }
       }
@@ -738,10 +732,8 @@
       }
 
       function updateRetroLoadingStatus(status) {
-        const statusText = document.getElementById('retroStatusText');
-        if (statusText) {
-          statusText.textContent = status;
-        }
+        // Status updates are no longer displayed in the loading animation
+        // This function is kept for backward compatibility
       }
 
       // === PERSISTENT CACHE SYSTEM (24-hour localStorage) ===
@@ -2068,12 +2060,8 @@
       // Show/hide retro loading animation
       function showRetroLoading(mainText = 'Searching...', statusText = 'Please wait...') {
         const container = document.getElementById('retroLoadingContainer');
-        const mainTextEl = document.getElementById('retroLoadingText');
-        const statusTextEl = document.getElementById('retroStatusText');
         
-        if (container && mainTextEl && statusTextEl) {
-          mainTextEl.textContent = mainText;
-          statusTextEl.textContent = statusText;
+        if (container) {
           container.classList.add('active');
         }
       }
