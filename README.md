@@ -1,4 +1,4 @@
-# academic-resort
+# Academic Resort
 A take on making a better version of [Academic Resort](https://sites.google.com/ais.du.ac.bd/academic-resort)
 
 ## 🌐 Live Site
