@@ -132,15 +132,8 @@ document.addEventListener('DOMContentLoaded', function() {
  * Fix relative paths in included HTML based on current page depth
  */
 function fixRelativePaths(html) {
-  // Use the shared utility for consistent path handling
-  const pathPrefix = window.DriveUtils ? window.DriveUtils.getBasePath() : '';
-  
-  // Fix href paths in navigation links - ensure they use absolute paths from root
-  // Replace relative paths with corrected paths
-  html = html.replace(/href="\.\.\/index\.html"/g, `href="${pathPrefix}index.html"`);
-  html = html.replace(/href="\.\.\/semester\//g, `href="${pathPrefix}semester/`);
-  html = html.replace(/href="\.\.\/courses\//g, `href="${pathPrefix}courses/`);
-  
+  // No path fixing needed - using proper relative paths in header.html
+  // Let the browser handle relative path resolution naturally
   return html;
 }
 
