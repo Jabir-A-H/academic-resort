@@ -198,7 +198,7 @@
       }
 
       // Save data to persistent cache with timestamp
-      function window.CacheUtils.saveToPersistentCache(folderId, data, depth = 0, PAGE_PREFIX) {
+      window.CacheUtils.saveToPersistentCache = function(folderId, data, depth = 0, PAGE_PREFIX) {
         try {
           const cacheKey = getCacheKey(folderId, depth);
           const cacheData = {
