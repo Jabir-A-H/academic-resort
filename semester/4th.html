@@ -7,7 +7,11 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
+    <link rel="stylesheet" href="../assets/utilities.css" />
     <script src="../assets/api-keys.js"></script>
+    <script src="../assets/cache-utils.js"></script>
+    <script src="../assets/api-limiter.js"></script>
+    <script src="../assets/drive-utils.js"></script>
     <script src="../assets/batch-loader.js"></script>
     <script src="../assets/script.js" defer></script>
   </head>
@@ -191,7 +195,7 @@
       }
 
       // Save data to persistent cache with timestamp
-      function saveToPersistentCache(folderId, data, depth = 0) {
+      function window.CacheUtils.saveToPersistentCache(folderId, data, depth = 0, PAGE_PREFIX) {
         try {
           const cacheKey = getCacheKey(folderId, depth);
           const cacheData = {
@@ -209,7 +213,7 @@
       }
 
       // Load data from persistent cache
-      function loadFromPersistentCache(folderId, depth = 0) {
+      function window.CacheUtils.loadFromPersistentCache(folderId, PAGE_PREFIX, depth = 0) {
         try {
           const cacheKey = getCacheKey(folderId, depth);
           const cached = localStorage.getItem(cacheKey);
@@ -376,7 +380,7 @@
 
         try {
           // Check persistent cache first
-          const cachedData = loadFromPersistentCache(folderId);
+          const cachedData = window.CacheUtils.loadFromPersistentCache(folderId, PAGE_PREFIX);
           if (cachedData) {
             console.log(`Loading batch ${batchNumber} from cache`);
             listContainer.innerHTML = cachedData;
@@ -407,7 +411,7 @@
           if (!data.files || data.files.length === 0) {
             const emptyMessage = '<li class="drive-item"><span class="item-name">No files found in this batch</span></li>';
             listContainer.innerHTML = emptyMessage;
-            saveToPersistentCache(folderId, emptyMessage);
+            window.CacheUtils.saveToPersistentCache(folderId, emptyMessage, PAGE_PREFIX, 0);
           } else {
             // Sort files: folders first, then by name
             const sortedFiles = data.files.sort((a, b) => {
@@ -426,22 +430,43 @@
                 const icon = isFolder ? "📁" : getFileIcon(file.mimeType);
                 const sizeText = file.size && !isFolder ? formatFileSize(file.size) : "";
 
-                return `
-                  <li class="drive-item ${isFolder ? "folder" : "file"}">
-                    <a href="${file.webViewLink}" target="_blank" class="item-link">
-                      <span class="item-icon">${icon}</span>
-                      <span class="item-name">${file.name}</span>
-                      ${sizeText ? `<span class="item-size">${sizeText}</span>` : ""}
-                    </a>
-                  </li>
-                `;
+                if (isFolder) {
+                  // Folder with expand action
+                  return `
+                    <li class="drive-item folder">
+                      <div class="folder-item">
+                        <a href="${file.webViewLink}" target="_blank" class="folder-link">
+                          <span class="item-icon">${icon}</span>
+                          <span class="item-name">${file.name}</span>
+                        </a>
+                        <div class="folder-actions">
+                          <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
+                            ▼
+                          </button>
+                        </div>
+                      </div>
+                      <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
+                    </li>
+                  `;
+                } else {
+                  // Regular file
+                  return `
+                    <li class="drive-item file">
+                      <a href="${file.webViewLink}" target="_blank" class="item-link">
+                        <span class="item-icon">${icon}</span>
+                        <span class="item-name">${file.name}</span>
+                        ${sizeText ? `<span class="item-size">${sizeText}</span>` : ""}
+                      </a>
+                    </li>
+                  `;
+                }
               })
               .join("");
 
             listContainer.innerHTML = html;
 
             // Cache the result
-            saveToPersistentCache(folderId, html);
+            window.CacheUtils.saveToPersistentCache(folderId, html, PAGE_PREFIX, 0);
           }
         } catch (error) {
           console.error(`Error loading batch ${batchNumber}:`, error);
@@ -484,6 +509,77 @@
         const sizes = ["Bytes", "KB", "MB", "GB"];
         const i = Math.floor(Math.log(bytes) / Math.log(1024));
         return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + " " + sizes[i];
+      }
+
+      // Toggle folder expansion with caching
+      async function toggleFolderExpansion(folderId, button) {
+        const subfolderList = document.getElementById(`subfolder-${folderId}`);
+
+        if (subfolderList.style.display === "none") {
+          // Expand folder
+          button.innerHTML = "▲";
+          button.title = "Collapse folder contents";
+          subfolderList.style.display = "block";
+
+          // Load folder contents if not already loaded
+          if (subfolderList.children.length === 0) {
+            subfolderList.innerHTML = '<li class="loading">Loading...</li>';
+
+            try {
+              // Use shared drive utilities for fetching with caching
+              const files = await window.DriveUtils.fetchFolderContents(folderId, PAGE_PREFIX, 1);
+              renderSubfolderFiles(files, subfolderList);
+            } catch (error) {
+              subfolderList.innerHTML = `<li class="error">Error loading: ${error.message}</li>`;
+            }
+          }
+        } else {
+          // Collapse folder
+          button.innerHTML = "▼";
+          button.title = "Expand folder contents";
+          subfolderList.style.display = "none";
+        }
+      }
+
+      // Helper function to render subfolder files
+      function renderSubfolderFiles(files, subfolderList) {
+        subfolderList.innerHTML = "";
+
+        if (files && files.length > 0) {
+          // Sort files alphabetically by name
+          files.sort((a, b) => a.name.localeCompare(b.name));
+
+          files.forEach((file) => {
+            const li = document.createElement("li");
+            li.className = "subfolder-item";
+
+            if (file.mimeType === "application/vnd.google-apps.folder") {
+              // Nested folder with its own dropdown
+              li.innerHTML = `
+                <div class="folder-item">
+                  <a href="https://drive.google.com/drive/folders/${file.id}" target="_blank" class="folder-link">
+                    📁 ${file.name}
+                  </a>
+                  <div class="folder-actions">
+                    <button class="expand-btn" onclick="toggleFolderExpansion('${file.id}', this)" title="Expand folder contents">
+                      ▼
+                    </button>
+                  </div>
+                </div>
+                <ul class="subfolder-list" id="subfolder-${file.id}" style="display: none;"></ul>
+              `;
+            } else {
+              li.innerHTML = `<a href="${
+                file.webViewLink ||
+                `https://drive.google.com/file/d/${file.id}/view`
+              }" target="_blank">📄 ${file.name}</a>`;
+            }
+
+            subfolderList.appendChild(li);
+          });
+        } else {
+          subfolderList.innerHTML = '<li class="no-files">No files found</li>';
+        }
       }
 
       function showError(message) {

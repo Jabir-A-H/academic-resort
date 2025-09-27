@@ -7,7 +7,11 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
+    <link rel="stylesheet" href="../assets/utilities.css" />
     <script src="../assets/api-keys.js"></script>
+    <script src="../assets/cache-utils.js"></script>
+    <script src="../assets/api-limiter.js"></script>
+    <script src="../assets/drive-utils.js"></script>
     <script src="../assets/batch-loader.js"></script>
     <script src="../assets/script.js" defer></script>
   </head>
@@ -191,7 +195,7 @@
       }
 
       // Save data to persistent cache with timestamp
-      function saveToPersistentCache(folderId, data, depth = 0) {
+      function window.CacheUtils.saveToPersistentCache(folderId, data, depth = 0, PAGE_PREFIX) {
         try {
           const cacheKey = getCacheKey(folderId, depth);
           const cacheData = {
@@ -209,7 +213,7 @@
       }
 
       // Load data from persistent cache
-      function loadFromPersistentCache(folderId, depth = 0) {
+      function window.CacheUtils.loadFromPersistentCache(folderId, PAGE_PREFIX, depth = 0) {
         try {
           const cacheKey = getCacheKey(folderId, depth);
           const cached = localStorage.getItem(cacheKey);
@@ -376,7 +380,7 @@
 
         try {
           // Check persistent cache first
-          const cachedData = loadFromPersistentCache(folderId);
+          const cachedData = window.CacheUtils.loadFromPersistentCache(folderId, PAGE_PREFIX);
           if (cachedData) {
             console.log(`Loading batch ${batchNumber} from cache`);
             listContainer.innerHTML = cachedData;
@@ -407,7 +411,7 @@
           if (!data.files || data.files.length === 0) {
             const emptyMessage = '<li class="drive-item"><span class="item-name">No files found in this batch</span></li>';
             listContainer.innerHTML = emptyMessage;
-            saveToPersistentCache(folderId, emptyMessage);
+            window.CacheUtils.saveToPersistentCache(folderId, emptyMessage, PAGE_PREFIX, 0);
           } else {
             // Sort files: folders first, then by name
             const sortedFiles = data.files.sort((a, b) => {
@@ -441,7 +445,7 @@
             listContainer.innerHTML = html;
 
             // Cache the result
-            saveToPersistentCache(folderId, html);
+            window.CacheUtils.saveToPersistentCache(folderId, html, PAGE_PREFIX, 0);
           }
         } catch (error) {
           console.error(`Error loading batch ${batchNumber}:`, error);
