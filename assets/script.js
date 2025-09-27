@@ -80,12 +80,8 @@ function toggleSections(showResults) {
 // Retro loading animation control
 function showRetroLoading(message = "Searching academic resources...") {
   const retroContainer = document.getElementById('retroLoadingContainer');
-  const retroText = document.getElementById('retroLoadingText');
-  const statusText = document.getElementById('retroStatusText');
   
-  if (retroContainer && retroText) {
-    retroText.textContent = message;
-    if (statusText) statusText.textContent = "Exploring drive folders...";
+  if (retroContainer) {
     retroContainer.classList.add('active');
   }
 }
@@ -98,10 +94,8 @@ function hideRetroLoading() {
 }
 
 function updateRetroLoadingStatus(status) {
-  const statusText = document.getElementById('retroStatusText');
-  if (statusText) {
-    statusText.textContent = status;
-  }
+  // Status updates are no longer displayed in the loading animation
+  // This function is kept for backward compatibility
 }
 
 // === EVENT LISTENERS ===
