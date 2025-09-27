@@ -48,7 +48,6 @@ async function loadAllBatchData() {
       }
     });
 
-    console.log('Batch data loaded successfully:', Array.from(window.BATCH_DATA_CACHE.keys()));
     return window.BATCH_DATA_CACHE;
   } catch (error) {
     console.error('Error loading batch data:', error);
@@ -280,15 +279,21 @@ async function getBatchInfo(batchNumber) {
 function clearBatchDataCache() {
   window.BATCH_DATA_CACHE.clear();
   window.SUBJECT_DATA_CACHE.clear();
-  console.log('Batch data cache cleared');
 }
 
 /**
- * Extract Google Drive folder ID from drive URL
+ * Extract Google Drive folder ID from drive URL or return bare folder ID
+ * Enhanced to handle both full URLs and bare folder IDs
  */
 function extractFolderId(driveUrl) {
   if (!driveUrl || typeof driveUrl !== 'string') return null;
   
+  // Check if it's already a folder ID (33+ chars, alphanumeric + _-)
+  if (/^[a-zA-Z0-9_-]{33,}$/.test(driveUrl.trim())) {
+    return driveUrl.trim();
+  }
+  
+  // Extract from full Google Drive URL
   const match = driveUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
   return match ? match[1] : null;
 }

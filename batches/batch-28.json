@@ -490,9 +490,9 @@
             "B": "Mahboob"
           },
           "links": {
-            "class_updates": "1F0JE70joz9ZkarSYHqL_5SgGg_mawDWc",
-            "notes": [" 1F0JE70joz9ZkarSYHqL_5SgGg_mawDWc"],
-            "slides_lectures": ["1F0JE70joz9ZkarSYHqL_5SgGg_mawDWc"],
+            "class_updates": "https://drive.google.com/drive/folders/1F0JE70joz9ZkarSYHqL_5SgGg_mawDWc",
+            "notes": [" https://drive.google.com/drive/folders/1F0JE70joz9ZkarSYHqL_5SgGg_mawDWc"],
+            "slides_lectures": ["https://drive.google.com/drive/folders/1F0JE70joz9ZkarSYHqL_5SgGg_mawDWc"],
             "books_manuals": [],
             "question_bank": []
           }
@@ -519,7 +519,7 @@
           "teachers": {
             "A": "",
             "B": "",
-            "C": ""
+            "C": "Some Sir"
           },
           "links": {
             "class_updates": "",

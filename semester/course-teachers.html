@@ -28,13 +28,34 @@
         <div class="teachers-filters">
           <!-- Top Row: View Type and Reset -->
           <div class="teachers-filters-top">
-            <div class="filter-group">
-              <label for="viewSelect">View by:</label>
-              <select id="viewSelect" class="filter-dropdown">
-                <option value="batch">Batch</option>
-                <option value="course">Course</option>
-                <option value="teacher">Teacher</option>
-              </select>
+            <div class="view-tabs">
+              <button 
+                class="view-tab" 
+                data-view="batch" 
+                id="batchTab"
+                title="View teachers organized by batch"
+              >
+                <span class="tab-icon">📊</span>
+                <span class="tab-label">Batch</span>
+              </button>
+              <button 
+                class="view-tab active" 
+                data-view="course" 
+                id="courseTab"
+                title="View teachers organized by course"
+              >
+                <span class="tab-icon">📚</span>
+                <span class="tab-label">Course</span>
+              </button>
+              <button 
+                class="view-tab" 
+                data-view="teacher" 
+                id="teacherTab"
+                title="View teachers with their details"
+              >
+                <span class="tab-icon">📋</span>
+                <span class="tab-label">Teacher</span>
+              </button>
             </div>
 
             <button
@@ -736,9 +757,7 @@
       let allTeachers = new Map(); // teacherName -> { courses: Set, batches: Set, semesters: Set }
       let allCourses = new Map(); // courseName -> { batches: Set, teachers: Set, semesters: Set }
 
-      // Faculty position and order mapping (based on official DU Accounting Department page)
-      // Faculty data will be loaded from external JSON file
-      let facultyData = {};
+      // All faculty information is now read from batch JSON files directly
 
       // Function to normalize teacher names (remove titles/honorifics for matching)
       function normalizeName(name) {
@@ -782,78 +801,16 @@
         return normalized;
       }
 
-      // Function to load faculty data from external JSON file
-      async function loadFacultyData() {
-        try {
-          const response = await fetch("../assets/faculty-mapping.json");
-          const data = await response.json();
-
-          // Transform the JSON structure to the format expected by the page
-          facultyData = {};
-          const categories = [
-            "professors",
-            "associateProfessors",
-            "assistantProfessors",
-            "lecturers",
-            "honoraryProfessors",
-            "guestTeachers",
-          ];
-
-          categories.forEach((category) => {
-            if (data.faculty && data.faculty[category]) {
-              data.faculty[category].forEach((faculty) => {
-                // Add main name
-                facultyData[faculty.name] = {
-                  position: faculty.position,
-                  order: faculty.order,
-                  cleanName: faculty.cleanName,
-                };
-
-                // Add alternative names if they exist
-                if (faculty.alternativeNames) {
-                  faculty.alternativeNames.forEach((altName) => {
-                    facultyData[altName] = {
-                      position: faculty.position,
-                      order: faculty.order,
-                      cleanName: faculty.cleanName,
-                    };
-                  });
-                }
-              });
-            }
-          });
-
-          console.log(
-            "Faculty data loaded successfully:",
-            Object.keys(facultyData).length,
-            "entries"
-          );
-        } catch (error) {
-          console.error("Error loading faculty data:", error);
-          // Fallback to empty object if loading fails
-          facultyData = {};
-        }
-      }
+      // Faculty information is now derived from batch data only
+      // No need for external faculty mapping file
 
       // Function to get faculty info with improved name matching
       function getFacultyInfo(teacherName) {
-        // First try direct match
-        if (facultyData[teacherName]) {
-          return facultyData[teacherName];
-        }
-
-        // Try normalized name matching
-        const normalizedInput = normalizeName(teacherName);
-        for (const [key, value] of Object.entries(facultyData)) {
-          if (normalizeName(key) === normalizedInput) {
-            return value;
-          }
-        }
-
-        // Fallback to default
+        // Since all faculty data now comes from batch files,
+        // we provide a consistent default for all teachers
         return {
           position: "Faculty",
-          order: 1000,
+          order: 1000, // Default ordering
           cleanName: normalizeName(teacherName) || teacherName,
         };
       }
@@ -1555,15 +1512,27 @@
         handleFilterChange();
       }
 
+      // Handle tab switching
+      function handleTabSwitch(selectedView) {
+        // Update active tab
+        document.querySelectorAll('.view-tab').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        document.querySelector(`[data-view="${selectedView}"]`).classList.add('active');
+        
+        // Trigger filter change to update the view
+        handleFilterChange();
+      }
+
       // Handle filter changes
       function handleFilterChange() {
         const batchSelect = document.getElementById("batchSelect");
-        const viewSelect = document.getElementById("viewSelect");
+        const activeTab = document.querySelector(".view-tab.active");
         const teacherSelect = document.getElementById("teacherSelect");
         const courseSelect = document.getElementById("courseSelect");
 
         const selectedBatch = batchSelect.value;
-        const selectedView = viewSelect.value;
+        const selectedView = activeTab ? activeTab.dataset.view : "course";
         const selectedTeacher = teacherSelect.value;
         const selectedCourse = courseSelect.value;
 
@@ -1616,17 +1585,14 @@
       // Initialize page
       document.addEventListener("DOMContentLoaded", async () => {
         try {
-          // Load faculty data first
-          await loadFacultyData();
-
-          // Load teacher data from batch JSON files instead of hardcoded archive
+          // Load teacher data from batch JSON files - no external faculty mapping needed
           allBatches = await loadTeacherDataFromBatches();
 
           // Populate dropdowns
           populateDropdowns();
 
-          // Initial render
-          renderBatchView(allBatches, document.getElementById("view-batch"));
+          // Initial render - render course view since it's the default active tab
+          handleFilterChange();
 
           // Add event listeners
           document
@@ -1635,9 +1601,15 @@
           document
             .getElementById("semesterSelect")
             .addEventListener("change", handleFilterChange);
-          document
-            .getElementById("viewSelect")
-            .addEventListener("change", handleFilterChange);
+          
+          // Add tab click event listeners
+          document.querySelectorAll('.view-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+              const view = this.dataset.view;
+              handleTabSwitch(view);
+            });
+          });
+          
           document
             .getElementById("teacherSelect")
             .addEventListener("change", handleFilterChange);

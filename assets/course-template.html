@@ -1,9 +1,15 @@
 <!-- Course Page Template -->
 <script src="../assets/api-keys.js"></script>
 <script src="../assets/batch-loader.js"></script>
+<script src="../assets/cache-utils.js"></script>
+<script src="../assets/drive-utils.js"></script>
+<script src="../assets/api-limiter.js"></script>
 <script>
   // Course page configuration that will be set by each page
   window.subjectConfig = window.subjectConfig || {};
+
+  // Cache configuration for course pages
+  const PAGE_PREFIX = `course_${window.subjectConfig?.code || 'unknown'}_`;
 
   function initializeCoursePage() {
     try {
@@ -178,9 +184,10 @@
         const folderId = extractFolderId(link);
         if (folderId) {
           const linkTitle = links.length > 1 ? `${title} ${index + 1}` : title;
+          const fullUrl = link.includes('drive.google.com') ? link : `https://drive.google.com/drive/folders/${folderId}`;
           linksHtml += `
             <div class="folder-item">
-              <a href="${link}" target="_blank" class="folder-link">
+              <a href="${fullUrl}" target="_blank" class="folder-link">
                 📁 ${linkTitle}
               </a>
               <div class="folder-actions">
@@ -214,10 +221,16 @@
     `;
   }
 
-  // Extract Google Drive folder ID from URL
+  // Enhanced extractFolderId function (matches batch-loader.js)
   function extractFolderId(driveUrl) {
     if (!driveUrl || typeof driveUrl !== 'string') return null;
     
+    // Check if it's already a folder ID (33+ chars, alphanumeric + _-)
+    if (/^[a-zA-Z0-9_-]{33,}$/.test(driveUrl.trim())) {
+      return driveUrl.trim();
+    }
+    
+    // Extract from full Google Drive URL
     const match = driveUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
     return match ? match[1] : null;
   }
@@ -237,16 +250,9 @@
         subfolderList.innerHTML = '<li class="loading">Loading...</li>';
 
         try {
-          const response = await fetch(
-            `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${getNextApiKey()}&fields=files(id,name,mimeType,webViewLink)`
-          );
-
-          if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
-          }
-
-          const data = await response.json();
-          renderSubfolderFiles(data.files, subfolderList);
+          // Use shared drive utilities for fetching with caching
+          const files = await window.DriveUtils.fetchFolderContents(folderId, PAGE_PREFIX, 1);
+          renderSubfolderFiles(files, subfolderList);
         } catch (error) {
           subfolderList.innerHTML = `<li class="error">Error loading: ${error.message}</li>`;
         }

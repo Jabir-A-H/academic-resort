@@ -1,30 +1,139 @@
+// === SEARCH FUNCTIONALITY ===
+
+// Debounce function for search optimization
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Toggle advanced search options
+function toggleAdvancedOptions() {
+  const advancedOptions = document.getElementById("advancedOptions");
+  const toggleBtn = document.querySelector(".options-toggle-btn");
+  
+  if (!advancedOptions || !toggleBtn) return;
+  
+  if (advancedOptions.classList.contains("show")) {
+    advancedOptions.classList.remove("show");
+    toggleBtn.classList.remove("active");
+    toggleBtn.innerHTML = 'Search Globally <span class="accordion-icon">▼</span>';
+  } else {
+    advancedOptions.classList.add("show");
+    toggleBtn.classList.add("active");
+    toggleBtn.innerHTML = 'Search Specifically <span class="accordion-icon">▲</span>';
+  }
+}
+
+// Toggle apps dropdown
+function toggleAppsDropdown() {
+  const dropdown = document.getElementById("appsDropdown");
+  if (dropdown) {
+    dropdown.classList.toggle("show");
+  }
+}
+
+// Toggle filter dropdown
+function toggleFilter(filterType) {
+  const dropdown = document.getElementById(`${filterType}Dropdown`);
+  const button = dropdown?.previousElementSibling;
+  
+  if (!dropdown) return;
+  
+  // Close all other dropdowns
+  document.querySelectorAll('.filter-dropdown-content').forEach(d => {
+    if (d !== dropdown) {
+      d.classList.remove('show');
+      d.previousElementSibling?.classList.remove('active');
+    }
+  });
+  
+  // Toggle current dropdown
+  dropdown.classList.toggle('show');
+  button?.classList.toggle('active');
+}
+
+// Note: optimizedSearch function is implemented in index.html's inline script
+// Don't define it here to avoid conflicts
+
+// === UTILITY FUNCTIONS ===
+
+// Show/hide search results and quick access sections
+function toggleSections(showResults) {
+  const searchResultsContainer = document.getElementById('searchResults') || 
+                                 document.querySelector('.search-results-container');
+  if (searchResultsContainer) {
+    if (showResults) {
+      searchResultsContainer.classList.add("visible");
+    } else {
+      searchResultsContainer.classList.remove("visible");
+    }
+  }
+}
+
+// Retro loading animation control
+function showRetroLoading(message = "Searching academic resources...") {
+  const retroContainer = document.getElementById('retroLoadingContainer');
+  const retroText = document.getElementById('retroLoadingText');
+  const statusText = document.getElementById('retroStatusText');
+  
+  if (retroContainer && retroText) {
+    retroText.textContent = message;
+    if (statusText) statusText.textContent = "Exploring drive folders...";
+    retroContainer.classList.add('active');
+  }
+}
+
+function hideRetroLoading() {
+  const retroContainer = document.getElementById('retroLoadingContainer');
+  if (retroContainer) {
+    retroContainer.classList.remove('active');
+  }
+}
+
+function updateRetroLoadingStatus(status) {
+  const statusText = document.getElementById('retroStatusText');
+  if (statusText) {
+    statusText.textContent = status;
+  }
+}
+
+// === EVENT LISTENERS ===
+
+// Setup event listeners when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function(e) {
+    // Close apps dropdown
+    const dropdown = document.getElementById("appsDropdown");
+    const appsBtn = document.querySelector(".apps-btn");
+    
+    if (dropdown && !dropdown.contains(e.target) && !appsBtn?.contains(e.target)) {
+      dropdown.classList.remove("show");
+    }
+    
+    // Close filter dropdowns
+    if (!e.target.closest('.filter-dropdown')) {
+      document.querySelectorAll('.filter-dropdown-content').forEach(d => {
+        d.classList.remove('show');
+        d.previousElementSibling?.classList.remove('active');
+      });
+    }
+  });
+});
+
 /**
  * Fix relative paths in included HTML based on current page depth
  */
 function fixRelativePaths(html) {
-  const currentPath = window.location.pathname;
-  let pathPrefix = '';
-  
-  // Determine path prefix based on page depth
-  if (currentPath.includes('/pages/subjects/')) {
-    // We're in a subject page (2 levels deep from root)
-    pathPrefix = '../../';
-  } else if (currentPath.includes('/pages/')) {
-    // We're in a regular page (1 level deep from root)
-    pathPrefix = '../';
-  } else {
-    // We're at root level
-    pathPrefix = '';
-  }
-  
-  // Fix href paths in navigation links - ensure they use absolute paths from root
-  // Replace relative paths with corrected paths
-  html = html.replace(/href="\.\.\/index\.html"/g, `href="${pathPrefix}index.html"`);
-  html = html.replace(/href="\.\.\/pages\//g, `href="${pathPrefix}pages/`);
-  
-  // Fix any doubled paths that might occur
-  html = html.replace(/pages\/pages\//g, 'pages/');
-  
+  // No path fixing needed - using proper relative paths in header.html
+  // Let the browser handle relative path resolution naturally
   return html;
 }
 
@@ -125,7 +234,6 @@ function setupDynamicComponents() {
     console.error('Error setting up dynamic components:', error);
     // Retry after a short delay if there was an error
     setTimeout(() => {
-      console.log('Retrying dynamic components setup...');
       setupSidebarToggle();
     }, 200);
   }
@@ -136,7 +244,6 @@ function setupDynamicComponents() {
  */
 function setupNavLinkHandlers(appHeader, navLinks) {
   if (!appHeader || !navLinks || navLinks.length === 0) {
-    console.log('Cannot setup nav link handlers - missing elements');
     return;
   }
 
@@ -171,8 +278,6 @@ function setupNavLinkHandlers(appHeader, navLinks) {
       link.classList.add('active');
     }
   });
-  
-  console.log(`Set up ${updatedNavLinks.length} navigation link handlers`);
 }
 
 function setupSidebarToggle(retryCount = 0) {
@@ -184,10 +289,7 @@ function setupSidebarToggle(retryCount = 0) {
   const appHeader = document.querySelector('.app-header');
   if (!appHeader) {
     if (retryCount < 10) { // Max 10 retries (1 second total)
-      console.log(`App header not found, retrying in 100ms... (${retryCount + 1}/10)`);
       setTimeout(() => setupSidebarToggle(retryCount + 1), 100);
-    } else {
-      console.error('App header not found after 10 retries, giving up');
     }
     return;
   }
@@ -196,20 +298,13 @@ function setupSidebarToggle(retryCount = 0) {
   const navLinks = appHeader.querySelectorAll('.nav-item');
   if (navLinks.length === 0) {
     if (retryCount < 15) { // Max 15 retries for nav links (1.5 seconds total)
-      console.log(`Navigation links not loaded yet, retrying in 100ms... (${retryCount + 1}/15)`);
       setTimeout(() => setupSidebarToggle(retryCount + 1), 100);
-    } else {
-      console.error('Navigation links not found after 15 retries, proceeding without them');
-      // Continue with setup even without nav links
     }
     return;
   }
 
-  console.log(`Found ${navLinks.length} navigation links after ${retryCount} retries`);
-
   // Prevent multiple initializations globally
   if (sidebarInitialized) {
-    console.log('Sidebar already initialized, just updating state');
     // Just ensure the header has the right classes and state
     appHeader.classList.add('sidebar');
     document.body.classList.add('has-sidebar');
@@ -233,7 +328,6 @@ function setupSidebarToggle(retryCount = 0) {
     return;
   }
 
-  console.log('Initializing sidebar for the first time');
   // Mark as initialized
   sidebarInitialized = true;
   appHeader.setAttribute('data-sidebar-initialized', '1');
@@ -293,17 +387,13 @@ function setupSidebarToggle(retryCount = 0) {
   mobileToggle.setAttribute('aria-expanded', 'false');
   mobileToggle.setAttribute('type', 'button'); // Ensure it's a button
   document.body.appendChild(mobileToggle);
-  
-  console.log('Mobile toggle created and added to body');
 
   const toggleEl = appHeader.querySelector('.menu-toggle');
   
   // Function to toggle sidebar
   const toggleSidebar = () => {
     try {
-      console.log('Toggle sidebar called');
       const expanded = document.body.classList.toggle('sidebar-expanded');
-      console.log('Sidebar expanded:', expanded);
       
       if (toggleEl) toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
       if (mobileToggle) mobileToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
@@ -343,11 +433,9 @@ function setupSidebarToggle(retryCount = 0) {
 
   // Add click listeners to both toggle buttons
   if (toggleEl) {
-    console.log('Adding click listener to desktop toggle');
     toggleEl.addEventListener('click', toggleSidebar, { passive: true });
   }
   if (mobileToggle) {
-    console.log('Adding click listener to mobile toggle');
     mobileToggle.addEventListener('click', toggleSidebar, { passive: true });
     
     // Also add touch events for better mobile responsiveness

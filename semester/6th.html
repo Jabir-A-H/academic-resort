@@ -7,7 +7,11 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../assets/styles.css" />
+    <link rel="stylesheet" href="../assets/utilities.css" />
     <script src="../assets/api-keys.js"></script>
+    <script src="../assets/cache-utils.js"></script>
+    <script src="../assets/api-limiter.js"></script>
+    <script src="../assets/drive-utils.js"></script>
     <script src="../assets/batch-loader.js"></script>
     <script src="../assets/script.js" defer></script>
   </head>
@@ -34,97 +38,42 @@
             href="../courses/3201-forensic-accounting-and-fraud-investigation.html"
             class="subject-card"
           >
-            <div class="subject-header">
-              <span class="subject-code">3201</span>
-              <span class="subject-icon">📊</span>
-            </div>
-            <h3>Advanced Financial Accounting-II</h3>
-            <p>
-              Advanced corporate accounting, consolidation, and financial reporting
-            </p>
-            <div class="subject-meta">
-              <span class="resource-count">45+ Resources</span>
-              <span class="question-count">30+ Questions</span>
-            </div>
-          </a>
-
-          <a href="../courses/3202-corporate-finance.html" class="subject-card">
-            <div class="subject-header">
-              <span class="subject-code">3202</span>
-              <span class="subject-icon">💰</span>
-            </div>
-            <h3>Financial Management</h3>
-            <p>
-              Capital budgeting, working capital management, and financial analysis
-            </p>
-            <div class="subject-meta">
-              <span class="resource-count">50+ Resources</span>
-              <span class="question-count">35+ Questions</span>
-            </div>
+            <span class="subject-code">3201</span>
+            <h3>Forensic Accounting and Fraud Investigation</h3>
           </a>
 
           <a
-            href="../courses/2203-cost-accounting.html"
+            href="../courses/3202-corporate-finance.html"
             class="subject-card"
           >
-            <div class="subject-header">
-              <span class="subject-code">2203</span>
-              <span class="subject-icon">📈</span>
-            </div>
-            <h3>Cost Accounting</h3>
-            <p>
-              Cost allocation, variance analysis, and management accounting
-            </p>
-            <div class="subject-meta">
-              <span class="resource-count">40+ Resources</span>
-              <span class="question-count">25+ Questions</span>
-            </div>
+            <span class="subject-code">3202</span>
+            <h3>Corporate Finance</h3>
           </a>
 
           <a
-            href="../courses/2204-marketing.html"
+            href="../courses/3203-accounting-information-systems.html"
             class="subject-card"
           >
-            <div class="subject-header">
-              <span class="subject-code">2204</span>
-              <span class="subject-icon">📢</span>
-            </div>
-            <h3>Marketing</h3>
-            <p>
-              Marketing principles, consumer behavior, and promotional strategies
-            </p>
-            <div class="subject-meta">
-              <span class="resource-count">35+ Resources</span>
-              <span class="question-count">20+ Questions</span>
-            </div>
+            <span class="subject-code">3203</span>
+            <h3>Accounting Information Systems</h3>
           </a>
 
           <a
-            href="../courses/2205-business-statistics-ii.html"
+            href="../courses/3204-vat-and-cross-border-taxation.html"
             class="subject-card"
           >
-            <div class="subject-header">
-              <span class="subject-code">2205</span>
-              <span class="subject-icon">📊</span>
-            </div>
-            <h3>Business Statistics-II</h3>
-            <p>
-              Advanced statistical methods and business research applications
-            </p>
-            <div class="subject-meta">
-              <span class="resource-count">42+ Resources</span>
-              <span class="question-count">28+ Questions</span>
-            </div>
+            <span class="subject-code">3204</span>
+            <h3>VAT and Cross-border Taxation</h3>
           </a>
-        </div>
 
-        <!-- Quick Access Links -->
-        <div class="quick-access">
-          <h3>Quick Access</h3>
-          <div class="quick-access-links">
-            <a href="../index.html?search=3201" class="quick-link">Search 3201 Resources</a>
-            <a href="course-teachers.html?course=3202" class="quick-link">View Teachers</a>
-          </div>
+          <a
+            href="../courses/3205-corporate-laws-governance-and-secretarial-practices.html"
+            class="subject-card"
+          >
+            <span class="subject-code">3205</span>
+            <h3>Corporate Laws, Governance and Secretarial Practices</h3>
+          </a>
+
         </div>
 
         <!-- Traditional Table of Contents for Batch Archives -->
@@ -246,7 +195,7 @@
       }
 
       // Save data to persistent cache with timestamp
-      function saveToPersistentCache(folderId, data, depth = 0) {
+      function window.CacheUtils.saveToPersistentCache(folderId, data, depth = 0, PAGE_PREFIX) {
         try {
           const cacheKey = getCacheKey(folderId, depth);
           const cacheData = {
@@ -264,7 +213,7 @@
       }
 
       // Load data from persistent cache
-      function loadFromPersistentCache(folderId, depth = 0) {
+      function window.CacheUtils.loadFromPersistentCache(folderId, PAGE_PREFIX, depth = 0) {
         try {
           const cacheKey = getCacheKey(folderId, depth);
           const cached = localStorage.getItem(cacheKey);
@@ -431,7 +380,7 @@
 
         try {
           // Check persistent cache first
-          const cachedData = loadFromPersistentCache(folderId);
+          const cachedData = window.CacheUtils.loadFromPersistentCache(folderId, PAGE_PREFIX);
           if (cachedData) {
             console.log(`Loading batch ${batchNumber} from cache`);
             listContainer.innerHTML = cachedData;
@@ -462,7 +411,7 @@
           if (!data.files || data.files.length === 0) {
             const emptyMessage = '<li class="drive-item"><span class="item-name">No files found in this batch</span></li>';
             listContainer.innerHTML = emptyMessage;
-            saveToPersistentCache(folderId, emptyMessage);
+            window.CacheUtils.saveToPersistentCache(folderId, emptyMessage, PAGE_PREFIX, 0);
           } else {
             // Sort files: folders first, then by name
             const sortedFiles = data.files.sort((a, b) => {
@@ -496,7 +445,7 @@
             listContainer.innerHTML = html;
 
             // Cache the result
-            saveToPersistentCache(folderId, html);
+            window.CacheUtils.saveToPersistentCache(folderId, html, PAGE_PREFIX, 0);
           }
         } catch (error) {
           console.error(`Error loading batch ${batchNumber}:`, error);
