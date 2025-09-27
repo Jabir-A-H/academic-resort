@@ -1,6 +1,20 @@
 /**
  * Shared Google Drive Integration Utilities
- * Centralizes Google Drive API operations and eliminates code duplication
+ * 
+ * This module centralizes Google Drive API operations across the Academic Resort website.
+ * It eliminates code duplication by providing shared functionality for:
+ * - Fetching folder contents from Google Drive with automatic caching
+ * - Searching files across multiple Google Drive folders recursively
+ * - Handling API rate limiting and error responses gracefully
+ * - Optimizing duplicate removal for search results
+ * - Building consistent Google Drive API URLs
+ * 
+ * Benefits:
+ * - Consistent Google Drive integration across all pages
+ * - Automatic retry logic for failed API requests
+ * - Optimized search performance with duplicate removal
+ * - Centralized error handling and logging
+ * - Reduced API calls through intelligent caching
  */
 
 /**

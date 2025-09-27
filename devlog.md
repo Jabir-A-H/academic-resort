@@ -757,8 +757,7 @@ sortSemesters(semesters)    // Orders semesters academically (1st, 2nd...)
 - [ ] Mobile responsive layout functions properly
 - [ ] Shared utilities load correctly across all pages
 - [ ] Cache management works consistently
-- [ ] Build pipeline generates optimized assets
-- [ ] Minified files maintain full functionality
+- [ ] Cache reset clears cache for entire website
 
 ---
 
@@ -779,18 +778,14 @@ sortSemesters(semesters)    // Orders semesters academically (1st, 2nd...)
 // Eliminated 200+ lines of duplicate code per semester page
 window.CacheUtils = {
   getCacheKey, saveToPersistentCache, loadFromPersistentCache,
-  getCacheStats, clearPageCache, cleanExpiredCache
+  getCacheStats, clearPageCache, clearAllWebsiteCache
 };
 ```
 
 **`assets/api-limiter.js`** - Unified API rate limiting:
 ```javascript
 // Single rate limiter instance replaces multiple implementations
-window.APILimiter = {
-  general: new APIRateLimiter(200, 2),
-  fast: new APIRateLimiter(300, 1),
-  background: new APIRateLimiter(100, 5)
-};
+window.apiLimiter = new APIRateLimiter(200, 2);
 ```
 
 **`assets/drive-utils.js`** - Google Drive integration utilities:
@@ -814,16 +809,6 @@ window.DriveUtils = {
 - **Maintainable architecture** with clear separation of concerns
 - **Better caching** through external CSS files
 
-#### 3. Build Pipeline Implementation
-**`build.py`** - Automated optimization pipeline:
-```python
-# Minification results:
-- styles.css: 81,944 → 62,395 bytes (23.9% reduction)
-- homepage.css: 25,367 → 16,258 bytes (35.9% reduction) 
-- batch-loader.js: 13,071 → 8,677 bytes (33.6% reduction)
-- api-limiter.js: 3,618 → 2,306 bytes (36.3% reduction)
-```
-
 ### Technical Impact Analysis
 **Code Deduplication Metrics:**
 - **~1,800 lines eliminated** across all semester pages
@@ -840,8 +825,8 @@ window.DriveUtils = {
 **Development Experience Enhancements:**
 - **DRY principle compliance** - significant duplicate code elimination
 - **Modular architecture** enabling easier feature additions
-- **Build automation** for production-ready deployments
 - **Clear separation of concerns** improving code organization
+- **Website-wide cache management** with single reset button
 
 ### Future Optimization Opportunities
 **High Priority:**
@@ -853,7 +838,6 @@ window.DriveUtils = {
 **Medium Priority:**
 - **ESModules migration** for better browser caching
 - **CSS-in-JS evaluation** for component-scoped styles
-- **Webpack integration** for advanced build optimization
 - **Performance monitoring** with automated regression detection
 ## 13. Project Impact & Comprehensive Reflection
 ### What I'm Most Proud Of

@@ -1164,8 +1164,8 @@
 
       // Clear cache and reload function
       function clearCacheAndReload() {
-        const success = clearAllCache();
-        if (success) {
+        const success = window.CacheUtils.clearAllWebsiteCache();
+        if (success > 0) {
           updateSearchStats("Cache cleared! Reloading page...");
           setTimeout(() => {
             location.reload();

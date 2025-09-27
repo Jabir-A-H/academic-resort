@@ -105,20 +105,5 @@ class APIRateLimiter {
   }
 }
 
-// Create global rate limiter instances for different use cases
-window.APILimiter = {
-  // Balanced limiter for general use
-  general: new APIRateLimiter(200, 2),
-  
-  // Aggressive limiter for fast searches
-  fast: new APIRateLimiter(300, 1),
-  
-  // Conservative limiter for background operations
-  background: new APIRateLimiter(100, 5),
-  
-  // Create a custom limiter
-  create: (maxConcurrent, delayBetween) => new APIRateLimiter(maxConcurrent, delayBetween)
-};
-
-// For backwards compatibility
-window.apiLimiter = window.APILimiter.general;
+// Create single global rate limiter instance
+window.apiLimiter = new APIRateLimiter(200, 2);

@@ -1,6 +1,17 @@
 /**
  * Shared Cache Management Utilities
- * Centralizes cache operations to eliminate code duplication across semester pages
+ * 
+ * This module centralizes cache operations across the Academic Resort website.
+ * It eliminates code duplication by providing shared caching functionality for:
+ * - Google Drive API responses (24-hour localStorage caching)
+ * - Batch data and folder mappings
+ * - Search results and folder structures
+ * 
+ * Benefits:
+ * - Faster page loads by avoiding repeated API calls
+ * - Consistent cache management across all pages
+ * - Automatic cleanup of expired cache entries
+ * - Centralized cache statistics and debugging
  */
 
 // Cache configuration constants
@@ -170,6 +181,57 @@ function clearPageCache(pagePrefix = 'drive') {
 }
 
 /**
+ * Clear ALL cache for the entire website
+ * This function clears cache from all pages (semester pages, homepage, etc.)
+ */
+function clearAllWebsiteCache() {
+  try {
+    let totalCleared = 0;
+    
+    // List of all known page prefixes used across the website
+    const allPagePrefixes = [
+      'drive', '1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', 
+      'MBA-1ST', 'MBA-2ND'
+    ];
+    
+    // Clear cache for each page prefix
+    allPagePrefixes.forEach(pagePrefix => {
+      try {
+        const metaKey = getGlobalCacheKey(pagePrefix);
+        const metadata = JSON.parse(
+          localStorage.getItem(metaKey) || '{"keys":[],"lastCleanup":0}'
+        );
+        
+        metadata.keys.forEach(key => {
+          localStorage.removeItem(key);
+          totalCleared++;
+        });
+        
+        localStorage.removeItem(metaKey);
+      } catch (error) {
+        console.warn(`Failed to clear cache for ${pagePrefix}:`, error);
+      }
+    });
+    
+    // Also clear any additional cache entries that might exist
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+      if (key.includes('driveCache_') || key.includes('driveCacheMetadata_') || 
+          key.includes('resolvedFolderCache_') || key.includes('BATCH_DATA_CACHE')) {
+        localStorage.removeItem(key);
+        totalCleared++;
+      }
+    });
+    
+    console.log(`🗑️ Cleared ${totalCleared} cache entries from entire website`);
+    return totalCleared;
+  } catch (error) {
+    console.warn("Failed to clear all website cache:", error);
+    return 0;
+  }
+}
+
+/**
  * Clean expired cache entries
  */
 function cleanExpiredCache(pagePrefix = 'drive') {
@@ -224,6 +286,7 @@ window.CacheUtils = {
   removeCacheFromMetadata,
   getCacheStats,
   clearPageCache,
+  clearAllWebsiteCache,
   cleanExpiredCache,
   CACHE_DURATION,
   CACHE_VERSION

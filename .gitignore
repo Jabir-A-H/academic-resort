@@ -1,12 +1,6 @@
 # Lighthouse reports
 /.lh
 
-# Build artifacts and temporary files
-/dist/
-*.min.css
-*.min.js
-build-stats.json
-
 # Development tools
 node_modules/
 .npm/
@@ -28,7 +22,7 @@ node_modules/
 ehthumbs.db
 Thumbs.db
 
-# Temporary optimization scripts
+# Temporary files
 /tmp/
 *.tmp
 *.bak
