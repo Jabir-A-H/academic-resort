@@ -1,3 +1,52 @@
+// === SEARCH FUNCTIONALITY ===
+
+// Debounce function for search optimization
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Toggle advanced search options
+function toggleAdvancedOptions() {
+  const advancedOptions = document.getElementById("advancedOptions");
+  const toggleBtn = document.querySelector(".options-toggle-btn");
+  
+  if (!advancedOptions || !toggleBtn) return;
+  
+  if (advancedOptions.classList.contains("show")) {
+    advancedOptions.classList.remove("show");
+    toggleBtn.classList.remove("active");
+    toggleBtn.innerHTML = 'Search Globally <span class="accordion-icon">▼</span>';
+  } else {
+    advancedOptions.classList.add("show");
+    toggleBtn.classList.add("active");
+    toggleBtn.innerHTML = 'Search Specifically <span class="accordion-icon">▲</span>';
+  }
+}
+
+// Optimized search function (placeholder - would need full implementation)
+function optimizedSearch() {
+  const searchTerm = document.getElementById('globalSearch')?.value.trim();
+  console.log('Search triggered for:', searchTerm);
+  
+  // This is a simplified placeholder - the full search implementation
+  // would need to be restored from the original codebase
+  if (!searchTerm) {
+    console.log('No search term provided');
+    return;
+  }
+  
+  // For now, just log that search was triggered
+  // The full search implementation would go here
+}
+
 /**
  * Fix relative paths in included HTML based on current page depth
  */

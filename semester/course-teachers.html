@@ -1591,8 +1591,8 @@
           // Populate dropdowns
           populateDropdowns();
 
-          // Initial render
-          renderBatchView(allBatches, document.getElementById("view-batch"));
+          // Initial render - render course view since it's the default active tab
+          handleFilterChange();
 
           // Add event listeners
           document
