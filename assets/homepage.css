@@ -232,13 +232,13 @@
   background: #f8fafc;
 }
 
-/* Retro Loading Animation - Clean Windows XP Style */
+/* Retro Loading Animation - Only the Loading Bar */
 .retro-loading-container {
   display: none;
   flex-direction: column;
   align-items: center;
-  padding: 15px;
-  margin: 10px 0;
+  padding: 10px 0;
+  margin: 5px 0;
 }
 
 .retro-loading-container.active {
@@ -252,7 +252,6 @@
   border: 2px inset #d0d0d0;
   border-radius: 2px;
   padding: 2px;
-  margin-bottom: 10px;
   overflow: hidden;
 }
 
@@ -593,48 +592,6 @@
         background: #f8fafc;
       }
 
-      /* Retro Loading Animation (Simple XP-style bar) */
-      .retro-loading-container {
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
-        border: 2px solid #4a90e2;
-        border-radius: 8px;
-        margin: 20px 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      }
-
-      .retro-loading-container.active {
-        display: flex;
-      }
-
-      .simple-loading-bar {
-        width: 300px;
-        height: 20px;
-        background: #f0f0f0;
-        border: 2px inset #d0d0d0;
-        border-radius: 2px;
-        padding: 2px;
-        margin-bottom: 10px;
-        overflow: hidden;
-      }
-
-      .loading-bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #4a90e2, #67b3f0, #4a90e2);
-        background-size: 60px 100%;
-        animation: loadingBarFlow 1.5s linear infinite;
-        border-radius: 1px;
-        width: 100%;
-      }
-
-      @keyframes loadingBarFlow {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-      }
-
       /* Filter Section - Clean & Streamlined */
       .search-filters {
         display: flex;
@@ -649,12 +606,7 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
 
-      .filter-row {
-        position: relative;
-        width: 100%;
-      }
-
-      .filter-dropdown {
+      .filter-item {
         position: relative;
         width: 100%;
       }

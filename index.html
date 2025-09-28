@@ -133,55 +133,49 @@
         <!-- Search Filters - Completely Rebuilt -->
         <div class="search-filters">
           <!-- Batch Filter (Always visible) -->
-          <div class="filter-row">
-            <div class="filter-dropdown">
-              <div class="filter-button" onclick="toggleFilter('batch')">
-                <div class="filter-button-text">
-                  <span class="filter-label">Select Batches</span>
-                  <span class="filter-count" id="batchCount">All batches selected</span>
-                </div>
-                <span class="filter-arrow">▼</span>
+          <div class="filter-item">
+            <div class="filter-button" onclick="toggleFilter('batch')">
+              <div class="filter-button-text">
+                <span class="filter-label">Select Batches</span>
+                <span class="filter-count" id="batchCount">All batches selected</span>
               </div>
-              <div class="filter-dropdown-content" id="batchDropdown">
-                <div id="batchOptions">
-                  <!-- Batch options will be populated here -->
-                </div>
+              <span class="filter-arrow">▼</span>
+            </div>
+            <div class="filter-dropdown-content" id="batchDropdown">
+              <div id="batchOptions">
+                <!-- Batch options will be populated here -->
               </div>
             </div>
           </div>
 
           <!-- Semester Filter (Always visible) -->
-          <div class="filter-row">
-            <div class="filter-dropdown">
-              <div class="filter-button" onclick="toggleFilter('semester')">
-                <div class="filter-button-text">
-                  <span class="filter-label">Select Semesters</span>
-                  <span class="filter-count" id="semesterCount">All semesters available</span>
-                </div>
-                <span class="filter-arrow">▼</span>
+          <div class="filter-item">
+            <div class="filter-button" onclick="toggleFilter('semester')">
+              <div class="filter-button-text">
+                <span class="filter-label">Select Semesters</span>
+                <span class="filter-count" id="semesterCount">All semesters available</span>
               </div>
-              <div class="filter-dropdown-content" id="semesterDropdown">
-                <div id="semesterOptions">
-                  <!-- Semester options will be populated here -->
-                </div>
+              <span class="filter-arrow">▼</span>
+            </div>
+            <div class="filter-dropdown-content" id="semesterDropdown">
+              <div id="semesterOptions">
+                <!-- Semester options will be populated here -->
               </div>
             </div>
           </div>
 
           <!-- Course Filter (Shows when semesters are selected) -->
-          <div class="filter-row" id="courseRow" style="display: none;">
-            <div class="filter-dropdown">
-              <div class="filter-button" onclick="toggleFilter('course')">
-                <div class="filter-button-text">
-                  <span class="filter-label">Select Courses</span>
-                  <span class="filter-count" id="courseCount">Select semesters first</span>
-                </div>
-                <span class="filter-arrow">▼</span>
+          <div class="filter-item" id="courseRow" style="display: none;">
+            <div class="filter-button" onclick="toggleFilter('course')">
+              <div class="filter-button-text">
+                <span class="filter-label">Select Courses</span>
+                <span class="filter-count" id="courseCount">Select semesters first</span>
               </div>
-              <div class="filter-dropdown-content" id="courseDropdown">
-                <div id="courseOptions">
-                  <!-- Course options will be populated here -->
-                </div>
+              <span class="filter-arrow">▼</span>
+            </div>
+            <div class="filter-dropdown-content" id="courseDropdown">
+              <div id="courseOptions">
+                <!-- Course options will be populated here -->
               </div>
             </div>
           </div>
