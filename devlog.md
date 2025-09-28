@@ -929,3 +929,121 @@ The system now serves as a model for building maintainable, performant, and user
 ---
 
 *This documentation represents the complete technical evolution of the Academic Resort web application from conception through revolutionary architectural advancement. It showcases advanced web development, system design, performance engineering, and user experience optimization techniques.*
+
+```
+## 14. Advanced Search & Drive Resource Retrieval System (September 2025)
+
+### Purpose & Evolution
+The index page now includes a Google‑style federated search that unifies: (a) free‑text filename/path search, (b) hierarchical Google Drive traversal, and (c) multi‑dimensional academic filters (Batch → Semester → Course). It delivers incremental results, resilient API usage, and zero‑backend deployment.
+
+### End‑to‑End Flow
+1. User types (main input) → `oninput` triggers `debounce(optimizedSearch, 500)()`.
+2. Debounce waits 500ms idle, then `optimizedSearch()` gathers active filters.
+3. If query text present → Text Search Mode; else → Filter‑Only Mode (`applyFiltersOnly()`).
+4. `smartSearch()` orchestrates parallel Drive folder exploration (roots defined by selected semesters/batches).
+5. Each root folder searched via `searchInFolderRecursive()` with caching + rate limiting.
+6. Files matched through `smartMatch()` and enriched with academic metadata.
+7. Deduplicated results streamed to UI (`displayResults()`), building a semester → batch → folder/file tree.
+8. Final stats updated (`updateStats()`), user can sort or collapse sections without re‑querying network.
+
+### Major Functions (Execution Order)
+| Stage          | Function                                | Key Responsibility                       |
+| -------------- | --------------------------------------- | ---------------------------------------- |
+| Input Debounce | `debounce()`                            | Throttle rapid keystrokes                |
+| Orchestrator   | `optimizedSearch()`                     | Determine mode, kick off search          |
+| Core Engine    | `smartSearch()`                         | Parallel scheduling, progress feedback   |
+| Traversal      | `searchInFolderRecursive()`             | Depth‑bounded Drive recursion            |
+| Expansion      | `processFilesRecursively()`             | Enumerate children + queue subfolders    |
+| Matching       | `smartMatch()`                          | Multi‑strategy query/file relevance test |
+| De‑dupe        | `removeDuplicatesOptimized()`           | O(1) uniqueness by composite key         |
+| Structuring    | `buildTreeStructure()`                  | Convert flat list → hierarchical tree    |
+| Rendering      | `displayResults()` / `renderTreeNode()` | DOM generation + incremental updates     |
+| Metrics        | `updateStats()`                         | Live folder/file counts & status text    |
+
+### Data & State Structures
+- `ALL_DRIVE_RESOURCES`: Loaded mappings (semester → batch → folder meta) from consolidated batch JSON files.
+- `fileCache` (Map): In‑memory per (folderId_depth) listing cache.
+- LocalStorage Persistent Cache: 24h TTL folder listings (versioned with `CACHE_VERSION`).
+- `resolvedFolderCache`: Maps folderId → human path segment for fast path reconstruction.
+- Control Flags: `isLoading`, `currentSearchMode`, `isAscendingSort` (semester order toggle).
+- Rate Limiter: Global `apiLimiter` + multi‑key rotation (`getNextApiKey()` from `api-keys.js`).
+
+### Parallelization Strategy
+`smartSearch()` batches root folders (semester/batch pairs) in round‑robin order to prevent large folders from monopolizing fetch time. Dynamic `PARALLEL_BATCH_SIZE` scales with available API keys to balance concurrency against quota limits.
+
+### Caching Layers
+1. Persistent (localStorage) — Folder listing snapshots keyed by folder + depth.
+2. Session Memory — Eliminates duplicate fetches during a single search run.
+3. Resolved Path Cache — Avoids recomputing hierarchical paths for each file.
+4. Metadata Cleanup — Expired entries pruned automatically to prevent storage bloat.
+
+### Rate Limiting & Resilience
+- Token bucket style limiter ensures spacing between Drive API calls.
+- Automatic API key rotation mitigates per‑key quota exhaustion.
+- Partial failure tolerant: already gathered results are rendered; failures logged silently.
+- Version bumps (`CACHE_VERSION`) invalidate stale cached structures seamlessly.
+
+### Matching Algorithm (`smartMatch`)
+Layered evaluation (short‑circuit):
+1. Case‑insensitive substring.
+2. Multi‑word AND (all tokens must appear in name/path).
+3. Word boundary token match.
+4. Space‑insensitive comparison (compressed query vs compressed filename/path).
+This yields good recall while suppressing noisy incidental matches.
+
+### Filter‑Only Mode
+If no query text: `applyFiltersOnly()` calls `smartSearch()` with empty term & `isFilterOnly=true`. Matching phase accepts all filenames; academic filters (Batch/Semester/Course) constrain scope. Provides structured browsing without requiring a query.
+
+### Result Object Shape
+```javascript
+{
+  id, name, mimeType, webViewLink,
+  path, depth, semester, batch, batchLabel,
+  isFolder: mimeType === 'application/vnd.google-apps.folder'
+}
+```
+
+### UI Rendering Mechanics
+- Hierarchy: Semester → Batch → (Folders first, then Files).
+- Accordion Controls: Expand/collapse semesters & batches; global expand/collapse utilities.
+- Sorting: `toggleSemesterSort()` flips chronological order without re‑querying Drive (operates on in‑memory results).
+- Incremental Paint: Each batch of traversed folders triggers a re‑render for responsive feedback.
+
+### User Feedback & Metrics
+- Retro loading bar with dynamic status messages (`updateRetroLoadingStatus`).
+- `resultsStats` shows matched file count, folders explored, and search mode.
+- Clear empty state messaging when zero results.
+
+### Reliability Matrix
+| Failure Case           | Handling                                                        |
+| ---------------------- | --------------------------------------------------------------- |
+| Quota exceeded mid-run | Rotate API key, retry within limiter budget                     |
+| Network hiccup         | Skip failed folder, continue traversal, surface partial results |
+| Corrupt cache entry    | Detected via version / timestamp mismatch → rebuild             |
+| Large slow folder      | Round‑robin scheduling prevents UI starvation                   |
+
+### Performance Considerations
+- Reduced redundant Drive calls (persistent + session caches).
+- O(1) duplicate elimination via composite map/set key.
+- Bounded recursion depth prevents pathological traversal.
+- Minimal DOM churn: tree rebuilt from structured object, not append‑per‑file.
+
+### Extension Opportunities
+Short Term:
+- Query term highlighting in rendered filenames.
+- Persist last search & filters in `sessionStorage` for reload continuity.
+- Display per‑semester & per‑batch counts beside headers.
+
+Medium Term:
+- Add fuzzy (Levenshtein) matching with threshold gating.
+- Web Worker offload for deep traversal to keep main thread idle.
+- Lightweight client index for fast repeated queries across same scope.
+
+Long Term:
+- Full content indexing (if Drive file contents exposed) with scoring.
+- Usage analytics driven relevance ranking (frequency, recency).
+- Offline snapshot mode via service worker + manifest of cached folder trees.
+
+### Summary
+The search subsystem converts raw Drive folder graphs plus academic metadata into a fast, resilient, and extensible discovery interface—achieving incremental UX, quota safety, and static hosting compatibility without backend infrastructure.
+```
