@@ -102,6 +102,18 @@ function updateRetroLoadingStatus(status) {
 
 // Setup event listeners when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+  // Remove focus from buttons after click to prevent persistent focus states
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('button') || e.target.closest('button')) {
+      // Small delay to allow the click to process, then blur focus
+      setTimeout(() => {
+        if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
+          document.activeElement.blur();
+        }
+      }, 100);
+    }
+  });
+
   // Close dropdowns when clicking outside
   document.addEventListener('click', function(e) {
     // Close apps dropdown

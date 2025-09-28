@@ -2459,6 +2459,9 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
 
 .view-tab:focus {
   outline: none;
+}
+
+.view-tab:focus-visible {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
