@@ -207,41 +207,56 @@
           Ready! Enter search terms to find resources.
         </div>
 
-        <!-- Accordion Controls -->
+        <!-- Result Controls with Dropdown -->
         <div
-          class="accordion-controls"
-          id="accordionControls"
+          class="result-controls"
+          id="resultControls"
           style="display: none"
         >
-          <button
-            class="control-btn"
-            onclick="expandAllSemesters()"
-            title="Expand all semesters"
-          >
-            📂 Expand All
-          </button>
-          <button
-            class="control-btn"
-            onclick="collapseAllSemesters()"
-            title="Collapse all semesters"
-          >
-            📁 Collapse All
-          </button>
-          <button
-            class="control-btn"
-            onclick="collapseAllBatches()"
-            title="Collapse all batches"
-          >
-            🗂️ Minimize Batches
-          </button>
-          <button
-            class="control-btn"
-            onclick="toggleSemesterSort()"
-            title="Toggle semester sort order"
-            id="sortToggleBtn"
-          >
-            📊 Ascending Order
-          </button>
+          <div class="controls-dropdown">
+            <button class="dropdown-toggle" id="controlsDropdownBtn" onclick="toggleControlsDropdown()">
+              🔧 Display Options ▼
+            </button>
+            <div class="dropdown-content" id="controlsDropdownContent">
+              <button
+                class="dropdown-item"
+                onclick="expandAllSemesters()"
+                title="Expand all semester sections"
+              >
+                📂 Expand All
+              </button>
+              <button
+                class="dropdown-item"
+                onclick="collapseAllSemesters()"
+                title="Collapse all semester sections"
+              >
+                📁 Collapse All
+              </button>
+              <button
+                class="dropdown-item"
+                onclick="collapseAllBatches()"
+                title="Collapse all batch sections"
+              >
+                🗂️ Minimize Batches
+              </button>
+              <button
+                class="dropdown-item"
+                onclick="toggleSemesterSort()"
+                title="Toggle semester sort order"
+                id="semesterSortBtn"
+              >
+                📊 Ascending Semester
+              </button>
+              <button
+                class="dropdown-item"
+                onclick="toggleBatchSort()"
+                title="Toggle batch sort order"
+                id="batchSortBtn"
+              >
+                🎓 Descending Batch
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -601,7 +616,7 @@
         }
         
         // Show accordion controls
-        document.getElementById('accordionControls').style.display = 'flex';
+        document.getElementById('resultControls').style.display = 'flex';
         
         // Show current filter status
         const resourcesDiv = document.getElementById('all-resources');
@@ -635,7 +650,8 @@
       let isLoading = false;
       let fileCache = new Map(); // Cache for API responses
       let loadedFolders = new Set(); // Track which folders we've already loaded
-      let isAscendingSort = true; // Track semester sort order: true = 1st→8th, false = 8th→1st
+      let isAscendingSemesterSort = true; // Track semester sort order: true = 1st→8th, false = 8th→1st
+      let isAscendingBatchSort = false; // Track batch sort order: true = 24th→31st, false = 31st→24th (default: newest first)
       let currentSearchMode = null; // Track current search mode: 'search' or 'filter-only'
 
       // DOM element cache for performance optimization
@@ -643,7 +659,7 @@
         globalSearch: null,
         resultsStats: null,
         allResources: null,
-        accordionControls: null,
+        resultControls: null,
         searchResultsContainer: null,
 
         // Initialize cache
@@ -651,7 +667,7 @@
           this.globalSearch = document.getElementById("globalSearch");
           this.resultsStats = document.getElementById("resultsStats");
           this.allResources = document.getElementById("all-resources");
-          this.accordionControls = document.getElementById("accordionControls");
+          this.resultControls = document.getElementById("resultControls");
           this.searchResultsContainer = document.getElementById(
             "searchResultsContainer"
           );
@@ -1727,12 +1743,12 @@
         if (files.length === 0) {
           DOM_CACHE.allResources.innerHTML =
             '<div class="no-results">No files found. Try different search terms.</div>';
-          DOM_CACHE.accordionControls.style.display = "none";
+          DOM_CACHE.resultControls.style.display = "none";
           return;
         }
 
         // Show accordion controls when there are results
-        DOM_CACHE.accordionControls.style.display = "flex";
+        DOM_CACHE.resultControls.style.display = "flex";
 
         // Build hierarchical tree structure
         const treeStructure = buildTreeStructure(files);
@@ -1754,15 +1770,15 @@
           
           // If both semesters are in the order array, sort by their position
           if (indexA !== -1 && indexB !== -1) {
-            return isAscendingSort ? (indexA - indexB) : (indexB - indexA);
+            return isAscendingSemesterSort ? (indexA - indexB) : (indexB - indexA);
           }
           
           // If only one is in the order array, prioritize it
-          if (indexA !== -1) return isAscendingSort ? -1 : 1;
-          if (indexB !== -1) return isAscendingSort ? 1 : -1;
+          if (indexA !== -1) return isAscendingSemesterSort ? -1 : 1;
+          if (indexB !== -1) return isAscendingSemesterSort ? 1 : -1;
           
           // Fallback to alphabetical sort for unknown semesters
-          return isAscendingSort ? a.localeCompare(b) : b.localeCompare(a);
+          return isAscendingSemesterSort ? a.localeCompare(b) : b.localeCompare(a);
         });
 
         sortedSemesters.forEach(([semester, batches]) => {
@@ -1785,11 +1801,11 @@
           semesterContent.className = "semester-content";
           semesterContent.id = `semester-${semester}`;
 
-          // Sort batches (most recent first: 30th, 29th, 28th, etc.)
+          // Sort batches based on batch sort order
           const sortedBatches = Object.entries(batches).sort(([a], [b]) => {
             const numA = parseInt(a.replace(/\D/g, "")) || 0;
             const numB = parseInt(b.replace(/\D/g, "")) || 0;
-            return numB - numA;
+            return isAscendingBatchSort ? (numA - numB) : (numB - numA);
           });
 
           sortedBatches.forEach(([batch, tree]) => {
@@ -2209,17 +2225,38 @@
 
       // Toggle semester sort order
       function toggleSemesterSort() {
-        isAscendingSort = !isAscendingSort;
-        const sortBtn = document.getElementById('sortToggleBtn');
+        isAscendingSemesterSort = !isAscendingSemesterSort;
+        const sortBtn = document.getElementById('semesterSortBtn');
         
-        if (isAscendingSort) {
-          sortBtn.innerHTML = '📊 Ascending Order';
+        if (isAscendingSemesterSort) {
+          sortBtn.innerHTML = '📊 Ascending Semester';
           sortBtn.title = 'Currently showing semesters in ascending order (1st to 8th). Click to reverse.';
         } else {
-          sortBtn.innerHTML = '📊 Descending Order';
+          sortBtn.innerHTML = '📊 Descending Semester';
           sortBtn.title = 'Currently showing semesters in descending order (8th to 1st). Click to reverse.';
         }
         
+        refreshCurrentResults();
+      }
+
+      // Toggle batch sort order
+      function toggleBatchSort() {
+        isAscendingBatchSort = !isAscendingBatchSort;
+        const sortBtn = document.getElementById('batchSortBtn');
+        
+        if (isAscendingBatchSort) {
+          sortBtn.innerHTML = '🎓 Ascending Batch';
+          sortBtn.title = 'Currently showing batches in ascending order (24th to 31st). Click to reverse.';
+        } else {
+          sortBtn.innerHTML = '🎓 Descending Batch';
+          sortBtn.title = 'Currently showing batches in descending order (31st to 24th). Click to reverse.';
+        }
+        
+        refreshCurrentResults();
+      }
+
+      // Helper function to refresh current results based on search mode
+      function refreshCurrentResults() {
         // Re-display results with new sort order if there are current results
         const resultsContainer = document.getElementById('all-resources');
         if (resultsContainer && resultsContainer.children.length > 0) {
@@ -2234,6 +2271,32 @@
           }
         }
       }
+
+      // Toggle controls dropdown
+      function toggleControlsDropdown() {
+        const dropdown = document.getElementById('controlsDropdownContent');
+        const btn = document.getElementById('controlsDropdownBtn');
+        
+        if (dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show');
+          btn.innerHTML = '🔧 Display Options ▼';
+        } else {
+          dropdown.classList.add('show');
+          btn.innerHTML = '🔧 Display Options ▲';
+        }
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.controls-dropdown')) {
+          const dropdown = document.getElementById('controlsDropdownContent');
+          const btn = document.getElementById('controlsDropdownBtn');
+          if (dropdown && dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+            btn.innerHTML = '🔧 Display Options ▼';
+          }
+        }
+      });
     </script>
   </body>
 </html>
