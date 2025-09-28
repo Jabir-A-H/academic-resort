@@ -636,6 +636,7 @@
       let fileCache = new Map(); // Cache for API responses
       let loadedFolders = new Set(); // Track which folders we've already loaded
       let isAscendingSort = true; // Track semester sort order: true = 1st→8th, false = 8th→1st
+      let currentSearchMode = null; // Track current search mode: 'search' or 'filter-only'
 
       // DOM element cache for performance optimization
       const DOM_CACHE = {
@@ -1047,6 +1048,7 @@
           optimizedSearch();
         } else {
           // Clear results if no search term
+          currentSearchMode = null; // Clear search mode when no results
           displayResults([]);
           updateSearchStats("Enter a search term to find resources.");
           toggleSections(false);
@@ -1058,6 +1060,9 @@
         const batchFilters = selectedBatches;
         const semesterFilters = selectedSemesters;
         const courseFilters = selectedCourses;
+
+        // Set current search mode
+        currentSearchMode = 'filter-only';
 
         // Show all resources for the selected filters (no search term required)
         updateSearchStats("Loading all resources for selected filters...");
@@ -1165,8 +1170,12 @@
         const semesterFilters = selectedSemesters;
         const courseFilters = selectedCourses;
 
+        // Set current search mode
+        currentSearchMode = 'search';
+
         // Always require a search term for manual search
         if (!searchTerm) {
+          currentSearchMode = null; // Clear search mode when no results
           displayResults([]);
           DOM_CACHE.resultsStats.textContent =
             "Enter a search term to find resources.";
@@ -2214,10 +2223,14 @@
         // Re-display results with new sort order if there are current results
         const resultsContainer = document.getElementById('all-resources');
         if (resultsContainer && resultsContainer.children.length > 0) {
-          // Get current search term and re-run search
-          const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
-          if (searchTerm) {
-            optimizedSearch();
+          // Call the appropriate function based on current search mode
+          if (currentSearchMode === 'search') {
+            const searchTerm = DOM_CACHE.globalSearch.value.toLowerCase().trim();
+            if (searchTerm) {
+              optimizedSearch();
+            }
+          } else if (currentSearchMode === 'filter-only') {
+            applyFiltersOnly();
           }
         }
       }
