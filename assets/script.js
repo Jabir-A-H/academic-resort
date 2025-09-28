@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Close filter dropdowns
-    if (!e.target.closest('.filter-dropdown')) {
+    if (!e.target.closest('.filter-item')) {
       document.querySelectorAll('.filter-dropdown-content').forEach(d => {
         d.classList.remove('show');
         d.previousElementSibling?.classList.remove('active');
