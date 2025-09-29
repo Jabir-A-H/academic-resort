@@ -81,102 +81,9 @@
         </div>
       </div>
 
-      <!-- Simple batch list -->
+      <!-- Dynamic batch list - populated from JSON files -->
       <div id="batches-container">
-        <section class="drive-batch-container" id="batch-30">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>30th Batch</h2>
-              <button
-                class="root-folder-btn"
-                onclick="window.open('https://drive.google.com/drive/folders/1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat', '_blank')"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-30"></div>
-              <ul id="drive-list-30" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="drive-batch-container" id="batch-29">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>29th Batch</h2>
-              <button
-                class="root-folder-btn"
-                onclick="window.open('https://drive.google.com/drive/folders/1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO', '_blank')"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-29"></div>
-              <ul id="drive-list-29" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="drive-batch-container" id="batch-28">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>28th Batch</h2>
-              <button
-                class="root-folder-btn"
-                id="root-btn-28"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-28"></div>
-              <ul id="drive-list-28" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="drive-batch-container" id="batch-27">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>27th Batch</h2>
-              <button
-                class="root-folder-btn"
-                id="root-btn-27"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-27"></div>
-              <ul id="drive-list-27" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="drive-batch-container" id="batch-26">
-          <div class="card drive-embed-card">
-            <div class="batch-header">
-              <h2>26th Batch</h2>
-              <button
-                class="root-folder-btn"
-                id="root-btn-26"
-                title="Open root folder"
-              >
-                ↗
-              </button>
-            </div>
-            <div class="drive-list-wrapper">
-              <div class="drive-spinner" id="spinner-26"></div>
-              <ul id="drive-list-26" class="drive-list"></ul>
-            </div>
-          </div>
-        </section>
+        <!-- Batch sections will be dynamically generated here -->
       </div>
     </main>
 
@@ -194,9 +101,9 @@
       // Cache management is now handled by shared CacheUtils
       // API rate limiting is now handled by shared APILimiter
       // Drive operations are now handled by shared DriveUtils
-      
+
       // Page-specific cache prefix
-      const PAGE_PREFIX = '1st';
+      const PAGE_PREFIX = "1st";
 
       // Make cache management functions available globally for debugging
       window.firstSemesterCache = {
@@ -210,26 +117,44 @@
         try {
           // Use the batch loader utility to get drive folder mapping for 1st semester
           const mapping = await getDriveFolderMapping();
-          
+
           // Extract 1st semester batches
           if (mapping["1st"]) {
-            Object.entries(mapping["1st"]).forEach(
-              ([batchKey, batchData]) => {
-                batches[batchKey] = batchData.folderId;
-              }
-            );
+            Object.entries(mapping["1st"]).forEach(([batchKey, batchData]) => {
+              batches[batchKey] = batchData.folderId;
+            });
           }
 
           return batches;
         } catch (error) {
           console.error("Error loading batch mapping:", error);
-          // Fallback to basic structure if batch loading fails
-          batches = {
-            30: "1ROStto-XpFTVfxyo9SLUL6Ou78pL6sat",
-            29: "1SV50Qd7OcbRsMd5tHzl0qXqW6BMdQ7uO",
-          };
+          // No hardcoded fallbacks - rely entirely on JSON files
           return batches;
         }
+      }
+
+      // Create batch section HTML dynamically
+      function createBatchSection(batchNumber, batchLabel) {
+        return `
+          <section class="drive-batch-container" id="batch-${batchNumber}">
+            <div class="card drive-embed-card">
+              <div class="batch-header">
+                <h2>${batchLabel}</h2>
+                <button
+                  class="root-folder-btn"
+                  id="root-btn-${batchNumber}"
+                  title="Open root folder"
+                >
+                  ↗
+                </button>
+              </div>
+              <div class="drive-list-wrapper">
+                <div class="drive-spinner" id="spinner-${batchNumber}"></div>
+                <ul id="drive-list-${batchNumber}" class="drive-list"></ul>
+              </div>
+            </div>
+          </section>
+        `;
       }
 
       // Toggle Table of Contents accordion
@@ -255,7 +180,11 @@
 
         try {
           // Use shared drive utilities for fetching with caching
-          const files = await window.DriveUtils.fetchFolderContents(folderId, PAGE_PREFIX, 0);
+          const files = await window.DriveUtils.fetchFolderContents(
+            folderId,
+            PAGE_PREFIX,
+            0
+          );
           renderBatchFiles(files, list, batchNum);
         } catch (error) {
           list.innerHTML = `<li class="error-message">Error loading files: ${error.message}</li>`;
@@ -319,7 +248,11 @@
 
             try {
               // Use shared drive utilities for fetching with caching
-              const files = await window.DriveUtils.fetchFolderContents(folderId, PAGE_PREFIX, 1);
+              const files = await window.DriveUtils.fetchFolderContents(
+                folderId,
+                PAGE_PREFIX,
+                1
+              );
               renderSubfolderFiles(files, subfolderList);
             } catch (error) {
               subfolderList.innerHTML = `<li class="error">Error loading: ${error.message}</li>`;
@@ -394,14 +327,31 @@
           console.log(`📊 Cache Status:`, stats);
         }
 
-        // Load mapping first, then load all batches
+        // Load mapping first, then dynamically create batch sections
         await loadBatchMapping();
+
+        // Get the batches container
+        const batchesContainer = document.getElementById("batches-container");
+
+        // Sort batch keys in descending order (newest first)
+        const batchKeys = Object.keys(batches).sort(
+          (a, b) => parseInt(b) - parseInt(a)
+        );
+
+        // Dynamically create batch sections
+        batchKeys.forEach((batchNum) => {
+          const batchLabel = `${batchNum}th Batch`;
+          const batchHTML = createBatchSection(batchNum, batchLabel);
+          batchesContainer.insertAdjacentHTML("beforeend", batchHTML);
+        });
+
+        // Add spinners to all dynamically created sections
+        document.querySelectorAll(".drive-spinner").forEach((spinner) => {
+          spinner.innerHTML = '<div class="loading-spinner"></div>';
+        });
 
         // Populate table of contents
         const toc = document.getElementById("table-of-contents");
-        const batchKeys = Object.keys(batches).sort(
-          (a, b) => parseInt(b) - parseInt(a)
-        ); // Sort descending
         toc.innerHTML = batchKeys
           .map(
             (batchNum) =>
@@ -409,7 +359,7 @@
           )
           .join("");
 
-        // Set up root folder buttons for batches loaded from JSON
+        // Set up root folder buttons and load batch data
         Object.entries(batches).forEach(([batchNum, folderId]) => {
           const rootBtn = document.getElementById(`root-btn-${batchNum}`);
           if (rootBtn) {
