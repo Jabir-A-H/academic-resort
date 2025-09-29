@@ -21,8 +21,8 @@ REM Update batch_name in new file
 REM This uses PowerShell for in-place editing
 powershell -Command "(Get-Content '%newfile%') -replace '\"batch_name\": \".*\"', '\"batch_name\": \"%batchname%\"' | Set-Content '%newfile%'"
 
-REM Update index.json to include the new batch file (newest first)
-powershell -Command "$index = Get-Content 'index.json' | ConvertFrom-Json; if ($index.batches -notcontains '%newfile%') { $index.batches += '%newfile%'; $index.batches = $index.batches | Sort-Object { [int]($_ -replace 'batch-|\.json', '') } -Descending; $index.last_updated = (Get-Date).ToString('yyyy-MM-ddTHH:mm:ssZ'); $index | ConvertTo-Json | Set-Content 'index.json' }"
+REM Update index.json to include the new batch file
+powershell -Command "$index = Get-Content 'index.json' | ConvertFrom-Json; if ($index.batches -notcontains '%newfile%') { $index.batches += '%newfile%'; $index.last_updated = (Get-Date).ToString('yyyy-MM-ddTHH:mm:ssZ'); $index | ConvertTo-Json | Set-Content 'index.json' }"
 
 echo New batch file created: %newfile%
 echo Batch name set to: %batchname%

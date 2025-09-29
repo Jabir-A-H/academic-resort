@@ -303,8 +303,10 @@
         // Get the batches container
         const batchesContainer = document.getElementById("batches-container");
 
-        // Batch keys are already sorted (newest first) from the index.json
-        const batchKeys = Object.keys(batches);
+        // Sort batch keys in descending order (newest first)
+        const batchKeys = Object.keys(batches).sort(
+          (a, b) => parseInt(b) - parseInt(a)
+        );
 
         // Dynamically create batch sections
         batchKeys.forEach((batchNum) => {

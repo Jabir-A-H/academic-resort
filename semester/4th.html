@@ -326,8 +326,10 @@
 
         const batchesContainer = document.getElementById("batches-container");
         const toc = document.getElementById("table-of-contents");
-        // Batch keys are already sorted (newest first) from the index.json
-        const batchKeys = Object.keys(batches);
+        // Sort batch keys in descending order (newest first)
+        const batchKeys = Object.keys(batches).sort(
+          (a, b) => parseInt(b) - parseInt(a)
+        );
 
         // Populate table of contents
         toc.innerHTML = batchKeys
