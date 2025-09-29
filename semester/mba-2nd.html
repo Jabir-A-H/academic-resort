@@ -303,10 +303,8 @@
         // Get the batches container
         const batchesContainer = document.getElementById("batches-container");
 
-        // Sort batch keys in descending order (newest first)
-        const batchKeys = Object.keys(batches).sort(
-          (a, b) => parseInt(b) - parseInt(a)
-        );
+        // Batch keys are already sorted (newest first) from the index.json
+        const batchKeys = Object.keys(batches);
 
         // Dynamically create batch sections
         batchKeys.forEach((batchNum) => {
@@ -329,8 +327,9 @@
           )
           .join("");
 
-        // Set up root folder buttons and load batch data
-        Object.entries(batches).forEach(([batchNum, folderId]) => {
+        // Set up root folder buttons and load batch data in correct order
+        batchKeys.forEach((batchNum) => {
+          const folderId = batches[batchNum];
           const rootBtn = document.getElementById(`root-btn-${batchNum}`);
           if (rootBtn) {
             rootBtn.onclick = () =>

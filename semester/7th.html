@@ -331,9 +331,8 @@
 
         const batchesContainer = document.getElementById("batches-container");
         const toc = document.getElementById("table-of-contents");
-        const batchKeys = Object.keys(batches).sort(
-          (a, b) => parseInt(b) - parseInt(a)
-        ); // Sort descending
+        // Batch keys are already sorted (newest first) from the index.json
+        const batchKeys = Object.keys(batches);
 
         // Populate table of contents
         toc.innerHTML = batchKeys
@@ -344,7 +343,8 @@
           .join("");
 
         // Generate batch sections dynamically and set up root folder buttons
-        Object.entries(batches).forEach(([batchNumber, folderId]) => {
+        batchKeys.forEach((batchNumber) => {
+          const folderId = batches[batchNumber];
           const batchLabel = `${batchNumber}th Batch`;
           batchesContainer.innerHTML += createBatchSection(
             batchNumber,
@@ -363,8 +363,9 @@
           }
         });
 
-        // Load all batches
-        Object.entries(batches).forEach(([batchNumber, folderId]) => {
+        // Load all batches in the correct order
+        batchKeys.forEach((batchNumber) => {
+          const folderId = batches[batchNumber];
           loadBatch(batchNumber, folderId);
         });
       }

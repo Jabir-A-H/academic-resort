@@ -8,6 +8,35 @@ window.BATCH_DATA_CACHE = new Map();
 window.SUBJECT_DATA_CACHE = new Map();
 
 /**
+ * Discover all batch JSON files dynamically from index
+ */
+async function discoverBatchFiles() {
+  const basePath = getBasePath();
+  
+  try {
+    // Load the batch index file
+    const response = await fetch(`${basePath}batches/index.json`);
+    if (!response.ok) {
+      throw new Error(`Could not load batch index: ${response.status}`);
+    }
+    
+    const indexData = await response.json();
+    const batchFiles = indexData.batches || [];
+    
+    console.log(`Discovered ${batchFiles.length} batch files from index:`, batchFiles);
+    return batchFiles;
+  } catch (error) {
+    console.error('Error loading batch index, falling back to known batches:', error);
+    
+    // Fallback to known batch files if index fails
+    return [
+      'batch-24.json', 'batch-25.json', 'batch-26.json', 'batch-27.json',
+      'batch-28.json', 'batch-29.json', 'batch-30.json', 'batch-31.json'
+    ];
+  }
+}
+
+/**
  * Load all batch JSON files and cache them
  */
 async function loadAllBatchData() {
@@ -15,13 +44,16 @@ async function loadAllBatchData() {
     return window.BATCH_DATA_CACHE;
   }
 
-  const batchFiles = [
-    'batch-24.json', 'batch-25.json', 'batch-26.json', 'batch-27.json', 
-    'batch-28.json', 'batch-29.json', 'batch-30.json', 'batch-31.json'
-  ];
-
   try {
-    // Load all batch files in parallel
+    // Dynamically discover all batch files
+    const batchFiles = await discoverBatchFiles();
+    
+    if (batchFiles.length === 0) {
+      console.warn('No batch files found in batches folder');
+      return window.BATCH_DATA_CACHE;
+    }
+
+    // Load all discovered batch files in parallel
     const batchPromises = batchFiles.map(async (batchFile) => {
       try {
         const basePath = getBasePath();
