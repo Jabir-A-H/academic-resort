@@ -2591,12 +2591,20 @@ tr[data-type="folder"][data-collapsed="false"] .tree-toggle {
   letter-spacing: 0.3px;
 }
 
+/* Fallback for browsers that do not support :focus-visible */
 .view-tab:focus {
-  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
-.view-tab:focus-visible {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+/* Use :focus-visible if supported */
+@supports selector(:focus-visible) {
+  .view-tab:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  .view-tab:focus-visible {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
 }
 
 .view-tab:active {
