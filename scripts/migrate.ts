@@ -123,7 +123,7 @@ async function migrate() {
       if (sErr) { console.error('Semester Error:', sErr); continue; }
 
       // 3. Process Subjects
-      for (const [code, subject] of Object.entries((semData as any).subjects)) {
+      for (const [code, subject] of Object.entries((semData as any).subjects) as [string, any][]) {
         // Ensure Course exists
         const { data: course, error: cErr } = await supabase
           .from('courses')
