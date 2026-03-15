@@ -59,7 +59,8 @@ CREATE TABLE sections (
 CREATE TABLE resource_links (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   batch_course_id UUID REFERENCES batch_courses(id) ON DELETE CASCADE,
-  category TEXT NOT NULL, -- "Notes", "Slides", "Books", "Question Bank"
+  category TEXT NOT NULL, -- "Class Notes", "Slides and Materials", "Books and Manuals", "Question Bank"
+  title TEXT NOT NULL DEFAULT '',
   url TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -176,12 +177,15 @@ async function migrate() {
 
         for (const type of linkTypes) {
           const links = subject.links[type.key] || [];
-          for (const url of links) {
+          for (let idx = 0; idx < links.length; idx++) {
+            const url = links[idx];
             if (url) {
+              const title = links.length === 1 ? type.label : `${type.label} ${idx + 1}`;
               const { error: rlErr } = await supabase.from('resource_links').insert({
                 batch_course_id: batchCourse.id,
                 category: type.label,
-                url: url
+                title,
+                url
               });
               if (rlErr) { console.error('Resource Link Insert Error:', rlErr); }
             }

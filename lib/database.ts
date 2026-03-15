@@ -33,16 +33,17 @@ export async function searchResources(query: string, filters: { batchId?: string
         name, 
         teachers (name)
       ),
-      resource_links (category, url)
+      resource_links (category, title, url)
     `)
 
   if (filters.semesterId) {
     supabaseQuery = supabaseQuery.eq('semester_id', filters.semesterId)
   } else if (filters.batchId) {
-    const { data: semesters } = await supabase
+    const { data: semesters, error: semErr } = await supabase
       .from('semesters')
       .select('id')
       .eq('batch_id', filters.batchId)
+    if (semErr) throw semErr
     if (semesters && semesters.length > 0) {
       supabaseQuery = supabaseQuery.in('semester_id', semesters.map(s => s.id))
     }

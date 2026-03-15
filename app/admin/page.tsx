@@ -90,7 +90,7 @@ export default function AdminDashboard() {
     if (selectedSemester) loadSemesterData(selectedSemester.id);
   }
 
-  async function handleSaveLinks(links: Array<{ category: string, url: string }>) {
+  async function handleSaveLinks(links: Array<{ category: string, title: string, url: string }>) {
     if (!activeBatchCourseId) return;
 
     const { error } = await supabase
@@ -98,12 +98,13 @@ export default function AdminDashboard() {
       .insert(links.map(l => ({
         batch_course_id: activeBatchCourseId,
         category: l.category,
+        title: l.title,
         url: l.url
       })));
 
     if (error) {
       console.error('Save Links Error:', error);
-      throw new Error('Failed to save some links.');
+      throw new Error(`Failed to save links: ${error.message}`);
     }
     
     if (selectedSemester) loadSemesterData(selectedSemester.id);
