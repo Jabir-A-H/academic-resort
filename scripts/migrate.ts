@@ -6,7 +6,7 @@ const SCHEMA = `
 -- 1. Batches Table
 CREATE TABLE batches (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
+  name TEXT NOT NULL UNIQUE,
   year TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -17,7 +17,8 @@ CREATE TABLE semesters (
   batch_id UUID REFERENCES batches(id) ON DELETE CASCADE,
   name TEXT NOT NULL, -- e.g., "1st", "2nd"
   drive_folder_id TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE (batch_id, name)
 );
 
 -- 3. Permanent Courses (Standard Reference)

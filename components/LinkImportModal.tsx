@@ -21,6 +21,7 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
   const [urlInput, setUrlInput] = useState<string>('');
   const [extractedLinks, setExtractedLinks] = useState<ExtractedLink[]>([]);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -52,10 +53,13 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
 
   const handleSaveAll = async () => {
     setIsProcessing(true);
+    setSaveError(null);
     try {
       await onSave(extractedLinks.map(({ category, title, url }) => ({ category, title, url })));
       setExtractedLinks([]);
       onClose();
+    } catch (err: any) {
+      setSaveError(err?.message || 'Failed to save links. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -155,7 +159,13 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
           )}
         </div>
 
-        <div className="p-6 border-t border-gray-100 flex justify-end gap-3 bg-gray-50/50">
+        <div className="p-6 border-t border-gray-100 flex flex-col gap-3 bg-gray-50/50">
+          {saveError && (
+            <div className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+              {saveError}
+            </div>
+          )}
+          <div className="flex justify-end gap-3">
           <button onClick={onClose} className="px-6 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg transition-all text-sm">
             Cancel
           </button>
@@ -167,6 +177,7 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
             {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
             Save {extractedLinks.length} Links
           </button>
+          </div>
         </div>
       </div>
     </div>
