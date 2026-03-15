@@ -33,11 +33,19 @@ export async function searchResources(query: string, filters: { batchId?: string
         name, 
         teachers (name)
       ),
-      resource_links (category, title, url)
+      resource_links (category, url)
     `)
 
-  if (filters.batchId) {
-    // Handling specific batch filter if needed
+  if (filters.semesterId) {
+    supabaseQuery = supabaseQuery.eq('semester_id', filters.semesterId)
+  } else if (filters.batchId) {
+    const { data: semesters } = await supabase
+      .from('semesters')
+      .select('id')
+      .eq('batch_id', filters.batchId)
+    if (semesters && semesters.length > 0) {
+      supabaseQuery = supabaseQuery.in('semester_id', semesters.map(s => s.id))
+    }
   }
 
   const { data, error } = await supabaseQuery

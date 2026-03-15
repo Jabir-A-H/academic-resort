@@ -99,7 +99,7 @@ async function migrate() {
     // 1. Insert Batch
     const { data: batch, error: bErr } = await supabase
       .from('batches')
-      .upsert({ name: data.batch_name })
+      .upsert({ name: data.batch_name }, { onConflict: 'name' })
       .select()
       .single();
 
@@ -115,7 +115,7 @@ async function migrate() {
           batch_id: batch.id, 
           name: semName,
           drive_folder_id: driveFolder
-        })
+        }, { onConflict: 'batch_id,name' })
         .select()
         .single();
 
@@ -158,11 +158,12 @@ async function migrate() {
 
           if (tErr) { console.error('Teacher Error:', tErr); continue; }
 
-          await supabase.from('sections').insert({
+          const { error: secErr } = await supabase.from('sections').insert({
             batch_course_id: batchCourse.id,
             teacher_id: teacher.id,
             name: secName // A, B, or C
           });
+          if (secErr) { console.error('Section Insert Error:', secErr); }
         }
 
         // 5. Insert Links with Finalized Categories
@@ -177,11 +178,12 @@ async function migrate() {
           const links = subject.links[type.key] || [];
           for (const url of links) {
             if (url) {
-              await supabase.from('resource_links').insert({
+              const { error: rlErr } = await supabase.from('resource_links').insert({
                 batch_course_id: batchCourse.id,
                 category: type.label,
                 url: url
               });
+              if (rlErr) { console.error('Resource Link Insert Error:', rlErr); }
             }
           }
         }

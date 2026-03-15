@@ -13,7 +13,7 @@ interface ExtractedLink {
 interface LinkImportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (links: Array<{ category: string, title: string, url: string }>) => Promise<void>;
+  onSave: (links: Array<{ category: string, url: string }>) => Promise<void>;
   categories: string[];
 }
 
@@ -26,8 +26,9 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
 
   const handleProcess = () => {
     const urls = urlInput.split('\n').map(u => u.trim()).filter(u => u.startsWith('http'));
+    const defaultCategory = categories[0] ?? 'Class Notes';
     const processed: ExtractedLink[] = urls.map(url => {
-      let category = categories[0];
+      let category = defaultCategory;
       let title = 'New Resource';
       const lowerUrl = url.toLowerCase();
       
@@ -45,14 +46,14 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
       return { url, category, title, status: 'pending' };
     });
     
-    setExtractedLinks([...extractedLinks, ...processed]);
+    setExtractedLinks(prev => [...prev, ...processed]);
     setUrlInput('');
   };
 
   const handleSaveAll = async () => {
     setIsProcessing(true);
     try {
-      await onSave(extractedLinks.map(({ category, title, url }) => ({ category, title, url })));
+      await onSave(extractedLinks.map(({ category, url }) => ({ category, url })));
       setExtractedLinks([]);
       onClose();
     } finally {

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Grid, Home, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
-import { searchResources, getBatches } from '@/lib/database';
+import { searchResources, getBatches, getSemesters } from '@/lib/database';
 import ResourceCard from '@/components/ResourceCard';
 
 export default function AcademicResort() {
@@ -12,6 +12,9 @@ export default function AcademicResort() {
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [batches, setBatches] = useState<any[]>([]);
+  const [semesters, setSemesters] = useState<any[]>([]);
+  const [selectedBatchId, setSelectedBatchId] = useState('');
+  const [selectedSemesterId, setSelectedSemesterId] = useState('');
 
   useEffect(() => {
     async function loadInitialData() {
@@ -24,6 +27,16 @@ export default function AcademicResort() {
     }
     loadInitialData();
   }, []);
+
+  useEffect(() => {
+    setSemesters([]);
+    setSelectedSemesterId('');
+    if (selectedBatchId) {
+      getSemesters(selectedBatchId)
+        .then(setSemesters)
+        .catch(err => console.error('Failed to load semesters:', err));
+    }
+  }, [selectedBatchId]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
@@ -44,6 +57,22 @@ export default function AcademicResort() {
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
+
+  const handleApplyFilters = async () => {
+    if (!searchTerm) return;
+    setLoading(true);
+    try {
+      const searchData = await searchResources(searchTerm, {
+        batchId: selectedBatchId || undefined,
+        semesterId: selectedSemesterId || undefined,
+      });
+      setResults(searchData);
+    } catch (err) {
+      console.error('Search failed:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen relative">
@@ -125,20 +154,33 @@ export default function AcademicResort() {
                <div className="flex flex-col gap-3">
                  <div className="w-full">
                     <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Batch</label>
-                    <select className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-blue-500">
-                      <option>All Batches</option>
-                      {batches.map(b => <option key={b.id}>{b.name}</option>)}
+                    <select
+                      className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-blue-500"
+                      value={selectedBatchId}
+                      onChange={(e) => setSelectedBatchId(e.target.value)}
+                    >
+                      <option value="">All Batches</option>
+                      {batches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                     </select>
                  </div>
                  <div className="w-full">
                     <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Semester</label>
-                    <select className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-blue-500">
-                      <option>All Semesters</option>
-                      {['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'].map(s => <option key={s}>{s} Semester</option>)}
+                    <select
+                      className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-blue-500"
+                      value={selectedSemesterId}
+                      onChange={(e) => setSelectedSemesterId(e.target.value)}
+                      disabled={!selectedBatchId}
+                    >
+                      <option value="">All Semesters</option>
+                      {semesters.map(s => <option key={s.id} value={s.id}>{s.name} Semester</option>)}
                     </select>
                  </div>
                </div>
-               <button className="w-full mt-6 bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg active:scale-95">
+               <button
+                 className="w-full mt-6 bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50"
+                 onClick={handleApplyFilters}
+                 disabled={!searchTerm}
+               >
                  Apply Filters & Search
                </button>
              </div>

@@ -7,20 +7,15 @@ import {
   LogOut, 
   Plus, 
   Settings, 
-  BookOpen, 
   Users, 
   Link as LinkIcon, 
-  Save, 
   Trash2,
   ChevronRight,
   LayoutDashboard,
-  ExternalLink,
-  Share2
 } from 'lucide-react';
 import LinkImportModal from '@/components/LinkImportModal';
 
 export default function AdminDashboard() {
-  const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [batches, setBatches] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -36,7 +31,6 @@ export default function AdminDashboard() {
       if (!session) {
         router.push('/login');
       } else {
-        setSession(session);
         loadData();
       }
       setLoading(false);
@@ -109,7 +103,7 @@ export default function AdminDashboard() {
 
     if (error) {
       console.error('Save Links Error:', error);
-      alert('Failed to save some links.');
+      throw new Error('Failed to save some links.');
     }
     
     if (selectedSemester) loadSemesterData(selectedSemester.id);
