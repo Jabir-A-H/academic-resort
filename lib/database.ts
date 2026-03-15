@@ -79,3 +79,30 @@ export async function searchResources(query: string, filters: { batchId?: string
     item.sections.some((s: any) => s.teachers?.name?.toLowerCase().includes(query.toLowerCase()))
   )
 }
+
+export async function getTeachers() {
+  const { data, error } = await supabase
+    .from('teachers')
+    .select('*')
+    .order('name', { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getTeacherProfiles() {
+  const { data, error } = await supabase
+    .from('batch_courses')
+    .select(`
+      id,
+      courses (code, title),
+      semesters (name, batches (name)),
+      sections (
+        name,
+        teachers (id, name)
+      )
+    `);
+
+  if (error) throw error;
+  return data;
+}
