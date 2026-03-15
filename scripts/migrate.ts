@@ -109,7 +109,11 @@ async function migrate() {
 
     // 2. Process Semesters
     for (const [semName, semData] of Object.entries(data.semesters)) {
-      const driveFolder = data.drive_folders?.[`${semName.toLowerCase()}_semester`] || null;
+      // For regular semesters: "1st" -> "1st_semester"
+      // For MBA semesters: "mba-1st" -> "mba-1st" (no _semester suffix in JSON)
+      const isMbaSemester = semName.startsWith('mba-');
+      const driveFolderKey = isMbaSemester ? semName.toLowerCase() : `${semName.toLowerCase()}_semester`;
+      const driveFolder = data.drive_folders?.[driveFolderKey] || null;
       
       const { data: semester, error: sErr } = await supabase
         .from('semesters')
@@ -125,10 +129,11 @@ async function migrate() {
 
       // 3. Process Subjects
       for (const [code, subject] of Object.entries((semData as any).subjects) as [string, any][]) {
-        // Ensure Course exists
+        // Ensure Course exists (scoped to syllabus version)
+        const syllabus = data.syllabus || '2021-2022';
         const { data: course, error: cErr } = await supabase
           .from('courses')
-          .upsert({ code: subject.code, title: subject.title }, { onConflict: 'code' })
+          .upsert({ code: subject.code, title: subject.title, syllabus }, { onConflict: 'code,syllabus' })
           .select()
           .single();
 
@@ -140,8 +145,8 @@ async function migrate() {
           .upsert({
             semester_id: semester.id,
             course_id: course.id,
-            class_updates_url: subject.links.class_updates
-          })
+            class_updates_url: subject.links.class_updates || null
+          }, { onConflict: 'semester_id,course_id' })
           .select()
           .single();
 
@@ -160,12 +165,14 @@ async function migrate() {
 
           if (tErr) { console.error('Teacher Error:', tErr); continue; }
 
-          const { error: secErr } = await supabase.from('sections').insert({
-            batch_course_id: batchCourse.id,
-            teacher_id: teacher.id,
-            name: secName // A, B, or C
-          });
-          if (secErr) { console.error('Section Insert Error:', secErr); }
+          const { error: secErr } = await supabase
+            .from('sections')
+            .upsert({
+              batch_course_id: batchCourse.id,
+              teacher_id: teacher.id,
+              name: secName // A, B, or C
+            }, { onConflict: 'batch_course_id,name' });
+          if (secErr) { console.error('Section Upsert Error:', secErr); }
         }
 
         // 5. Insert Links with Finalized Categories
@@ -182,13 +189,15 @@ async function migrate() {
             const url = links[idx];
             if (url) {
               const title = links.length === 1 ? type.label : `${type.label} ${idx + 1}`;
-              const { error: rlErr } = await supabase.from('resource_links').insert({
-                batch_course_id: batchCourse.id,
-                category: type.label,
-                title,
-                url
-              });
-              if (rlErr) { console.error('Resource Link Insert Error:', rlErr); }
+              const { error: rlErr } = await supabase
+                .from('resource_links')
+                .upsert({
+                  batch_course_id: batchCourse.id,
+                  category: type.label,
+                  title,
+                  url
+                }, { onConflict: 'batch_course_id,category,url' });
+              if (rlErr) { console.error('Resource Link Upsert Error:', rlErr); }
             }
           }
         }

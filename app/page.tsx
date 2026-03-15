@@ -105,11 +105,23 @@ export default function AcademicResort() {
                       <span className="text-xs text-gray-600">{ord} Sem</span>
                     </Link>
                   ))}
-                  <Link href="/semester/mba" className="p-2 hover:bg-red-50 rounded-lg group transition-all">
-                    <div className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center mx-auto mb-1 shadow-md group-hover:scale-110 transition-transform">
-                      M
+                  <Link href="/semester/mba-1st" className="p-2 hover:bg-red-50 rounded-lg group transition-all">
+                    <div className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center mx-auto mb-1 shadow-md group-hover:scale-110 transition-transform font-bold">
+                      M1
                     </div>
-                    <span className="text-xs text-gray-600">MBA</span>
+                    <span className="text-xs text-gray-600">MBA 1st</span>
+                  </Link>
+                  <Link href="/semester/mba-2nd" className="p-2 hover:bg-red-50 rounded-lg group transition-all">
+                    <div className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center mx-auto mb-1 shadow-md group-hover:scale-110 transition-transform font-bold">
+                      M2
+                    </div>
+                    <span className="text-xs text-gray-600">MBA 2nd</span>
+                  </Link>
+                  <Link href="/teachers" className="p-2 hover:bg-green-50 rounded-lg group transition-all">
+                    <div className="w-10 h-10 bg-green-600 text-white rounded-lg flex items-center justify-center mx-auto mb-1 shadow-md group-hover:scale-110 transition-transform">
+                      📋
+                    </div>
+                    <span className="text-xs text-gray-600">Teachers</span>
                   </Link>
                 </div>
               </div>

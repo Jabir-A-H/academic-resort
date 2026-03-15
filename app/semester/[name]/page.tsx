@@ -10,7 +10,7 @@ import ResourceCard from '@/components/ResourceCard';
 const ORDINAL: Record<string, string> = {
   '1st': '1st', '2nd': '2nd', '3rd': '3rd', '4th': '4th',
   '5th': '5th', '6th': '6th', '7th': '7th', '8th': '8th',
-  'mba': 'MBA',
+  'mba-1st': 'MBA 1st', 'mba-2nd': 'MBA 2nd',
 };
 
 export default function SemesterPage() {
@@ -61,7 +61,7 @@ export default function SemesterPage() {
           </Link>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center text-lg font-bold shadow">
-              {label === 'MBA' ? 'M' : label.replace(/\D/g, '')}
+              {label.includes('MBA') ? 'M' : label.replace(/\D/g, '')}
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
