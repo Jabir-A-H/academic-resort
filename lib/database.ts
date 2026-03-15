@@ -28,7 +28,7 @@ export async function getCoursesBySemesterName(semesterName: string) {
       id,
       class_updates_url,
       courses (code, title),
-      semesters (name, drive_folder_id, batches (id, name)),
+      semesters!inner (name, drive_folder_id, batches (id, name)),
       sections (
         name,
         teachers (name)
@@ -38,8 +38,7 @@ export async function getCoursesBySemesterName(semesterName: string) {
     .eq('semesters.name', semesterName)
 
   if (error) throw error
-  // Supabase embedded-relationship filters set non-matching rows to null; discard them
-  return (data || []).filter((item: any) => item.semesters !== null)
+  return data || []
 }
 
 export async function searchResources(query: string, filters: { batchId?: string, semesterId?: string }) {
@@ -65,9 +64,8 @@ export async function searchResources(query: string, filters: { batchId?: string
       .select('id')
       .eq('batch_id', filters.batchId)
     if (semErr) throw semErr
-    if (semesters && semesters.length > 0) {
-      supabaseQuery = supabaseQuery.in('semester_id', semesters.map(s => s.id))
-    }
+    if (!semesters || semesters.length === 0) return []
+    supabaseQuery = supabaseQuery.in('semester_id', semesters.map(s => s.id))
   }
 
   const { data, error } = await supabaseQuery
