@@ -9,7 +9,7 @@ interface ResourceCardProps {
   semester: string;
   batch: string;
   sections: Array<{ name: string, teachers: { name: string } | null }>;
-  links: Array<{ category: string, title?: string, url: string }>;
+  links: Array<{ category: string, title: string, url: string }>;
   classUpdatesUrl?: string;
 }
 
