@@ -52,7 +52,7 @@ export default function ResourceCard({ course, semester, batch, sections, links,
             <User size={14} /> Sections & Teachers
           </h4>
           <div className="space-y-2">
-            {sections?.sort((a,b) => a.name.localeCompare(b.name)).map((sec, i) => (
+            {sections?.slice().sort((a,b) => a.name.localeCompare(b.name)).map((sec, i) => (
               <div key={i} className="flex items-center gap-3">
                 <span className="w-6 h-6 bg-gray-100 text-gray-600 rounded text-xs flex items-center justify-center font-bold">
                   {sec.name}

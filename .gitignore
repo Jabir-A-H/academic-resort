@@ -6,6 +6,13 @@ node_modules/
 .npm/
 .cache/
 
+# Next.js
+.next/
+out/
+
+# Environment variables (never commit secrets)
+.env*.local
+
 # Editor and IDE files
 .vscode/
 .idea/
