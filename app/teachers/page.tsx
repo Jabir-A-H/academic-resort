@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Home, Loader2, ArrowLeft, User, Book, Filter } from 'lucide-react';
+import { Home, Loader2, ArrowLeft, User, Book } from 'lucide-react';
 import { getTeacherProfiles, getBatches } from '@/lib/database';
 
 export default function TeachersPage() {
