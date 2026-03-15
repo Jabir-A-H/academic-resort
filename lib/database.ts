@@ -21,6 +21,27 @@ export async function getSemesters(batchId: string) {
   return data
 }
 
+export async function getCoursesBySemesterName(semesterName: string) {
+  const { data, error } = await supabase
+    .from('batch_courses')
+    .select(`
+      id,
+      class_updates_url,
+      courses (code, title),
+      semesters (name, drive_folder_id, batches (id, name)),
+      sections (
+        name,
+        teachers (name)
+      ),
+      resource_links (category, title, url)
+    `)
+    .eq('semesters.name', semesterName)
+
+  if (error) throw error
+  // Supabase embedded-relationship filters set non-matching rows to null; discard them
+  return (data || []).filter((item: any) => item.semesters !== null)
+}
+
 export async function searchResources(query: string, filters: { batchId?: string, semesterId?: string }) {
   let supabaseQuery = supabase
     .from('batch_courses')

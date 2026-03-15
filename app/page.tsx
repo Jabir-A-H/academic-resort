@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Search, Grid, Home, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { searchResources, getBatches, getSemesters } from '@/lib/database';
 import ResourceCard from '@/components/ResourceCard';
@@ -79,9 +80,9 @@ export default function AcademicResort() {
       {/* Google-style Header */}
       <header className="google-header">
         <div className="header-right">
-          <a href="#" className="home-link">
+          <Link href="/" className="home-link">
             <Home size={18} /> Home
-          </a>
+          </Link>
           <div className="relative">
             <button 
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -92,20 +93,24 @@ export default function AcademicResort() {
             {showApps && (
               <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 shadow-xl rounded-lg p-4 w-80 z-50">
                 <div className="grid grid-cols-3 gap-4 text-center">
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
-                    <a key={sem} href="#" className="p-2 hover:bg-blue-50 rounded-lg group transition-all">
+                  {([
+                    { num: 1, ord: '1st' }, { num: 2, ord: '2nd' }, { num: 3, ord: '3rd' },
+                    { num: 4, ord: '4th' }, { num: 5, ord: '5th' }, { num: 6, ord: '6th' },
+                    { num: 7, ord: '7th' }, { num: 8, ord: '8th' },
+                  ] as { num: number; ord: string }[]).map(({ num, ord }) => (
+                    <Link key={num} href={`/semester/${ord}`} className="p-2 hover:bg-blue-50 rounded-lg group transition-all">
                       <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center mx-auto mb-1 shadow-md group-hover:scale-110 transition-transform">
-                        {sem}
+                        {num}
                       </div>
-                      <span className="text-xs text-gray-600">{sem}{sem === 1 ? 'st' : sem === 2 ? 'nd' : sem === 3 ? 'rd' : 'th'} Sem</span>
-                    </a>
+                      <span className="text-xs text-gray-600">{ord} Sem</span>
+                    </Link>
                   ))}
-                  <a href="#" className="p-2 hover:bg-red-50 rounded-lg group transition-all">
+                  <Link href="/semester/mba" className="p-2 hover:bg-red-50 rounded-lg group transition-all">
                     <div className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center mx-auto mb-1 shadow-md group-hover:scale-110 transition-transform">
                       M
                     </div>
                     <span className="text-xs text-gray-600">MBA</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
             )}
