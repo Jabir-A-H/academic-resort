@@ -106,3 +106,46 @@ export async function getTeacherProfiles() {
   if (error) throw error;
   return data;
 }
+
+export async function getCourseDetails(code: string) {
+  // 1. Get the course info
+  const { data: course, error: courseErr } = await supabase
+    .from('courses')
+    .select('*')
+    .eq('code', code)
+    .single()
+
+  if (courseErr) throw courseErr
+
+  // 2. Get all batch occurrences of this course
+  const { data: occurrences, error: occErr } = await supabase
+    .from('batch_courses')
+    .select(`
+      id,
+      class_updates_url,
+      course_id,
+      semesters (
+        name,
+        drive_folder_id,
+        batches (name)
+      ),
+      sections (
+        name,
+        teachers (name)
+      ),
+      resource_links (
+        id,
+        category,
+        title,
+        url
+      )
+    `)
+    .eq('course_id', (course as any).id)
+
+  if (occErr) throw occErr
+
+  return {
+    ...course,
+    occurrences: occurrences || []
+  }
+}

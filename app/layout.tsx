@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   },
 }
 
+import Sidebar from '@/components/Sidebar'
+
 export default function RootLayout({
   children,
 }: {
@@ -21,7 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
+        <Sidebar />
+        <div className="main-content-wrapper">
+          {children}
+        </div>
         <Analytics />
       </body>
     </html>
