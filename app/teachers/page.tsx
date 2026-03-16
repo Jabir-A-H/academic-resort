@@ -82,10 +82,13 @@ export default function TeachersPage() {
     return {
       teachers: Array.from(teachersMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
       courses: Array.from(coursesMap.values()).sort((a, b) => a.code.localeCompare(b.code)),
-      batches: Array.from(batchesMap.values()).sort((a, b) => {
+      batches: Array.from(batchesMap.values()).sort((a: any, b: any) => {
         const ai = parseInt(a.name); const bi = parseInt(b.name);
         return isNaN(ai) || isNaN(bi) ? 0 : bi - ai;
-      }).map(b => ({ ...b, semesters: Array.from(b.semesters.values()).sort((a, b) => a.name.localeCompare(b.name)) }))
+      }).map(b => ({ 
+        ...b, 
+        semesters: Array.from(b.semesters.values()).sort((a: any, b: any) => a.name.localeCompare(b.name)) 
+      }))
     };
   }, [profiles]);
 

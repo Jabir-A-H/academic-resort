@@ -12,6 +12,8 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.47.10",
     "@vercel/analytics": "^2.0.1",
+    "framer-motion": "^11.15.0",
+    "kbar": "^0.1.0-beta.45",
     "lucide-react": "^0.469.0",
     "next": "^16.1.6",
     "react": "^19.0.0",
