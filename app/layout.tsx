@@ -14,8 +14,6 @@ export const metadata: Metadata = {
 }
 
 import { Suspense } from 'react'
-import Sidebar from '@/components/Sidebar'
-import CommandBar from '@/components/CommandBar'
 
 export default function RootLayout({
   children,
@@ -24,15 +22,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <CommandBar>
-          <Sidebar />
-          <div className="main-content-wrapper p-4 md:p-8 ml-0 md:ml-sidebar transition-all duration-300">
-            <Suspense fallback={<div className="h-1 bg-brand animate-loading-bar" />}>
-              {children}
-            </Suspense>
-          </div>
-        </CommandBar>
+      <body className={`${inter.className} min-h-screen bg-gray-50/50`}>
+        <Suspense fallback={<div className="h-1 bg-brand animate-loading-bar" />}>
+          {children}
+        </Suspense>
         <Analytics />
       </body>
     </html>

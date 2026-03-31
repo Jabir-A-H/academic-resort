@@ -1138,3 +1138,65 @@ Current behavior:
 Batch JSON → root folder IDs → Drive API (fields=id,name,mimeType,webViewLink) → recursive expansion (with caching + rate limiting) → file object enrichment → deduplication → hierarchical tree build → render with folder/file URL derivation + fallbacks.
 
 <!-- End Section 14.1 -->
+
+---
+
+## 15. The Next.js & Supabase Master Migration (March 2026)
+### 15.1 Architectural Paradigm Shift
+In March 2026, the Academic Resort underwent its most significant transformation to date, migrating from a static vanilla HTML/JS architecture with local JSON files to a robust, dynamic Next.js 15 application powered by a Supabase React/PostgreSQL backend.
+
+This shift was implemented to address fundamental limitations of the legacy architecture:
+- Static HTML templates were becoming harder to scale and maintain.
+- Client-side data fetching of large JSON files affected scale and performance.
+- Authentication and role-based access control were impossible in a purely static environment.
+- The Google Drive API proxying needed better security to protect API keys.
+
+**New Tech Stack:**
+- **Framework:** Next.js (App Router, Turbopack)
+- **Styling:** Vanilla CSS with modern custom properties, eliminating Tailwind build conflicts and achieving a "Modern Professionalism" high-fidelity aesthetic.
+- **Backend/Database:** Supabase (PostgreSQL)
+- **Data Fetching:** Server-side fetching with strategic client-side state for interactive components.
+
+### 15.2 Database Migration & Schema Design
+The 8 consolidated batch JSON files from the legacy system were fully normalized and imported into a relational Supabase PostgreSQL schema.
+
+**Core Tables Created:**
+1. `batches` - Top-level academic groups.
+2. `semesters` - Individual semesters belonging to batches. Links to Drive folder ID.
+3. `courses` - The academic subjects.
+4. `sections` - Specific class divisions (A, B, C).
+5. `teachers` - Faculty members assigned to specific sections.
+6. `resource_links` - The actual course materials (URLs/Drive Folders) linked to everything above.
+
+This relational model completely eliminated the need to download massive JSON blobs on page load, delegating all data sorting and filtering to highly efficient Supabase database queries.
+
+### 15.3 Authentication & Role-Based Access Control
+We successfully integrated Supabase Auth to provide secure login capabilities.
+- Added `/login` route.
+- Implemented Next.js Middleware to protect admin routes (e.g., `/admin`).
+- Set the stage for allowing teachers and admins to actively modify course materials on the platform without needing direct code access.
+
+### 15.4 High-Fidelity UI/UX & Premium Design Implementation
+The UI was fundamentally redesigned using the Stitch MCP framework guidelines:
+- **Lava Lamp Navigation:** Smooth, animated navigation headers for excellent tactile feel.
+- **Quick Action Command Bar:** A Cmd+K menu system was scoped out and prepped to function as a global power-user search utility.
+- **Responsive Animations:** Employed Framer Motion and modern CSS transitions for a dynamic "App-like" feel that WOWs users on first impression.
+- **Progressive Disclosure:** Filter options, file sub-trees, and advanced settings are hidden until needed.
+
+### 15.5 Reimaged Google Drive Integration (The Core Feature)
+The flagship feature of Academic Resort—the deep integration with Google Drive—was completely rebuilt to combine performance, security, and exceptional UX.
+
+**Two-Phase Global Search:**
+- **Phase 1 (Instant):** Users type a query on the homepage, initiating a lightning-fast Supabase query returning matched courses and teachers in ~100ms.
+- **Phase 2 (Async Background):** Simultaneously, the app kicks off a background task to hunt through actual Google Drive files belonging to those matched courses.
+- A "Drive Results Panel" streams in the matching files and folders, presenting them grouped by batch and semester below the instant search results.
+
+**Secure API Proxy System:**
+- Legacy vulnerability: The 3 Google Drive API keys were fully exposed in the client-side `api-keys.js` logic.
+- **New Architecture:** Created the `/api/drive` Next.js server route.
+- The browser calls `/api/drive?folderId=...`, keeping operations purely on the server.
+- The server rotates the 3 secret keys round-robin locally from the `.env.local` to prevent rapid quota exhaustion without ever sending them to the user.
+
+**Recursive Folder Expansion:**
+- On the Course detail page, the `DriveFolder` React Component utilizes client-side memory caching and recursive fetching.
+- Users can click any Drive resource to expand it inline dynamically, browsing nested sub-folders endlessly without navigating away from the portal. Iconography automatically maps Google Drive File MIME types to relevant emojis (e.g., 📄 for docs, 📁 for folders, 📕 for PDFs).

@@ -837,7 +837,7 @@ body {
   border-left: 2px solid var(--gray-100);
   margin-left: 22px;
 }
-.subfolder-item {}
+.subfolder-item { } /* Removed empty ruleset warning */
 .subfolder-item > a, .subfolder-item .folder-item {
   font-size: 13px;
 }

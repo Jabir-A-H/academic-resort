@@ -99,7 +99,7 @@ export async function getTeacherProfiles() {
       semesters (name, batches (name)),
       sections (
         name,
-        teachers (id, name)
+        teachers (id, name, phone, email, du_profile_url, linkedin_url, facebook_url)
       )
     `);
 
