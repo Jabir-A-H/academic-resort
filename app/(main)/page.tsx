@@ -562,7 +562,7 @@ export default function AcademicResort() {
                               {!isBatchCollapsed && (
                                 <div className="batch-content" id={`batch-${semester}-${batch}`}>
                                   <div className="tree-results">
-                                    <DriveTreeNode node={batchNode} depth={0} />
+                                    <DriveTreeNode node={batchNode} />
                                   </div>
                                 </div>
                               )}
