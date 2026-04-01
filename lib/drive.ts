@@ -74,12 +74,13 @@ export async function fetchFolderContents(
 }
 
 // ─── Recursively collect all files (not folders) from a Drive folder tree ─────
-export async function fetchAllFilesRecursively(
+ export async function fetchAllFilesRecursively(
   folderId: string,
   path = '',
   maxDepth = 5,
   signal?: AbortSignal,
-  currentDepth = 0
+  currentDepth = 0,
+  folderRegistry?: Map<string, string> // path → Drive folder ID
 ): Promise<{ name: string; link: string; path: string; mimeType: string; folderId: string }[]> {
   if (currentDepth >= maxDepth) return [];
   if (signal?.aborted) return [];
@@ -92,8 +93,10 @@ export async function fetchAllFilesRecursively(
     if (signal?.aborted) break;
     if (file.isFolder) {
       const newPath = path ? `${path} / ${file.name}` : file.name;
+      // Record this folder's Drive ID keyed by its full path
+      folderRegistry?.set(newPath, file.id);
       subfolderPromises.push(
-        fetchAllFilesRecursively(file.id, newPath, maxDepth, signal, currentDepth + 1)
+        fetchAllFilesRecursively(file.id, newPath, maxDepth, signal, currentDepth + 1, folderRegistry)
       );
     } else {
       results.push({
@@ -152,7 +155,8 @@ export async function searchFilesInFolders(
   searchTerm: string,
   maxDepth = 4,
   signal?: AbortSignal,
-  onProgress?: (found: number, searched: number, total: number) => void
+  onProgress?: (results: DriveSearchResult[], searched: number, total: number) => void,
+  folderRegistry?: Map<string, string> // receives captured folder path→ID mappings
 ): Promise<DriveSearchResult[]> {
   if (!searchTerm || folderConfigs.length === 0) return [];
 
@@ -160,7 +164,6 @@ export async function searchFilesInFolders(
   let searched = 0;
   const allResults: DriveSearchResult[] = [];
 
-  // Process in batches of 8 to avoid overwhelming the proxy
   const BATCH_SIZE = 8;
   for (let i = 0; i < folderConfigs.length; i += BATCH_SIZE) {
     if (signal?.aborted) break;
@@ -171,10 +174,7 @@ export async function searchFilesInFolders(
         if (signal?.aborted) return [];
         try {
           const files = await fetchAllFilesRecursively(
-            config.folderId,
-            '',
-            maxDepth,
-            signal
+            config.folderId, '', maxDepth, signal, 0, folderRegistry
           );
           return files
             .filter(f => smartMatch(searchTerm, f.name, f.path))
@@ -195,9 +195,8 @@ export async function searchFilesInFolders(
 
     for (const r of batchResults.flat()) allResults.push(r);
     searched += batch.length;
-    onProgress?.(allResults.length, searched, total);
+    onProgress?.(dedupe(allResults), searched, total);
 
-    // Early termination on huge result sets
     if (allResults.length > 500) break;
   }
 

@@ -3,375 +3,303 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import {
-  Search, LayoutGrid, Home, ChevronDown, Settings2, Loader2,
-  FolderOpen, ExternalLink, X, Wifi,
+  Search, LayoutGrid, Home, ChevronDown, Settings2, Loader2, Wifi, ExternalLink,
 } from 'lucide-react';
-import { searchResources, getBatches, getSemesters } from '@/lib/database';
-import { searchFilesInFolders, mimeIcon, extractFolderId, type DriveSearchResult, type FolderConfig } from '@/lib/drive';
-import ResourceCard from '@/components/ResourceCard';
+import { searchFilesInFolders, mimeIcon, type DriveSearchResult, type FolderConfig } from '@/lib/drive';
+import { getAllDriveFolderConfigs } from '@/lib/database';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-type Batch    = { id: string; name: string };
-type Semester = { id: string; name: string };
-interface GroupedResult { batchName: string; semesterName: string; items: any[] }
+// ─── Types ──────────────────────────────────────────────────────────────────────
+interface TreeNode {
+  name: string;
+  driveId?: string;           // Drive folder ID for linking (if known)
+  children: Record<string, TreeNode>;
+  files: DriveSearchResult[];
+  hasMatchingContent: boolean;
+}
+// semester → batch → tree-root
+type SemTree = Record<string, Record<string, TreeNode>>;
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Constants ──────────────────────────────────────────────────────────────────
 const SEMESTER_ORDER = ['1st','2nd','3rd','4th','5th','6th','7th','8th','mba-1st','mba-2nd'];
-const ordinalLabel   = (s: string) =>
-  s.startsWith('mba-') ? `MBA ${s.replace('mba-','')} Semester` : `${s.charAt(0).toUpperCase()}${s.slice(1)} Semester`;
-const BBA_SEMS = [1,2,3,4,5,6,7,8].map(n => ({ num: n, ord: `${n}th`.replace('1th','1st').replace('2th','2nd').replace('3th','3rd') }));
 
-// Ordinal fix helper
+function semLabel(s: string) {
+  return s.startsWith('mba-')
+    ? `MBA ${s.replace('mba-','')} Semester`
+    : `${s.charAt(0).toUpperCase()}${s.slice(1)} Semester`;
+}
+
 function toOrdinal(n: number) {
-  if (n === 1) return '1st';
-  if (n === 2) return '2nd';
-  if (n === 3) return '3rd';
+  if (n === 1) return '1st'; if (n === 2) return '2nd'; if (n === 3) return '3rd';
   return `${n}th`;
 }
-const BBA_SEMS_FIXED = [1,2,3,4,5,6,7,8].map(n => ({ num: n, ord: toOrdinal(n) }));
 
-// ─── Drive Results Panel ──────────────────────────────────────────────────────
-interface DriveResultsPanelProps {
-  results: DriveSearchResult[];
-  searching: boolean;
-  searched: number;
-  total: number;
-  visible: boolean;
-  onToggle: () => void;
-}
-function DriveResultsPanel({ results, searching, searched, total, visible, onToggle }: DriveResultsPanelProps) {
-  // Group by batch → semester
-  const grouped = useMemo(() => {
-    const map = new Map<string, { batch: string; semester: string; files: DriveSearchResult[] }>();
-    for (const r of results) {
-      const key = `${r.batch}__${r.semester}`;
-      if (!map.has(key)) map.set(key, { batch: r.batch, semester: r.semester, files: [] });
-      map.get(key)!.files.push(r);
+// ─── Build hierarchical tree from flat file results + folder registry ─────────────────
+function buildTree(results: DriveSearchResult[], folderRegistry: Map<string, string>): SemTree {
+  const tree: SemTree = {};
+  for (const file of results) {
+    const { semester, batch } = file;
+    if (!tree[semester]) tree[semester] = {};
+    if (!tree[semester][batch]) {
+      tree[semester][batch] = { name: 'root', children: {}, files: [], hasMatchingContent: true };
     }
-    return Array.from(map.values()).sort((a, b) => {
-      const ai = parseInt(a.batch), bi = parseInt(b.batch);
-      return isNaN(ai) || isNaN(bi) ? 0 : bi - ai;
-    });
-  }, [results]);
+    // path is like "Accounting / Chapter 1" or "Root" for top-level files
+    const pathParts = (!file.path || file.path === 'Root') ? [] : file.path.split(' / ').filter(Boolean);
+    let node = tree[semester][batch];
+    let builtPath = '';
+    for (const part of pathParts) {
+      builtPath = builtPath ? `${builtPath} / ${part}` : part;
+      if (!node.children[part]) {
+        node.children[part] = {
+          name: part,
+          driveId: folderRegistry.get(builtPath),  // attach Drive ID if we have it
+          children: {},
+          files: [],
+          hasMatchingContent: false,
+        };
+      } else if (!node.children[part].driveId) {
+        node.children[part].driveId = folderRegistry.get(builtPath);
+      }
+      node.children[part].hasMatchingContent = true;
+      node = node.children[part];
+    }
+    node.files.push(file);
+  }
+  return tree;
+}
 
-  const progressPct = total > 0 ? Math.round((searched / total) * 100) : 0;
+// ─── Recursive tree renderer ─────────────────────────────────────────────────────
+function DriveTreeNode({ node }: { node: TreeNode }) {
+  const folders = Object.entries(node.children).sort(([a],[b]) => a.localeCompare(b));
+  const files = [...node.files].sort((a,b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="drive-results-panel">
-      {/* Header bar */}
-      <div className="drive-results-header" onClick={onToggle} role="button" tabIndex={0}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <FolderOpen size={15} style={{ color: 'var(--primary-blue)' }} />
-          <span style={{ fontWeight: 600, fontSize: 13 }}>
-            Drive File Search
-          </span>
-          {searching && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--muted)' }}>
-              <Loader2 size={12} className="animate-spin" />
-              {searched}/{total} folders
-              {progressPct > 0 && ` (${progressPct}%)`}
+    <>
+      {folders.map(([name, child]) => (
+        <div key={name} className="tree-folder-group">
+          {/* Folder row */}
+          <div className={`file-item folder-row ${child.hasMatchingContent ? 'matching-folder' : 'parent-folder'}`}>
+            <span className="file-icon">{child.hasMatchingContent ? '📁' : '📂'}</span>
+            <span className="file-name" style={{ opacity: child.hasMatchingContent ? 1 : 0.55 }}>
+              {name}
             </span>
-          )}
-          {!searching && results.length > 0 && (
-            <span className="drive-result-count">{results.length} file{results.length !== 1 ? 's' : ''}</span>
-          )}
-          {!searching && results.length === 0 && (
-            <span style={{ fontSize: 12, color: 'var(--muted)' }}>No matching files</span>
-          )}
+            {child.driveId && (
+              <a
+                href={`https://drive.google.com/drive/folders/${child.driveId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="folder-open-link"
+                title={`Open “${name}” in Google Drive`}
+                onClick={e => e.stopPropagation()}
+              >
+                <ExternalLink size={14} />
+              </a>
+            )}
+          </div>
+          {/* Children block (adds visual guide line and indent automatically) */}
+          <div className="tree-children">
+            <DriveTreeNode node={child} />
+          </div>
         </div>
-        <ChevronDown size={14} style={{ transform: visible ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', color: 'var(--muted)' }} />
-      </div>
-
-      {/* Progress bar */}
-      {searching && (
-        <div style={{ height: 2, background: 'var(--border)', borderRadius: 0 }}>
-          <div style={{
-            height: '100%',
-            width: `${progressPct}%`,
-            background: 'linear-gradient(90deg, var(--primary-blue), #60a5fa)',
-            transition: 'width 0.3s ease',
-            borderRadius: 0,
-          }} />
+      ))}
+      {files.map((file, i) => (
+        <div key={i} className="file-item">
+          <span className="file-icon">{mimeIcon(file.mimeType)}</span>
+          <a
+            href={file.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="file-name file-name-link"
+            title={file.name}
+          >
+            {file.name}
+          </a>
         </div>
-      )}
-
-      {/* Results */}
-      {visible && (
-        <div className="drive-results-body">
-          {grouped.length === 0 && !searching && (
-            <p style={{ textAlign: 'center', color: 'var(--muted)', fontSize: 13, padding: '24px 0', margin: 0 }}>
-              No matching files found in Drive folders.
-            </p>
-          )}
-          {grouped.map(group => (
-            <div key={`${group.batch}__${group.semester}`} className="drive-result-group">
-              <div className="drive-result-group-header">
-                <span className="batch-result-title">{group.batch}</span>
-                <span className="batch-result-meta">· {ordinalLabel(group.semester)}</span>
-                <span style={{ fontSize: 11, color: 'var(--muted)', marginLeft: 'auto' }}>
-                  {group.files.length} file{group.files.length !== 1 ? 's' : ''}
-                </span>
-              </div>
-              <ul className="drive-result-file-list">
-                {group.files.map((f, i) => (
-                  <li key={i} className="drive-result-file-item">
-                    <a
-                      href={f.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="drive-result-file-link"
-                    >
-                      <span className="drive-result-file-icon">{mimeIcon(f.mimeType)}</span>
-                      <div className="drive-result-file-info">
-                        <span className="drive-result-file-name">{f.name}</span>
-                        {f.path && f.path !== 'Root' && (
-                          <span className="drive-result-file-path">{f.path}</span>
-                        )}
-                      </div>
-                      <ExternalLink size={10} style={{ color: 'var(--muted)', flexShrink: 0 }} />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+      ))}
+    </>
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ─── Main Component ───────────────────────────────────────────────────────────────
 export default function AcademicResort() {
-  // UI
-  const [showApps,     setShowApps]     = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  // Drive folder configs (loaded once on mount)
+  const [allConfigs, setAllConfigs] = useState<FolderConfig[]>([]);
+  const [configsLoaded, setConfigsLoaded] = useState(false);
 
   // Search state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [results,    setResults]    = useState<any[]>([]);
-  const [loading,    setLoading]    = useState(false);
-  const [statusMsg,  setStatusMsg]  = useState('');
+  const [searchTerm, setSearchTerm]   = useState('');
+  const [searching,  setSearching]    = useState(false);
+  const [searched,   setSearched]     = useState(0);
+  const [total,      setTotal]        = useState(0);
+  const [driveResults, setDriveResults] = useState<DriveSearchResult[]>([]);
+  const [driveEnabled, setDriveEnabled] = useState(true);
+  const abortRef = useRef<AbortController | null>(null);
+  // Populated during search traversal: folder-path → Drive folder ID
+  const folderRegistryRef = useRef<Map<string, string>>(new Map());
 
-  // Filter data
-  const [batches,   setBatches]   = useState<Batch[]>([]);
-  const [semesters, setSemesters] = useState<Semester[]>([]);
-
-  // Filter selections
+  // Filter state
   const [selBatches,   setSelBatches]   = useState<string[]>([]);
   const [selSemesters, setSelSemesters] = useState<string[]>([]);
+  const [batchOpen,    setBatchOpen]    = useState(false);
+  const [semOpen,      setSemOpen]      = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Filter dropdown open state
-  const [batchOpen, setBatchOpen] = useState(false);
-  const [semOpen,   setSemOpen]   = useState(false);
+  // Display options
+  const [semAscending,    setSemAscending]    = useState(true);
+  const [batchDescending, setBatchDescending] = useState(true);
+  const [ctrlOpen, setCtrlOpen] = useState(false);
 
-  // Result controls
-  const [ctrlOpen,        setCtrlOpen]        = useState(false);
-  const [expandAll,       setExpandAll]        = useState(true);
-  const [semAscending,    setSemAscending]     = useState(true);
-  const [batchDescending, setBatchDescending]  = useState(true);
-  const [collapsed,       setCollapsed]        = useState<Set<string>>(new Set());
+  // Collapsible accordion state
+  const [collapsedSems,    setCollapsedSems]    = useState<Set<string>>(new Set());
+  const [collapsedBatches, setCollapsedBatches] = useState<Set<string>>(new Set());
 
-  // ── Drive search state ──────────────────────────────────────────────────────
-  const [driveResults,    setDriveResults]    = useState<DriveSearchResult[]>([]);
-  const [driveSearching,  setDriveSearching]  = useState(false);
-  const [driveSearched,   setDriveSearched]   = useState(0);
-  const [driveTotal,      setDriveTotal]      = useState(0);
-  const [drivePanelOpen,  setDrivePanelOpen]  = useState(true);
-  const [driveEnabled,    setDriveEnabled]    = useState(true);
-  const driveAbortRef = useRef<AbortController | null>(null);
-
-  // Refs
+  // UI
+  const [showApps, setShowApps] = useState(false);
   const appsRef    = useRef<HTMLDivElement>(null);
   const ctrlRef    = useRef<HTMLDivElement>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
 
-  // ── Load batches ─────────────────────────────────────────────────────────────
+  // ── Load Drive folder configs from Supabase on mount ─────────────────────────
   useEffect(() => {
-    getBatches().then(setBatches).catch(console.error);
+    getAllDriveFolderConfigs().then(configs => {
+      setAllConfigs(configs.map(c => ({
+        folderId: c.folderId,
+        semester: c.semester,
+        batch: c.batch,
+        label: c.batch,
+      })));
+      setConfigsLoaded(true);
+    });
   }, []);
 
-  // ── Load semesters on batch select ───────────────────────────────────────────
-  useEffect(() => {
-    if (selBatches.length === 1) {
-      getSemesters(selBatches[0]).then(setSemesters).catch(console.error);
-    } else {
-      setSemesters([]);
-      setSelSemesters([]);
-    }
-  }, [selBatches]);
+  // ── Derived filter options ─────────────────────────────────────────────────────
+  const uniqueBatches = useMemo(() =>
+    [...new Set(allConfigs.map(c => c.batch))].sort((a,b) => {
+      const ai = parseInt(a), bi = parseInt(b);
+      return isNaN(ai) || isNaN(bi) ? a.localeCompare(b) : bi - ai;
+    }),
+    [allConfigs]
+  );
+
+  const uniqueSemesters = useMemo(() =>
+    [...new Set(allConfigs.map(c => c.semester))].sort(
+      (a,b) => SEMESTER_ORDER.indexOf(a) - SEMESTER_ORDER.indexOf(b)
+    ),
+    [allConfigs]
+  );
+
+  // ── Configs filtered by selections ─────────────────────────────────────────────
+  const activeConfigs = useMemo(() =>
+    allConfigs.filter(c => {
+      if (selBatches.length   > 0 && !selBatches.includes(c.batch))       return false;
+      if (selSemesters.length > 0 && !selSemesters.includes(c.semester))  return false;
+      return true;
+    }),
+    [allConfigs, selBatches, selSemesters]
+  );
 
   // ── Outside-click handlers ────────────────────────────────────────────────────
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (appsRef.current && !appsRef.current.contains(e.target as Node)) setShowApps(false);
-      if (ctrlRef.current && !ctrlRef.current.contains(e.target as Node)) setCtrlOpen(false);
+    const h = (e: MouseEvent) => {
+      if (appsRef.current    && !appsRef.current.contains(e.target as Node))    setShowApps(false);
+      if (ctrlRef.current    && !ctrlRef.current.contains(e.target as Node))    setCtrlOpen(false);
       if (filtersRef.current && !filtersRef.current.contains(e.target as Node)) {
         setBatchOpen(false); setSemOpen(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
   }, []);
 
-  // ── Build Drive folder configs from Supabase results ────────────────────────
-  const buildDriveFolderConfigs = useCallback((dbResults: any[]): FolderConfig[] => {
-    const configs: FolderConfig[] = [];
-    const seen = new Set<string>();
-
-    for (const item of dbResults) {
-      const batch    = item.semesters?.batches?.name   ?? 'Unknown';
-      const semester = item.semesters?.name            ?? 'Unknown';
-
-      // Semester-level Drive folder
-      const semDriveId = item.semesters?.drive_folder_id;
-      if (semDriveId) {
-        const key = `sem__${semDriveId}`;
-        if (!seen.has(key)) { seen.add(key); configs.push({ folderId: semDriveId, semester, batch }); }
-      }
-
-      // Resource link folders
-      for (const link of (item.resource_links ?? [])) {
-        const fid = extractFolderId(link.url);
-        if (fid) {
-          const key = `rl__${fid}`;
-          if (!seen.has(key)) { seen.add(key); configs.push({ folderId: fid, semester, batch }); }
-        }
-      }
-    }
-    return configs;
-  }, []);
-
-  // ── Kick off Drive search after Supabase returns ─────────────────────────────
-  const runDriveSearch = useCallback(async (term: string, dbResults: any[]) => {
-    if (!driveEnabled || term.trim().length < 3) return;
-
-    // Cancel any previous Drive search
-    driveAbortRef.current?.abort();
+  // ── Run Drive search ──────────────────────────────────────────────────────────
+  const runSearch = useCallback(async (term: string, configs: FolderConfig[]) => {
+    abortRef.current?.abort();
     const ctrl = new AbortController();
-    driveAbortRef.current = ctrl;
-
-    const configs = buildDriveFolderConfigs(dbResults);
-    if (configs.length === 0) return;
+    abortRef.current = ctrl;
+    // Fresh registry for this search
+    folderRegistryRef.current = new Map();
 
     setDriveResults([]);
-    setDriveSearching(true);
-    setDriveSearched(0);
-    setDriveTotal(configs.length);
-    setDrivePanelOpen(true);
+    setSearching(true);
+    setSearched(0);
+    setTotal(configs.length);
+    setCollapsedSems(new Set());
+    setCollapsedBatches(new Set());
 
     try {
-      await searchFilesInFolders(
-        configs,
-        term.trim(),
-        4,
-        ctrl.signal,
-        (found, searched, total) => {
+      const final = await searchFilesInFolders(
+        configs, term, 4, ctrl.signal,
+        (results, searched, total) => {
           if (ctrl.signal.aborted) return;
-          setDriveResults(prev => {
-            // Results stream in; we replace with latest full list from the callback
-            // searchFilesInFolders updates via progress so we append incrementally
-            return prev; // actual accumulation happens inside the lib
-          });
-          setDriveSearched(searched);
-          setDriveTotal(total);
-        }
-      ).then(finalResults => {
-        if (!ctrl.signal.aborted) {
-          setDriveResults(finalResults);
-          setDriveSearching(false);
-        }
-      });
+          setDriveResults(results);
+          setSearched(searched);
+          setTotal(total);
+        },
+        folderRegistryRef.current  // ← pass registry so folder IDs are captured
+      );
+      if (!ctrl.signal.aborted) {
+        setDriveResults(final);
+        setSearching(false);
+      }
     } catch {
-      if (!ctrl.signal.aborted) setDriveSearching(false);
+      if (!ctrl.signal.aborted) setSearching(false);
     }
-  }, [driveEnabled, buildDriveFolderConfigs]);
+  }, []);
 
-  // ── Debounced auto-search ─────────────────────────────────────────────────────
+  // ── Debounced search trigger ──────────────────────────────────────────────────
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setResults([]);
-      setStatusMsg('');
+    if (!searchTerm.trim() || searchTerm.trim().length < 2) {
+      abortRef.current?.abort();
       setDriveResults([]);
-      setDriveSearching(false);
-      driveAbortRef.current?.abort();
+      setSearching(false);
       return;
     }
-    const t = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const data = await searchResources(searchTerm, {});
-        setResults(data);
-        setStatusMsg(`${data.length} course${data.length !== 1 ? 's' : ''} found`);
-        setCollapsed(new Set());
-        // Phase 2: Drive search in background
-        runDriveSearch(searchTerm, data);
-      } catch (e) { console.error(e); }
-      finally { setLoading(false); }
+    const t = setTimeout(() => {
+      if (driveEnabled && activeConfigs.length > 0) {
+        runSearch(searchTerm.trim(), activeConfigs);
+      }
     }, 500);
     return () => clearTimeout(t);
-  }, [searchTerm, runDriveSearch]);
+  }, [searchTerm, activeConfigs, driveEnabled, runSearch]);
 
-  // ── Apply filters ─────────────────────────────────────────────────────────────
-  const handleApplyFilters = useCallback(async () => {
-    setLoading(true);
-    try {
-      const batchId    = selBatches.length === 1   ? selBatches[0]   : undefined;
-      const semesterId = selSemesters.length === 1 ? selSemesters[0] : undefined;
-      const data = await searchResources(searchTerm.trim() || '', { batchId, semesterId });
-      setResults(data);
-      const parts: string[] = [];
-      if (selBatches.length)   parts.push(`${selBatches.length} batch${selBatches.length > 1 ? 'es' : ''}`);
-      if (selSemesters.length) parts.push(`${selSemesters.length} semester${selSemesters.length > 1 ? 's' : ''}`);
-      setStatusMsg(parts.length
-        ? `Showing resources for: ${parts.join(', ')}`
-        : `${data.length} resource${data.length !== 1 ? 's' : ''} found`);
-      setCollapsed(new Set());
-      if (searchTerm.trim()) runDriveSearch(searchTerm.trim(), data);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
-  }, [searchTerm, selBatches, selSemesters, runDriveSearch]);
+  // ── Build tree ────────────────────────────────────────────────────────────────
+  const tree = useMemo(() => buildTree(driveResults, folderRegistryRef.current), [driveResults]);
 
-  // ── Group + sort results ──────────────────────────────────────────────────────
-  const grouped = useMemo<GroupedResult[]>(() => {
-    const map = new Map<string, GroupedResult>();
-    for (const item of results) {
-      const batchName    = item.semesters?.batches?.name ?? 'Unknown Batch';
-      const semesterName = item.semesters?.name           ?? 'Unknown Semester';
-      const key = `${batchName}__${semesterName}`;
-      if (!map.has(key)) map.set(key, { batchName, semesterName, items: [] });
-      map.get(key)!.items.push(item);
-    }
-    let arr = Array.from(map.values());
-    arr.sort((a, b) => {
-      const si = SEMESTER_ORDER.indexOf(a.semesterName);
-      const sj = SEMESTER_ORDER.indexOf(b.semesterName);
-      const semCmp = semAscending ? si - sj : sj - si;
-      if (semCmp !== 0) return semCmp;
-      const bi = parseInt(a.batchName), bj = parseInt(b.batchName);
-      return batchDescending ? bj - bi : bi - bj;
+  // ── Sort semesters ────────────────────────────────────────────────────────────
+  const sortedSems = useMemo(() =>
+    Object.keys(tree).sort((a,b) => {
+      const ai = SEMESTER_ORDER.indexOf(a), bi = SEMESTER_ORDER.indexOf(b);
+      return semAscending ? ai - bi : bi - ai;
+    }),
+    [tree, semAscending]
+  );
+
+  const sortedBatchEntries = (batchMap: Record<string, TreeNode>) =>
+    Object.entries(batchMap).sort(([a],[b]) => {
+      const ai = parseInt(a), bi = parseInt(b);
+      return isNaN(ai) || isNaN(bi) ? 0 : (batchDescending ? bi - ai : ai - bi);
     });
-    return arr;
-  }, [results, semAscending, batchDescending]);
 
   // ── Toggle helpers ────────────────────────────────────────────────────────────
-  const toggleCollapsed = (key: string) =>
-    setCollapsed(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
-  const toggleBatch    = (id: string) =>
-    setSelBatches(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
-  const toggleSemester = (id: string) =>
-    setSelSemesters(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
+  const toggleSem   = (s: string) => setCollapsedSems(p => { const n = new Set(p); n.has(s) ? n.delete(s) : n.add(s); return n; });
+  const toggleBatch = (k: string) => setCollapsedBatches(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
 
-  const batchCountLabel = selBatches.length   === 0 ? 'All batches'   : `${selBatches.length} selected`;
-  const semCountLabel   = selSemesters.length === 0 ? 'All semesters' : `${selSemesters.length} selected`;
-  const hasResults      = grouped.length > 0;
-  const hasDrive        = driveResults.length > 0 || driveSearching;
+  const expandAll  = () => { setCollapsedSems(new Set()); setCollapsedBatches(new Set()); };
+  const collapseAllSems   = () => setCollapsedSems(new Set(sortedSems));
+  const collapseAllBatches = () => {
+    const keys: string[] = [];
+    for (const sem of Object.keys(tree)) for (const b of Object.keys(tree[sem])) keys.push(`${sem}__${b}`);
+    setCollapsedBatches(new Set(keys));
+  };
 
-  // ─── Render ──────────────────────────────────────────────────────────────────
+  const hasResults = driveResults.length > 0 || searching;
+  const progressPct = total > 0 ? Math.round((searched / total) * 100) : 0;
+
+  const BBA_SEMS = [1,2,3,4,5,6,7,8].map(n => ({ num: n, ord: toOrdinal(n) }));
+
   return (
     <div className="min-h-screen relative flex flex-col">
 
-      {/* ── Header ────────────────────────────────────────────────────────────── */}
+      {/* ── Header ──────────────────────────────────────────────────────────────── */}
       <header className="google-header">
         <div className="header-right">
           <Link href="/" className="home-link"><Home size={16} /> Home</Link>
@@ -379,14 +307,14 @@ export default function AcademicResort() {
           {/* Drive toggle */}
           <button
             onClick={() => setDriveEnabled(e => {
-              if (e) { driveAbortRef.current?.abort(); setDriveResults([]); setDriveSearching(false); }
+              if (e) { abortRef.current?.abort(); setDriveResults([]); setSearching(false); }
               return !e;
             })}
             title={driveEnabled ? 'Drive search ON — click to disable' : 'Drive search OFF — click to enable'}
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
-              padding: '5px 10px', borderRadius: 20, fontSize: 12,
-              fontWeight: 600, border: '1px solid var(--border)',
+              padding: '5px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600,
+              border: '1px solid var(--border)',
               background: driveEnabled ? 'rgba(37,99,235,0.1)' : 'var(--surface)',
               color: driveEnabled ? 'var(--primary-blue)' : 'var(--muted)',
               cursor: 'pointer', transition: 'all 0.2s',
@@ -403,7 +331,7 @@ export default function AcademicResort() {
             </button>
             <div className={`apps-dropdown-content${showApps ? ' show' : ''}`}>
               <div className="apps-grid">
-                {BBA_SEMS_FIXED.map(({ num, ord }) => (
+                {BBA_SEMS.map(({ num, ord }) => (
                   <Link key={num} href={`/semester/${ord}`} className="app-item" onClick={() => setShowApps(false)}>
                     <div className="app-icon bba-icon">{num}</div>
                     <span className="app-label">{ord} Sem</span>
@@ -427,7 +355,7 @@ export default function AcademicResort() {
         </div>
       </header>
 
-      {/* ── Search section ────────────────────────────────────────────────────── */}
+      {/* ── Search section ──────────────────────────────────────────────────────── */}
       <main className={`transition-all duration-500 ${hasResults ? 'pt-16' : 'pt-40'}`}>
         <div className="max-w-screen-sm mx-auto px-4">
 
@@ -443,14 +371,13 @@ export default function AcademicResort() {
               type="text"
               id="globalSearch"
               className="main-search-input"
-              placeholder="Search courses, teachers, or files…"
+              placeholder="Search academic resources..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               autoComplete="off"
             />
             <div style={{ position: 'absolute', right: 18, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', display: 'flex', gap: 6, alignItems: 'center' }}>
-              {driveSearching && <span title="Searching Drive files…"><Loader2 size={14} className="animate-spin" style={{ color: '#60a5fa' }} /></span>}
-              {loading
+              {searching
                 ? <Loader2 size={18} className="animate-spin" style={{ color: 'var(--primary-blue)' }} />
                 : <Search size={18} />}
             </div>
@@ -473,7 +400,7 @@ export default function AcademicResort() {
           <div className={`advanced-options${showAdvanced && !hasResults ? ' show' : ''}`}>
             <div ref={filtersRef} className="search-filters">
               <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 4px', fontWeight: 500 }}>
-                Narrow your search by batch or semester
+                Narrow search by batch or semester
               </p>
 
               {/* Batch filter */}
@@ -485,15 +412,17 @@ export default function AcademicResort() {
                 >
                   <div className="filter-button-text">
                     <span className="filter-label">Batches</span>
-                    <span className="filter-count">{batchCountLabel}</span>
+                    <span className="filter-count">{selBatches.length === 0 ? 'All batches' : `${selBatches.length} selected`}</span>
                   </div>
                   <span className="filter-arrow">▼</span>
                 </div>
                 <div className={`filter-dropdown-content${batchOpen ? ' show' : ''}`}>
-                  {batches.map(b => (
-                    <div key={b.id} className="filter-option" onClick={() => toggleBatch(b.id)}>
-                      <input type="checkbox" readOnly checked={selBatches.includes(b.id)} id={`b_${b.id}`} />
-                      <label htmlFor={`b_${b.id}`}>{b.name}</label>
+                  {uniqueBatches.map(b => (
+                    <div key={b} className="filter-option" onClick={() =>
+                      setSelBatches(p => p.includes(b) ? p.filter(x => x !== b) : [...p, b])
+                    }>
+                      <input type="checkbox" readOnly checked={selBatches.includes(b)} id={`b_${b}`} />
+                      <label htmlFor={`b_${b}`}>{b}</label>
                     </div>
                   ))}
                 </div>
@@ -503,231 +432,352 @@ export default function AcademicResort() {
               <div className="filter-item">
                 <div
                   className={`filter-button${semOpen ? ' active' : ''}`}
-                  onClick={() => {
-                    if (semesters.length === 0 && selBatches.length !== 1) return;
-                    setSemOpen(s => !s); setBatchOpen(false);
-                  }}
+                  onClick={() => { setSemOpen(s => !s); setBatchOpen(false); }}
                   role="button" tabIndex={0}
-                  style={{ opacity: selBatches.length !== 1 ? 0.55 : 1, cursor: selBatches.length !== 1 ? 'not-allowed' : 'pointer' }}
                 >
                   <div className="filter-button-text">
                     <span className="filter-label">Semesters</span>
-                    <span className="filter-count">{selBatches.length !== 1 ? 'Select 1 batch first' : semCountLabel}</span>
+                    <span className="filter-count">{selSemesters.length === 0 ? 'All semesters' : `${selSemesters.length} selected`}</span>
                   </div>
                   <span className="filter-arrow">▼</span>
                 </div>
-                {selBatches.length === 1 && (
-                  <div className={`filter-dropdown-content${semOpen ? ' show' : ''}`}>
-                    {semesters.map(s => (
-                      <div key={s.id} className="filter-option" onClick={() => toggleSemester(s.id)}>
-                        <input type="checkbox" readOnly checked={selSemesters.includes(s.id)} id={`s_${s.id}`} />
-                        <label htmlFor={`s_${s.id}`}>{ordinalLabel(s.name)}</label>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div className={`filter-dropdown-content${semOpen ? ' show' : ''}`}>
+                  {uniqueSemesters.map(s => (
+                    <div key={s} className="filter-option" onClick={() =>
+                      setSelSemesters(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s])
+                    }>
+                      <input type="checkbox" readOnly checked={selSemesters.includes(s)} id={`s_${s}`} />
+                      <label htmlFor={`s_${s}`}>{semLabel(s)}</label>
+                    </div>
+                  ))}
+                </div>
               </div>
-
-              <button className="apply-filters-btn" onClick={handleApplyFilters}>
-                Apply Filters &amp; Search
-              </button>
             </div>
           </div>
 
         </div>
       </main>
 
-      {/* ── Results section ───────────────────────────────────────────────────── */}
-      <div className="max-w-screen-md mx-auto px-4 w-full" style={{ marginTop: hasResults ? 12 : 0 }}>
+      {/* ── Results section ──────────────────────────────────────────────────────── */}
+      <div className="search-results-container" id="searchResultsContainer" style={{ marginTop: hasResults ? 8 : 0 }}>
 
         {/* Loading bar */}
-        <div className={`retro-loading-container${loading ? ' active' : ''}`}>
-          <div className="simple-loading-bar"><div className="loading-bar-fill" /></div>
+        <div className="max-w-screen-md mx-auto px-4 w-full">
+          <div className={`retro-loading-container${searching ? ' active' : ''}`}>
+            <div className="simple-loading-bar"><div className="loading-bar-fill" /></div>
+          </div>
         </div>
 
-        {hasResults && (
-          <>
-            {/* Results header */}
-            <div className="results-header">
-              <span className="results-status">{statusMsg}</span>
+        {(hasResults || (!searching && searchTerm.trim().length >= 2)) && (
+          <div className="max-w-screen-md mx-auto px-4 w-full">
 
-              <div className="result-controls" ref={ctrlRef}>
-                <button
-                  className={`controls-dropdown-btn${ctrlOpen ? ' open' : ''}`}
-                  onClick={() => setCtrlOpen(s => !s)}
-                >
-                  <Settings2 size={14} />
-                  Display Options
-                  <ChevronDown size={12} />
-                </button>
-                <div className={`controls-dropdown-menu${ctrlOpen ? ' show' : ''}`}>
-                  <button className="controls-dropdown-item" onClick={() => { setCollapsed(new Set()); setExpandAll(true); setCtrlOpen(false); }}>
-                    📂 Expand All
-                  </button>
-                  <button className="controls-dropdown-item" onClick={() => {
-                    setCollapsed(new Set(grouped.map(g => `${g.batchName}__${g.semesterName}`)));
-                    setExpandAll(false); setCtrlOpen(false);
-                  }}>
-                    📁 Collapse All
-                  </button>
-                  <button className="controls-dropdown-item" onClick={() => { setSemAscending(s => !s); setCtrlOpen(false); }}>
-                    📊 Semester: {semAscending ? 'Ascending' : 'Descending'}
-                  </button>
-                  <button className="controls-dropdown-item" onClick={() => { setBatchDescending(s => !s); setCtrlOpen(false); }}>
-                    🎓 Batch: {batchDescending ? 'Newest first' : 'Oldest first'}
-                  </button>
-                </div>
+            {/* Results header */}
+            <div className="results-header" id="resultControls" style={{ display: hasResults || !searching ? 'flex' : 'none' }}>
+              <div className="results-status" id="resultsStats">
+                {searching
+                  ? <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 13 }}>
+                      <Loader2 size={13} className="animate-spin" />
+                      Searching {searched}/{total} folders{progressPct > 0 ? ` (${progressPct}%)` : ''}
+                      {driveResults.length > 0 && <span style={{ color: 'var(--primary-blue)', fontWeight: 600 }}>· {driveResults.length} found so far</span>}
+                    </span>
+                  : driveResults.length === 0
+                  ? <span style={{ color: 'var(--muted)', fontSize: 13 }}>No matching files found. Try different search terms.</span>
+                  : <span>Found {driveResults.length} result{driveResults.length !== 1 ? 's' : ''}</span>
+                }
               </div>
+
+              {/* Display options */}
+              {driveResults.length > 0 && (
+                <div className="result-controls" ref={ctrlRef}>
+                  <button
+                    className={`controls-dropdown-btn${ctrlOpen ? ' open' : ''}`}
+                    onClick={() => setCtrlOpen(s => !s)}
+                  >
+                    <Settings2 size={14} /> Display Options <ChevronDown size={12} />
+                  </button>
+                  <div className={`controls-dropdown-menu${ctrlOpen ? ' show' : ''}`}>
+                    <button className="controls-dropdown-item" onClick={() => { expandAll(); setCtrlOpen(false); }}>📂 Expand All</button>
+                    <button className="controls-dropdown-item" onClick={() => { collapseAllSems(); setCtrlOpen(false); }}>📁 Collapse All</button>
+                    <button className="controls-dropdown-item" onClick={() => { collapseAllBatches(); setCtrlOpen(false); }}>🗂️ Minimize Batches</button>
+                    <button className="controls-dropdown-item" onClick={() => { setSemAscending(s => !s); setCtrlOpen(false); }}>
+                      📊 Semester: {semAscending ? 'Ascending' : 'Descending'}
+                    </button>
+                    <button className="controls-dropdown-item" onClick={() => { setBatchDescending(s => !s); setCtrlOpen(false); }}>
+                      🎓 Batch: {batchDescending ? 'Newest first' : 'Oldest first'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Grouped metadata results */}
-            {grouped.map(group => {
-              const key = `${group.batchName}__${group.semesterName}`;
-              const isCollapsed = collapsed.has(key);
-              return (
-                <div key={key} className={`batch-result-section${isCollapsed ? ' collapsed' : ''}`}>
-                  <div className="batch-result-header" onClick={() => toggleCollapsed(key)}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span className="batch-result-title">{group.batchName}</span>
-                      <span className="batch-result-meta">· {ordinalLabel(group.semesterName)}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 11, color: 'var(--muted)' }}>
-                        {group.items.length} course{group.items.length !== 1 ? 's' : ''}
-                      </span>
-                      <span className="batch-result-toggle">▾</span>
-                    </div>
-                  </div>
-                  {!isCollapsed && (
-                    <div className="batch-result-body">
-                      {group.items.map((res: any) => (
-                        <ResourceCard
-                          key={res.id}
-                          course={res.courses}
-                          semester={res.semesters?.name}
-                          batch={res.semesters?.batches?.name}
-                          sections={res.sections}
-                          links={res.resource_links}
-                          classUpdatesUrl={res.class_updates_url}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-            {/* ── Drive Results Panel ─────────────────────────────────────────── */}
-            {(hasDrive || driveEnabled) && searchTerm.trim().length >= 3 && (
-              <div style={{ marginTop: 16 }}>
-                <DriveResultsPanel
-                  results={driveResults}
-                  searching={driveSearching}
-                  searched={driveSearched}
-                  total={driveTotal}
-                  visible={drivePanelOpen}
-                  onToggle={() => setDrivePanelOpen(o => !o)}
-                />
+            {/* Progress bar */}
+            {searching && total > 0 && (
+              <div style={{ height: 3, background: 'var(--border)', borderRadius: 2, marginBottom: 12 }}>
+                <div style={{
+                  height: '100%', width: `${progressPct}%`,
+                  background: 'linear-gradient(90deg, var(--primary-blue), #60a5fa)',
+                  transition: 'width 0.4s ease', borderRadius: 2,
+                }} />
               </div>
             )}
-          </>
+
+            {/* Semester → Batch → Tree */}
+            <div id="all-resources">
+              {sortedSems.map(semester => {
+                const isSemCollapsed = collapsedSems.has(semester);
+                return (
+                  <div key={semester} className="semester-group">
+                    {/* Semester header (h2 accordion) */}
+                    <div className="semester-header" onClick={() => toggleSem(semester)}>
+                      <h2>
+                        <button className="accordion-btn" aria-expanded={!isSemCollapsed}>
+                          <span className="accordion-icon">{isSemCollapsed ? '▶' : '▼'}</span>
+                          {semLabel(semester).toUpperCase()}
+                        </button>
+                      </h2>
+                    </div>
+
+                    {/* Semester content */}
+                    {!isSemCollapsed && (
+                      <div className="semester-content" id={`semester-${semester}`}>
+                        {sortedBatchEntries(tree[semester]).map(([batch, batchNode]) => {
+                          const batchKey = `${semester}__${batch}`;
+                          const isBatchCollapsed = collapsedBatches.has(batchKey);
+                          const fileCount = driveResults.filter(r => r.semester === semester && r.batch === batch).length;
+
+                          return (
+                            <div key={batch} className="batch-group">
+                              {/* Batch header (h3 accordion) */}
+                              <div className="batch-header-item" onClick={() => toggleBatch(batchKey)}>
+                                <h3>
+                                  <button className="accordion-btn" aria-expanded={!isBatchCollapsed}>
+                                    <span className="accordion-icon">{isBatchCollapsed ? '▶' : '▼'}</span>
+                                    {batch}
+                                  </button>
+                                </h3>
+                                <span className="batch-file-count">{fileCount} file{fileCount !== 1 ? 's' : ''}</span>
+                              </div>
+
+                              {/* Batch content — file tree */}
+                              {!isBatchCollapsed && (
+                                <div className="batch-content" id={`batch-${semester}-${batch}`}>
+                                  <div className="tree-results">
+                                    <DriveTreeNode node={batchNode} depth={0} />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
         )}
 
         {/* Empty state */}
-        {!loading && !hasResults && !searchTerm && (
-          <p className="search-stats-subtle">Ready! Enter search terms or apply filters to find resources.</p>
+        {!searching && !hasResults && !searchTerm.trim() && (
+          <div className="max-w-screen-sm mx-auto px-4">
+            <p className="search-stats-subtle">
+              {configsLoaded
+                ? `Ready! ${allConfigs.length} semester folder${allConfigs.length !== 1 ? 's' : ''} indexed. Enter search terms to find files.`
+                : 'Loading folder index...'}
+            </p>
+          </div>
         )}
       </div>
 
-      {/* Drive panel styles */}
-      <style jsx>{`
-        .drive-results-panel {
+      {/* ── Tree & result styles ─────────────────────────────────────────────────── */}
+      <style jsx global>{`
+        .search-results-container {
+          padding-bottom: 60px;
+        }
+        /* Semester group */
+        .semester-group {
+          margin-bottom: 16px;
+        }
+        .semester-header {
+          cursor: pointer;
+          user-select: none;
+        }
+        .semester-header h2 {
+          margin: 0;
+        }
+        .accordion-btn {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+          padding: 14px 20px;
+          border: none;
+          border-radius: 12px;
+          background: var(--surface);
           border: 1px solid var(--border);
-          border-radius: 14px;
+          color: var(--text-primary);
+          font-size: 14px;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          cursor: pointer;
+          text-align: left;
+          transition: background 0.15s, box-shadow 0.15s;
+        }
+        .accordion-btn:hover { 
+          background: var(--hover);
+        }
+        .accordion-icon {
+          font-size: 11px;
+          color: var(--muted);
+          flex-shrink: 0;
+        }
+
+        /* Semester content */
+        .semester-content {
+          margin: 8px 0 0 0;
+          padding-left: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        /* Batch group */
+        .batch-group {
+          border: 1px solid var(--border);
+          border-radius: 12px;
           overflow: hidden;
           background: var(--card-bg);
-          box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
-        .drive-results-header {
+        .batch-header-item {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 12px 16px;
+          padding-right: 16px;
+          background: var(--card-bg);
           cursor: pointer;
           user-select: none;
-          border-bottom: 1px solid var(--border);
-          background: var(--surface);
+          border-bottom: 1px solid transparent;
+          transition: background 0.15s;
         }
-        .drive-results-header:hover { background: var(--hover); }
-        .drive-result-count {
-          display: inline-flex;
-          align-items: center;
-          background: rgba(37,99,235,0.1);
-          color: var(--primary-blue);
-          border-radius: 20px;
-          padding: 1px 8px;
-          font-size: 11px;
-          font-weight: 700;
-        }
-        .drive-results-body {
-          padding: 0 4px 8px;
-          max-height: 500px;
-          overflow-y: auto;
-        }
-        .drive-result-group {
-          margin: 8px 4px 0;
-          border: 1px solid var(--border);
-          border-radius: 10px;
-          overflow: hidden;
-        }
-        .drive-result-group-header {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 14px;
-          background: var(--surface);
-          border-bottom: 1px solid var(--border);
-          font-size: 13px;
-        }
-        .drive-result-file-list {
-          list-style: none;
-          margin: 0;
-          padding: 4px 0;
-        }
-        .drive-result-file-item {}
-        .drive-result-file-link {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 7px 14px;
-          text-decoration: none;
-          color: var(--text-primary);
-          transition: background 0.12s;
-        }
-        .drive-result-file-link:hover { background: var(--hover); }
-        .drive-result-file-icon { font-size: 15px; flex-shrink: 0; }
-        .drive-result-file-info {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
+        .batch-header-item:hover { background: var(--hover); }
+        .batch-header-item h3 {
           flex: 1;
-          min-width: 0;
+          margin: 0;
         }
-        .drive-result-file-name {
-          font-size: 13px;
-          font-weight: 500;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+        .batch-header-item .accordion-btn {
+          border: none;
+          border-radius: 0;
+          background: transparent;
+          padding: 12px 18px;
+          font-size: 13.5px;
+          font-weight: 600;
+          letter-spacing: 0.02em;
         }
-        .drive-result-file-path {
-          font-size: 11px;
+        .batch-header-item .accordion-btn:hover { background: transparent; box-shadow: none; }
+        .batch-file-count {
+          font-size: 12px;
           color: var(--muted);
           white-space: nowrap;
+          font-weight: 500;
+          padding-left: 12px;
+        }
+
+        /* Batch content / tree */
+        .batch-content {
+          border-top: 1px solid var(--border);
+          background: var(--card-bg);
+          padding-left: 8px; /* start offset for the root tree */
+        }
+        .tree-results {
+          padding: 8px 0;
+        }
+
+        /* Tree generic item row */
+        .file-item {
+          display: flex;
+          flex-wrap: nowrap; /* Prevent icon wrapping */
+          align-items: center;
+          gap: 8px;
+          padding: 4px 8px;
+          margin: 2px 0;
+          font-size: 13.5px;
+          transition: background 0.12s ease, color 0.12s ease;
+          color: var(--text-primary);
+          cursor: default;
+          border-radius: 6px;
+        }
+        .file-item:hover {
+          background: var(--hover);
+        }
+        /* Folder rows: not interactive, just label */
+        .folder-row {
+          cursor: default;
+        }
+        /* File name link — only the text is clickable */
+        .file-name-link {
+          color: inherit;
+          text-decoration: none;
           overflow: hidden;
           text-overflow: ellipsis;
+          white-space: nowrap;
+          flex: 1;
+        }
+        .file-name-link:hover {
+          color: var(--primary-blue);
+          text-decoration: underline;
+        }
+        .matching-folder {
+          color: var(--primary-blue);
+          font-weight: 600;
+        }
+        .parent-folder {
+          color: var(--muted);
+        }
+        .file-icon {
+          font-size: 15px;
+          flex-shrink: 0;
+          line-height: 1;
+        }
+        .file-name {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        /* Vertical indent guide lines */
+        :root { --tree-guide: rgba(0,0,0,0.15); }
+        @media (prefers-color-scheme: dark) { :root { --tree-guide: rgba(255,255,255,0.15); } }
+        
+        .tree-children {
+          margin-left: 9.5px;   /* Shift child block so its left border sits under the middle of the folder icon */
+          padding-left: 12px;   /* Spacing between the vertical line and the content */
+          border-left: 1.5px dashed var(--tree-guide);
+        }
+
+        /* Folder open-in-Drive icon */
+        .folder-open-link {
+          display: flex;
+          align-items: center;
+          margin-left: auto;
+          padding: 4px;
+          color: var(--muted);
+          opacity: 0;           /* Hidden by default */
+          border-radius: 4px;
+          transition: opacity 0.15s, background 0.15s, color 0.15s;
+        }
+        .folder-row:hover .folder-open-link {
+          opacity: 1;
+        }
+        .folder-open-link:hover {
+          color: var(--primary-blue);
         }
       `}</style>
+
     </div>
   );
 }

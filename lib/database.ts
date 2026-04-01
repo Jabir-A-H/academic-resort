@@ -107,6 +107,22 @@ export async function getTeacherProfiles() {
   return data;
 }
 
+// ─── Drive folder mapping for homepage search ──────────────────────────────────
+export async function getAllDriveFolderConfigs(): Promise<{ semester: string; batch: string; folderId: string }[]> {
+  const { data, error } = await supabase
+    .from('semesters')
+    .select('name, drive_folder_id, batches!inner(name)')
+    .not('drive_folder_id', 'is', null);
+
+  if (error || !data) return [];
+
+  return (data as any[]).map(row => ({
+    semester: row.name as string,
+    batch: (row.batches?.name ?? 'Unknown') as string,
+    folderId: row.drive_folder_id as string,
+  }));
+}
+
 export async function getCourseDetails(code: string) {
   // 1. Get the course info
   const { data: course, error: courseErr } = await supabase
