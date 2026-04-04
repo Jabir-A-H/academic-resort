@@ -46,15 +46,20 @@ export function fileLink(file: { id: string; webViewLink?: string; mimeType: str
 // ─── In-memory session cache (cleared on page refresh, perfect for a session) ──
 const sessionCache = new Map<string, DriveFile[]>();
 
+export function clearDriveCache() {
+  sessionCache.clear();
+}
+
 // ─── Fetch immediate children of a folder (via server proxy) ──────────────────
 export async function fetchFolderContents(
   folderId: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  refresh: boolean = false
 ): Promise<DriveFile[]> {
-  if (sessionCache.has(folderId)) return sessionCache.get(folderId)!;
+  if (!refresh && sessionCache.has(folderId)) return sessionCache.get(folderId)!;
 
   try {
-    const res = await fetch(`/api/drive?folderId=${encodeURIComponent(folderId)}`, { signal });
+    const res = await fetch(`/api/drive?folderId=${encodeURIComponent(folderId)}` + (refresh ? '&refresh=true' : ''), { signal });
     if (!res.ok) return [];
     const data = await res.json();
     const files: DriveFile[] = (data.files ?? []).map((f: any) => ({
@@ -80,12 +85,13 @@ export async function fetchFolderContents(
   maxDepth = 5,
   signal?: AbortSignal,
   currentDepth = 0,
-  folderRegistry?: Map<string, string> // path → Drive folder ID
+  folderRegistry?: Map<string, string>, // path → Drive folder ID
+  refresh: boolean = false
 ): Promise<{ name: string; link: string; path: string; mimeType: string; folderId: string }[]> {
   if (currentDepth >= maxDepth) return [];
   if (signal?.aborted) return [];
 
-  const files = await fetchFolderContents(folderId, signal);
+  const files = await fetchFolderContents(folderId, signal, refresh);
   const results: { name: string; link: string; path: string; mimeType: string; folderId: string }[] = [];
   const subfolderPromises: Promise<typeof results>[] = [];
 
@@ -96,7 +102,7 @@ export async function fetchFolderContents(
       // Record this folder's Drive ID keyed by its full path
       folderRegistry?.set(newPath, file.id);
       subfolderPromises.push(
-        fetchAllFilesRecursively(file.id, newPath, maxDepth, signal, currentDepth + 1, folderRegistry)
+        fetchAllFilesRecursively(file.id, newPath, maxDepth, signal, currentDepth + 1, folderRegistry, refresh)
       );
     } else {
       results.push({
@@ -156,7 +162,8 @@ export async function searchFilesInFolders(
   maxDepth = 4,
   signal?: AbortSignal,
   onProgress?: (results: DriveSearchResult[], searched: number, total: number) => void,
-  folderRegistry?: Map<string, string> // receives captured folder path→ID mappings
+  folderRegistry?: Map<string, string>, // receives captured folder path→ID mappings
+  refresh: boolean = false
 ): Promise<DriveSearchResult[]> {
   if (!searchTerm || folderConfigs.length === 0) return [];
 
@@ -174,7 +181,7 @@ export async function searchFilesInFolders(
         if (signal?.aborted) return [];
         try {
           const files = await fetchAllFilesRecursively(
-            config.folderId, '', maxDepth, signal, 0, folderRegistry
+            config.folderId, '', maxDepth, signal, 0, folderRegistry, refresh
           );
           return files
             .filter(f => smartMatch(searchTerm, f.name, f.path))

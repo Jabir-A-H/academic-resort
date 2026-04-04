@@ -313,7 +313,10 @@ body {
   overflow: hidden;
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.advanced-options.show { max-height: 600px; }
+.advanced-options.show { 
+  max-height: 1000px; 
+  overflow: visible;
+}
 
 /* ============================================================
    MULTI-CHECKBOX FILTER SYSTEM
@@ -369,17 +372,12 @@ body {
 .filter-button.active .filter-arrow { transform: rotate(180deg); }
 
 .filter-dropdown-content {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background: #fff;
+  margin-top: 6px;
+  background: var(--gray-50);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 6px 20px rgba(11,22,48,0.1);
   max-height: 220px;
   overflow-y: auto;
-  z-index: 1000;
   display: none;
 }
 .filter-dropdown-content.show { display: block; }

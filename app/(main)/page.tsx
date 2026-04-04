@@ -3,9 +3,10 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import {
-  Search, LayoutGrid, Home, ChevronDown, Settings2, Loader2, Wifi, ExternalLink,
+  Search, LayoutGrid, Home, ChevronDown, Settings2, Loader2, Wifi, ExternalLink, RefreshCw
 } from 'lucide-react';
-import { searchFilesInFolders, mimeIcon, type DriveSearchResult, type FolderConfig } from '@/lib/drive';
+import { motion, AnimatePresence } from 'framer-motion';
+import { searchFilesInFolders, mimeIcon, clearDriveCache, type DriveSearchResult, type FolderConfig } from '@/lib/drive';
 import { getAllDriveFolderConfigs } from '@/lib/database';
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -131,7 +132,7 @@ export default function AcademicResort() {
   const [searched,   setSearched]     = useState(0);
   const [total,      setTotal]        = useState(0);
   const [driveResults, setDriveResults] = useState<DriveSearchResult[]>([]);
-  const [driveEnabled, setDriveEnabled] = useState(true);
+  const [isBustingCache, setIsBustingCache] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   // Populated during search traversal: folder-path → Drive folder ID
   const folderRegistryRef = useRef<Map<string, string>>(new Map());
@@ -211,7 +212,7 @@ export default function AcademicResort() {
   }, []);
 
   // ── Run Drive search ──────────────────────────────────────────────────────────
-  const runSearch = useCallback(async (term: string, configs: FolderConfig[]) => {
+  const runSearch = useCallback(async (term: string, configs: FolderConfig[], refresh = false) => {
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
@@ -234,7 +235,8 @@ export default function AcademicResort() {
           setSearched(searched);
           setTotal(total);
         },
-        folderRegistryRef.current  // ← pass registry so folder IDs are captured
+        folderRegistryRef.current, // ← pass registry so folder IDs are captured
+        refresh
       );
       if (!ctrl.signal.aborted) {
         setDriveResults(final);
@@ -254,12 +256,12 @@ export default function AcademicResort() {
       return;
     }
     const t = setTimeout(() => {
-      if (driveEnabled && activeConfigs.length > 0) {
+      if (activeConfigs.length > 0) {
         runSearch(searchTerm.trim(), activeConfigs);
       }
     }, 500);
     return () => clearTimeout(t);
-  }, [searchTerm, activeConfigs, driveEnabled, runSearch]);
+  }, [searchTerm, activeConfigs, runSearch]);
 
   // ── Build tree ────────────────────────────────────────────────────────────────
   const tree = useMemo(() => buildTree(driveResults, folderRegistryRef.current), [driveResults]);
@@ -297,67 +299,11 @@ export default function AcademicResort() {
   const BBA_SEMS = [1,2,3,4,5,6,7,8].map(n => ({ num: n, ord: toOrdinal(n) }));
 
   return (
-    <div className="min-h-screen relative flex flex-col">
-
-      {/* ── Header ──────────────────────────────────────────────────────────────── */}
-      <header className="google-header">
-        <div className="header-right">
-          <Link href="/" className="home-link"><Home size={16} /> Home</Link>
-
-          {/* Drive toggle */}
-          <button
-            onClick={() => setDriveEnabled(e => {
-              if (e) { abortRef.current?.abort(); setDriveResults([]); setSearching(false); }
-              return !e;
-            })}
-            title={driveEnabled ? 'Drive search ON — click to disable' : 'Drive search OFF — click to enable'}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              padding: '5px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600,
-              border: '1px solid var(--border)',
-              background: driveEnabled ? 'rgba(37,99,235,0.1)' : 'var(--surface)',
-              color: driveEnabled ? 'var(--primary-blue)' : 'var(--muted)',
-              cursor: 'pointer', transition: 'all 0.2s',
-            }}
-          >
-            <Wifi size={13} />
-            Drive {driveEnabled ? 'ON' : 'OFF'}
-          </button>
-
-          {/* Apps dropdown */}
-          <div className="apps-dropdown" ref={appsRef}>
-            <button className="apps-btn" onClick={() => setShowApps(s => !s)} title="Quick Access" aria-label="Open semester navigation">
-              <LayoutGrid size={22} />
-            </button>
-            <div className={`apps-dropdown-content${showApps ? ' show' : ''}`}>
-              <div className="apps-grid">
-                {BBA_SEMS.map(({ num, ord }) => (
-                  <Link key={num} href={`/semester/${ord}`} className="app-item" onClick={() => setShowApps(false)}>
-                    <div className="app-icon bba-icon">{num}</div>
-                    <span className="app-label">{ord} Sem</span>
-                  </Link>
-                ))}
-                <Link href="/semester/mba-1st" className="app-item" onClick={() => setShowApps(false)}>
-                  <div className="app-icon mba-icon">M1</div>
-                  <span className="app-label">MBA 1st</span>
-                </Link>
-                <Link href="/semester/mba-2nd" className="app-item" onClick={() => setShowApps(false)}>
-                  <div className="app-icon mba-icon">M2</div>
-                  <span className="app-label">MBA 2nd</span>
-                </Link>
-                <Link href="/teachers" className="app-item" onClick={() => setShowApps(false)}>
-                  <div className="app-icon" style={{ fontSize: 24 }}>📋</div>
-                  <span className="app-label">Teachers</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="flex-1 relative flex flex-col w-full h-full">
 
       {/* ── Search section ──────────────────────────────────────────────────────── */}
-      <main className={`transition-all duration-500 ${hasResults ? 'pt-16' : 'pt-40'}`}>
-        <div className="max-w-screen-sm mx-auto px-4">
+      <main className={`transition-all duration-500 w-full flex flex-col ${hasResults ? 'justify-start pt-4' : 'flex-1 justify-center pb-32'}`}>
+        <div className="max-w-screen-sm mx-auto px-4 w-full">
 
           {/* Logo */}
           <div className={`text-center transition-all duration-500 ${hasResults ? 'scale-75 origin-top mb-2' : 'mb-10'}`}>
@@ -388,9 +334,15 @@ export default function AcademicResort() {
             <div className="options-toggle">
               <button
                 className={`options-toggle-btn${showAdvanced ? ' active' : ''}`}
-                onClick={() => setShowAdvanced(s => !s)}
+                onClick={() => {
+                  if (showAdvanced) {
+                    setSelBatches([]);
+                    setSelSemesters([]);
+                  }
+                  setShowAdvanced(s => !s);
+                }}
               >
-                {showAdvanced ? 'Search Specifically' : 'Search Globally'}
+                {showAdvanced ? 'Search Globally' : 'Search Specifically'}
                 <span className="accordion-icon">{showAdvanced ? '▲' : '▼'}</span>
               </button>
             </div>
@@ -416,16 +368,27 @@ export default function AcademicResort() {
                   </div>
                   <span className="filter-arrow">▼</span>
                 </div>
-                <div className={`filter-dropdown-content${batchOpen ? ' show' : ''}`}>
-                  {uniqueBatches.map(b => (
-                    <div key={b} className="filter-option" onClick={() =>
-                      setSelBatches(p => p.includes(b) ? p.filter(x => x !== b) : [...p, b])
-                    }>
-                      <input type="checkbox" readOnly checked={selBatches.includes(b)} id={`b_${b}`} />
-                      <label htmlFor={`b_${b}`}>{b}</label>
-                    </div>
-                  ))}
-                </div>
+                <AnimatePresence>
+                  {batchOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                      className="filter-dropdown-content"
+                      style={{ display: 'block', overflowX: 'hidden' }}
+                    >
+                      {uniqueBatches.map(b => (
+                        <div key={b} className="filter-option" onClick={() =>
+                          setSelBatches(p => p.includes(b) ? p.filter(x => x !== b) : [...p, b])
+                        }>
+                          <input type="checkbox" readOnly checked={selBatches.includes(b)} id={`b_${b}`} />
+                          <label htmlFor={`b_${b}`}>{b}</label>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Semester filter */}
@@ -441,16 +404,64 @@ export default function AcademicResort() {
                   </div>
                   <span className="filter-arrow">▼</span>
                 </div>
-                <div className={`filter-dropdown-content${semOpen ? ' show' : ''}`}>
-                  {uniqueSemesters.map(s => (
-                    <div key={s} className="filter-option" onClick={() =>
-                      setSelSemesters(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s])
-                    }>
-                      <input type="checkbox" readOnly checked={selSemesters.includes(s)} id={`s_${s}`} />
-                      <label htmlFor={`s_${s}`}>{semLabel(s)}</label>
-                    </div>
-                  ))}
-                </div>
+                <AnimatePresence>
+                  {semOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                      className="filter-dropdown-content"
+                      style={{ display: 'block', overflowX: 'hidden' }}
+                    >
+                      {uniqueSemesters.map(s => (
+                        <div key={s} className="filter-option" onClick={() =>
+                          setSelSemesters(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s])
+                        }>
+                          <input type="checkbox" readOnly checked={selSemesters.includes(s)} id={`s_${s}`} />
+                          <label htmlFor={`s_${s}`}>{semLabel(s)}</label>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Cache Control & Ready Status */}
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <p className="search-stats-subtle" style={{ margin: 0, color: 'var(--muted)', fontSize: '12px', fontWeight: 'normal' }}>
+                  {configsLoaded
+                    ? `Ready! ${allConfigs.length} semester folder${allConfigs.length !== 1 ? 's' : ''} indexed.`
+                    : 'Loading folder index...'}
+                </p>
+                {configsLoaded && (
+                  <button
+                    onClick={async () => {
+                      const toFetch = activeConfigs.length > 0 ? activeConfigs : allConfigs;
+                      setIsBustingCache(true);
+                      clearDriveCache();
+                      try {
+                        await Promise.allSettled(
+                          toFetch.map(c => fetch(`/api/drive?folderId=${c.folderId}&refresh=true`))
+                        );
+                      } finally {
+                        setIsBustingCache(false);
+                        if (searchTerm.trim().length >= 2) runSearch(searchTerm, activeConfigs, true);
+                      }
+                    }}
+                    title="Refresh cache"
+                    disabled={isBustingCache}
+                    style={{
+                      background: 'none', border: 'none', padding: '0',
+                      color: 'var(--muted)', cursor: isBustingCache ? 'wait' : 'pointer', display: 'flex', alignItems: 'center',
+                      transition: 'color 0.2s', opacity: isBustingCache ? 0.5 : 1
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = '#374151'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--muted)'; }}
+                  >
+                    <RefreshCw size={12} className={isBustingCache ? 'animate-spin' : ''} />
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -538,39 +549,61 @@ export default function AcademicResort() {
                     </div>
 
                     {/* Semester content */}
-                    {!isSemCollapsed && (
-                      <div className="semester-content" id={`semester-${semester}`}>
-                        {sortedBatchEntries(tree[semester]).map(([batch, batchNode]) => {
-                          const batchKey = `${semester}__${batch}`;
-                          const isBatchCollapsed = collapsedBatches.has(batchKey);
-                          const fileCount = driveResults.filter(r => r.semester === semester && r.batch === batch).length;
+                    <AnimatePresence initial={false}>
+                      {!isSemCollapsed && (
+                        <motion.div
+                          key="sem-content"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.35, ease: [0.04, 0.62, 0.23, 0.98] }}
+                          style={{ overflow: 'hidden' }}
+                        >
+                          <div className="semester-content" id={`semester-${semester}`}>
+                            {sortedBatchEntries(tree[semester]).map(([batch, batchNode]) => {
+                              const batchKey = `${semester}__${batch}`;
+                              const isBatchCollapsed = collapsedBatches.has(batchKey);
+                              const fileCount = driveResults.filter(r => r.semester === semester && r.batch === batch).length;
 
-                          return (
-                            <div key={batch} className="batch-group">
-                              {/* Batch header (h3 accordion) */}
-                              <div className="batch-header-item" onClick={() => toggleBatch(batchKey)}>
-                                <h3>
-                                  <button className="accordion-btn" aria-expanded={!isBatchCollapsed}>
-                                    <span className="accordion-icon">{isBatchCollapsed ? '▶' : '▼'}</span>
-                                    {batch}
-                                  </button>
-                                </h3>
-                                <span className="batch-file-count">{fileCount} file{fileCount !== 1 ? 's' : ''}</span>
-                              </div>
-
-                              {/* Batch content — file tree */}
-                              {!isBatchCollapsed && (
-                                <div className="batch-content" id={`batch-${semester}-${batch}`}>
-                                  <div className="tree-results">
-                                    <DriveTreeNode node={batchNode} />
+                              return (
+                                <div key={batch} className="batch-group">
+                                  {/* Batch header (h3 accordion) */}
+                                  <div className="batch-header-item" onClick={() => toggleBatch(batchKey)}>
+                                    <h3>
+                                      <button className="accordion-btn" aria-expanded={!isBatchCollapsed}>
+                                        <span className="accordion-icon">{isBatchCollapsed ? '▶' : '▼'}</span>
+                                        {batch}
+                                      </button>
+                                    </h3>
+                                    <span className="batch-file-count">{fileCount} file{fileCount !== 1 ? 's' : ''}</span>
                                   </div>
+
+                                  {/* Batch content — file tree */}
+                                  <AnimatePresence initial={false}>
+                                    {!isBatchCollapsed && (
+                                      <motion.div
+                                        key="batch-content"
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                                        style={{ overflow: 'hidden' }}
+                                      >
+                                        <div className="batch-content" id={`batch-${semester}-${batch}`}>
+                                          <div className="tree-results">
+                                            <DriveTreeNode node={batchNode} />
+                                          </div>
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
                                 </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}
@@ -579,16 +612,6 @@ export default function AcademicResort() {
           </div>
         )}
 
-        {/* Empty state */}
-        {!searching && !hasResults && !searchTerm.trim() && (
-          <div className="max-w-screen-sm mx-auto px-4">
-            <p className="search-stats-subtle">
-              {configsLoaded
-                ? `Ready! ${allConfigs.length} semester folder${allConfigs.length !== 1 ? 's' : ''} indexed. Enter search terms to find files.`
-                : 'Loading folder index...'}
-            </p>
-          </div>
-        )}
       </div>
 
       {/* ── Tree & result styles ─────────────────────────────────────────────────── */}

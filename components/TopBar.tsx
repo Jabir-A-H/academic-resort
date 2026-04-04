@@ -18,7 +18,7 @@ export default function TopBar() {
 
   const links = [
     { name: 'Home', href: '/', icon: <Home size={18} /> },
-    { name: 'Faculty Directory', href: '/teachers', icon: <Users size={18} /> },
+    { name: 'Teachers', href: '/teachers', icon: <Users size={18} /> },
   ];
 
   const semesters = [
@@ -78,11 +78,7 @@ export default function TopBar() {
               </div>
             </div>
 
-            <div className="h-6 w-px bg-gray-200"></div>
-
-            <Link href="/login" className="px-4 py-2 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-black transition-all shadow-md active:scale-95">
-              Rep Login
-            </Link>
+            <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -130,16 +126,6 @@ export default function TopBar() {
                  </Link>
                ))}
              </div>
-           </div>
-
-           <div className="mt-8 pt-8 border-t border-gray-100">
-             <Link 
-               href="/login" 
-               onClick={() => setMobileMenuOpen(false)}
-               className="w-full py-4 bg-gray-900 text-white rounded-xl font-bold flex justify-center items-center shadow-lg active:scale-95 transition-transform"
-             >
-               Representative Access
-             </Link>
            </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ function getNextKey(): string {
 }
 
 // ─── Drive API Fetcher ─────────────────────────────────────────────────────────
-async function fetchFromDrive(folderId: string): Promise<{ files: DriveFile[] }> {
+async function fetchFromDrive(folderId: string, refresh: boolean): Promise<{ files: DriveFile[] }> {
   const key = getNextKey();
   const url =
     `https://www.googleapis.com/drive/v3/files` +
@@ -25,7 +25,10 @@ async function fetchFromDrive(folderId: string): Promise<{ files: DriveFile[] }>
     `&pageSize=1000` +
     `&orderBy=name`;
 
-  const res = await fetch(url, { next: { revalidate: 3600 } }); // 1-hour server-side cache
+  const res = await fetch(url, {
+    next: { revalidate: refresh ? 0 : 86400 },
+    cache: refresh ? 'no-store' : undefined
+  }); // 24-hour server-side cache unless refreshed
 
   // Gracefully handle all error codes — never 500 the client
   if (!res.ok) {
@@ -51,12 +54,14 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const folderId = searchParams.get('folderId');
 
+  const refresh = searchParams.get('refresh') === 'true';
+
   if (!folderId || !/^[a-zA-Z0-9_-]{10,}$/.test(folderId)) {
     return NextResponse.json({ error: 'Invalid folderId' }, { status: 400 });
   }
 
   try {
-    const data = await fetchFromDrive(folderId);
+    const data = await fetchFromDrive(folderId, refresh);
 
     return NextResponse.json(data, {
       headers: {
