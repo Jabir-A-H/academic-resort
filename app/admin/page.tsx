@@ -151,14 +151,27 @@ function DriveFolderEditor({ semesterId, initialValue, onSaved }: {
   }, [editing]);
 
   const save = async () => {
+    let finalValue = value.trim();
+    
+    // Extract ID if it's a full URL
+    const folderMatch = finalValue.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    if (folderMatch && folderMatch[1]) {
+      finalValue = folderMatch[1];
+    } else {
+      const idMatch = finalValue.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (idMatch && idMatch[1]) {
+        finalValue = idMatch[1];
+      }
+    }
+
     setSaving(true);
     const { error } = await supabase
       .from('semesters')
-      .update({ drive_folder_id: value.trim() || null })
+      .update({ drive_folder_id: finalValue || null })
       .eq('id', semesterId);
     setSaving(false);
     if (!error) {
-      onSaved(value.trim() || null);
+      onSaved(finalValue || null);
       setEditing(false);
     }
   };
