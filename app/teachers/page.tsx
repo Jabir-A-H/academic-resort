@@ -285,16 +285,16 @@ export default function TeachersPage() {
                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 pb-2">Course Assignments</p>
                        <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                          {teacher.courses.map((course: any, idx: number) => (
-                          <div key={idx} className="flex justify-between items-center p-3 bg-gray-50/50 rounded-xl border border-gray-100/50 hover:bg-white transition-all">
+                          <Link key={idx} href={`/courses/${course.code}`} className="flex justify-between items-center p-3 bg-gray-50/50 rounded-xl border border-gray-100/50 hover:bg-blue-50 hover:border-blue-100 transition-all group/course">
                             <div className="flex flex-col">
                               <span className="text-[9px] font-extrabold text-blue-600 mb-0.5">{course.code}</span>
-                              <span className="text-xs font-bold text-gray-700 leading-tight">{course.title}</span>
+                              <span className="text-xs font-bold text-gray-700 leading-tight group-hover/course:text-blue-700 transition-colors">{course.title}</span>
                             </div>
                             <div className="flex flex-col items-end shrink-0">
                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Section {course.section}</span>
                                <span className="text-[10px] font-bold bg-white px-2 py-0.5 rounded-lg border border-gray-100 shadow-sm text-gray-500 uppercase">{course.batch} Batch</span>
                             </div>
-                          </div>
+                          </Link>
                          ))}
                        </div>
                     </div>
@@ -312,7 +312,7 @@ export default function TeachersPage() {
                           <Book size={120} />
                        </div>
                        <div className="relative z-10">
-                         <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest mb-3 inline-block shadow-sm">{course.code}</span>
+                         <Link href={`/courses/${course.code}`} className="text-[10px] font-extrabold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-full uppercase tracking-widest mb-3 inline-block shadow-sm transition-colors">{course.code} ↗</Link>
                          <h3 className="text-2xl font-extrabold text-gray-900 tracking-tight leading-tight">{course.title}</h3>
                        </div>
                      </div>
@@ -345,10 +345,10 @@ export default function TeachersPage() {
                     </div>
                     {batch.semesters.map((sem: any) => (
                       <div key={sem.name} className="hover:bg-gray-50/50 rounded-2xl p-2 transition-all">
-                        <div className="px-4 py-2 text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50/50 rounded-xl inline-block mb-4">{sem.name} Semester</div>
+                        <Link href={`/semester/${sem.name.toLowerCase()}`} className="px-4 py-2 text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50/50 hover:bg-blue-100/80 rounded-xl inline-block mb-4 transition-colors">{sem.name} Semester ↗</Link>
                         <div className="space-y-3">
                           {sem.courses.map((c: any, idx: number) => (
-                            <div key={idx} className="flex justify-between items-center text-sm p-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:border-blue-200 group transition-all">
+                            <Link key={idx} href={`/courses/${c.code}`} className="flex justify-between items-center text-sm p-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:border-blue-200 hover:bg-blue-50/30 group transition-all">
                               <div className="flex flex-col">
                                 <span className="font-bold text-gray-800 leading-tight group-hover:text-blue-600 transition-colors">{c.title}</span>
                                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">({c.code})</span>
@@ -357,7 +357,7 @@ export default function TeachersPage() {
                                 <p className="font-bold text-gray-700 text-xs">{c.teacher}</p>
                                 <p className="text-[9px] font-extrabold text-gray-300 uppercase tracking-tighter">Sec: {c.section}</p>
                               </div>
-                            </div>
+                            </Link>
                           ))}
                         </div>
                       </div>

@@ -93,7 +93,7 @@ export async function deleteTeacher(teacherId: string) {
 /**
  * Section & Course Actions
  */
-export async function addCourseWithDefaultSections(semesterId: string, courseId: string, sections: string[] = ['A', 'B', 'C']) {
+export async function addCourseWithDefaultSections(semesterId: string, courseId: string, sections: string[] = ['A', 'B']) {
   // 1. Create the batch_course
   const { data: batchCourse, error: bcError } = await supabaseAdmin
     .from('batch_courses')
@@ -144,6 +144,31 @@ export async function deleteSectionFromCourse(sectionId: string) {
     .eq('id', sectionId);
 
   if (error) throw error;
+  revalidatePath('/admin');
+  return { success: true };
+}
+
+export async function createBatch(name: string) {
+  const { data: batch, error: batchError } = await supabaseAdmin
+    .from('batches')
+    .insert({ name })
+    .select()
+    .single();
+
+  if (batchError) throw batchError;
+
+  const names = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
+  const semestersData = names.map(n => ({
+    batch_id: batch.id,
+    name: n
+  }));
+
+  const { error: semError } = await supabaseAdmin
+    .from('semesters')
+    .insert(semestersData);
+
+  if (semError) throw semError;
+
   revalidatePath('/admin');
   return { success: true };
 }

@@ -125,13 +125,15 @@ export async function getAllDriveFolderConfigs(): Promise<{ semester: string; ba
 
 export async function getCourseDetails(code: string) {
   // 1. Get the course info
+  // Use .maybeSingle() — returns null if not found, throws only on DB errors.
   const { data: course, error: courseErr } = await supabase
     .from('courses')
     .select('*')
     .eq('code', code)
-    .single()
+    .maybeSingle()
 
   if (courseErr) throw courseErr
+  if (!course) throw new Error(`Course "${code}" not found`)
 
   // 2. Get all batch occurrences of this course
   const { data: occurrences, error: occErr } = await supabase

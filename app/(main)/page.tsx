@@ -76,11 +76,11 @@ function DriveTreeNode({ node }: { node: TreeNode }) {
   return (
     <>
       {folders.map(([name, child]) => (
-        <div key={name} className="tree-folder-group">
+        <div key={name} className="flex flex-col mb-1">
           {/* Folder row */}
-          <div className={`file-item folder-row ${child.hasMatchingContent ? 'matching-folder' : 'parent-folder'}`}>
-            <span className="file-icon">{child.hasMatchingContent ? '📁' : '📂'}</span>
-            <span className="file-name" style={{ opacity: child.hasMatchingContent ? 1 : 0.55 }}>
+          <div className={`flex items-center gap-2 py-1.5 px-2 rounded-lg text-sm transition-colors cursor-default ${child.hasMatchingContent ? 'text-primary font-medium' : 'text-muted'}`}>
+            <span className="flex-shrink-0 text-base leading-none">{child.hasMatchingContent ? '📁' : '📂'}</span>
+            <span className="flex-1 truncate" style={{ opacity: child.hasMatchingContent ? 1 : 0.7 }}>
               {name}
             </span>
             {child.driveId && (
@@ -88,7 +88,7 @@ function DriveTreeNode({ node }: { node: TreeNode }) {
                 href={`https://drive.google.com/drive/folders/${child.driveId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="folder-open-link"
+                className="ml-auto p-1 text-muted opacity-0 hover:opacity-100 hover:text-primary transition-all rounded"
                 title={`Open “${name}” in Google Drive`}
                 onClick={e => e.stopPropagation()}
               >
@@ -97,19 +97,19 @@ function DriveTreeNode({ node }: { node: TreeNode }) {
             )}
           </div>
           {/* Children block (adds visual guide line and indent automatically) */}
-          <div className="tree-children">
+          <div className="ml-2.5 pl-3 border-l border-dashed border-outline-variant/50">
             <DriveTreeNode node={child} />
           </div>
         </div>
       ))}
       {files.map((file, i) => (
-        <div key={i} className="file-item">
-          <span className="file-icon">{mimeIcon(file.mimeType)}</span>
+        <div key={i} className="flex items-center gap-2 py-1.5 px-2 text-sm text-on-surface hover:bg-surface-low rounded-lg transition-colors group">
+          <span className="flex-shrink-0 text-base leading-none">{mimeIcon(file.mimeType)}</span>
           <a
             href={file.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="file-name file-name-link"
+            className="flex-1 truncate group-hover:text-primary group-hover:underline transition-colors"
             title={file.name}
           >
             {file.name}
@@ -305,35 +305,39 @@ export default function AcademicResort() {
       <main className={`transition-all duration-500 w-full flex flex-col ${hasResults ? 'justify-start pt-4' : 'flex-1 justify-center pb-32'}`}>
         <div className="max-w-screen-sm mx-auto px-4 w-full">
 
-          {/* Logo */}
-          <div className={`text-center transition-all duration-500 ${hasResults ? 'scale-75 origin-top mb-2' : 'mb-10'}`}>
-            <div className="search-engine-logo">🎓</div>
-            <h1 className="search-engine-title">Academic Resort</h1>
+          {/* Hero */}
+          <div className={`text-center transition-all duration-500 ${hasResults ? 'scale-90 origin-top mb-4 opacity-0 pointer-events-none absolute' : 'mb-12'}`}>
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-on-surface mb-3 tracking-tight">
+              Academic Resort
+            </h1>
+            <p className="text-base text-muted max-w-sm mx-auto">
+              Curated course materials, efficiently organized for your semester.
+            </p>
           </div>
 
           {/* Search box */}
-          <div className="main-search-box">
+          <div className="relative w-full max-w-lg mx-auto mb-6 z-10">
             <input
               type="text"
               id="globalSearch"
-              className="main-search-input"
+              className="w-full px-6 py-4 bg-surface-lowest text-on-surface placeholder-muted border border-outline-variant/30 rounded-2xl shadow-ambient focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-body text-base"
               placeholder="Search academic resources..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               autoComplete="off"
             />
-            <div style={{ position: 'absolute', right: 18, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', display: 'flex', gap: 6, alignItems: 'center' }}>
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-muted flex flex-col items-center justify-center pointer-events-none">
               {searching
-                ? <Loader2 size={18} className="animate-spin" style={{ color: 'var(--primary-blue)' }} />
-                : <Search size={18} />}
+                ? <Loader2 size={20} className="animate-spin text-primary" />
+                : <Search size={20} />}
             </div>
           </div>
 
           {/* Advanced toggle */}
           {!hasResults && (
-            <div className="options-toggle">
+            <div className="text-center">
               <button
-                className={`options-toggle-btn${showAdvanced ? ' active' : ''}`}
+                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors rounded-full ${showAdvanced ? 'text-primary bg-primary/10' : 'text-primary bg-transparent hover:bg-primary/5'}`}
                 onClick={() => {
                   if (showAdvanced) {
                     setSelBatches([]);
@@ -343,180 +347,181 @@ export default function AcademicResort() {
                 }}
               >
                 {showAdvanced ? 'Search Globally' : 'Search Specifically'}
-                <span className="accordion-icon">{showAdvanced ? '▲' : '▼'}</span>
+                <ChevronDown size={14} className={`transition-transform duration-300 ${showAdvanced ? 'rotate-180' : ''}`} />
               </button>
             </div>
           )}
 
           {/* Filters panel */}
-          <div className={`advanced-options${showAdvanced && !hasResults ? ' show' : ''}`}>
-            <div ref={filtersRef} className="search-filters">
-              <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 4px', fontWeight: 500 }}>
-                Narrow search by batch or semester
-              </p>
+          <AnimatePresence>
+            {showAdvanced && !hasResults && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-4 max-w-md mx-auto p-4 bg-surface-lowest rounded-2xl shadow-ambient border border-outline-variant/30 flex flex-col gap-3">
+                  <p className="text-xs font-medium text-muted mx-1">
+                    Narrow your search scope
+                  </p>
 
-              {/* Batch filter */}
-              <div className="filter-item">
-                <div
-                  className={`filter-button${batchOpen ? ' active' : ''}`}
-                  onClick={() => { setBatchOpen(s => !s); setSemOpen(false); }}
-                  role="button" tabIndex={0}
-                >
-                  <div className="filter-button-text">
-                    <span className="filter-label">Batches</span>
-                    <span className="filter-count">{selBatches.length === 0 ? 'All batches' : `${selBatches.length} selected`}</span>
-                  </div>
-                  <span className="filter-arrow">▼</span>
-                </div>
-                <AnimatePresence>
-                  {batchOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
-                      className="filter-dropdown-content"
-                      style={{ display: 'block', overflowX: 'hidden' }}
+                  {/* Batch filter */}
+                  <div className="relative w-full">
+                    <button
+                      className={`w-full px-4 py-2.5 text-sm font-medium flex justify-between items-center rounded-xl border transition-colors ${batchOpen ? 'border-primary bg-surface-low text-primary' : 'border-outline-variant/30 bg-surface-lowest text-on-surface hover:border-primary/50'}`}
+                      onClick={() => { setBatchOpen(s => !s); setSemOpen(false); }}
                     >
-                      {uniqueBatches.map(b => (
-                        <div key={b} className="filter-option" onClick={() =>
-                          setSelBatches(p => p.includes(b) ? p.filter(x => x !== b) : [...p, b])
-                        }>
-                          <input type="checkbox" readOnly checked={selBatches.includes(b)} id={`b_${b}`} />
-                          <label htmlFor={`b_${b}`}>{b}</label>
-                        </div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Semester filter */}
-              <div className="filter-item">
-                <div
-                  className={`filter-button${semOpen ? ' active' : ''}`}
-                  onClick={() => { setSemOpen(s => !s); setBatchOpen(false); }}
-                  role="button" tabIndex={0}
-                >
-                  <div className="filter-button-text">
-                    <span className="filter-label">Semesters</span>
-                    <span className="filter-count">{selSemesters.length === 0 ? 'All semesters' : `${selSemesters.length} selected`}</span>
+                      <div className="flex items-center gap-2">
+                        <span>Batches</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container text-muted">
+                          {selBatches.length === 0 ? 'All' : selBatches.length}
+                        </span>
+                      </div>
+                      <ChevronDown size={14} className={`transition-transform ${batchOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {batchOpen && (
+                      <div className="mt-1 bg-surface-low border border-outline-variant/30 rounded-xl max-h-52 overflow-y-auto z-20 flex flex-col absolute w-full left-0">
+                        {uniqueBatches.map(b => (
+                          <label key={b} className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-lowest border-b border-outline-variant/20 last:border-0 cursor-pointer text-sm text-on-surface transition-colors">
+                            <input
+                              type="checkbox"
+                              checked={selBatches.includes(b)}
+                              onChange={() => setSelBatches(p => p.includes(b) ? p.filter(x => x !== b) : [...p, b])}
+                              className="w-4 h-4 rounded text-primary focus:ring-primary border-outline-variant"
+                            />
+                            {b}
+                          </label>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <span className="filter-arrow">▼</span>
-                </div>
-                <AnimatePresence>
-                  {semOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
-                      className="filter-dropdown-content"
-                      style={{ display: 'block', overflowX: 'hidden' }}
-                    >
-                      {uniqueSemesters.map(s => (
-                        <div key={s} className="filter-option" onClick={() =>
-                          setSelSemesters(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s])
-                        }>
-                          <input type="checkbox" readOnly checked={selSemesters.includes(s)} id={`s_${s}`} />
-                          <label htmlFor={`s_${s}`}>{semLabel(s)}</label>
-                        </div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
 
-              {/* Cache Control & Ready Status */}
-              <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                <p className="search-stats-subtle" style={{ margin: 0, color: 'var(--muted)', fontSize: '12px', fontWeight: 'normal' }}>
-                  {configsLoaded
-                    ? `Ready! ${allConfigs.length} semester folder${allConfigs.length !== 1 ? 's' : ''} indexed.`
-                    : 'Loading folder index...'}
-                </p>
-                {configsLoaded && (
-                  <button
-                    onClick={async () => {
-                      const toFetch = activeConfigs.length > 0 ? activeConfigs : allConfigs;
-                      setIsBustingCache(true);
-                      clearDriveCache();
-                      try {
-                        await Promise.allSettled(
-                          toFetch.map(c => fetch(`/api/drive?folderId=${c.folderId}&refresh=true`))
-                        );
-                      } finally {
-                        setIsBustingCache(false);
-                        if (searchTerm.trim().length >= 2) runSearch(searchTerm, activeConfigs, true);
-                      }
-                    }}
-                    title="Refresh cache"
-                    disabled={isBustingCache}
-                    style={{
-                      background: 'none', border: 'none', padding: '0',
-                      color: 'var(--muted)', cursor: isBustingCache ? 'wait' : 'pointer', display: 'flex', alignItems: 'center',
-                      transition: 'color 0.2s', opacity: isBustingCache ? 0.5 : 1
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = '#374151'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--muted)'; }}
-                  >
-                    <RefreshCw size={12} className={isBustingCache ? 'animate-spin' : ''} />
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+                  {/* Semester filter */}
+                  <div className="relative w-full">
+                    <button
+                      className={`w-full px-4 py-2.5 text-sm font-medium flex justify-between items-center rounded-xl border transition-colors ${semOpen ? 'border-primary bg-surface-low text-primary' : 'border-outline-variant/30 bg-surface-lowest text-on-surface hover:border-primary/50'}`}
+                      onClick={() => { setSemOpen(s => !s); setBatchOpen(false); }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>Semesters</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container text-muted">
+                          {selSemesters.length === 0 ? 'All' : selSemesters.length}
+                        </span>
+                      </div>
+                      <ChevronDown size={14} className={`transition-transform ${semOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {semOpen && (
+                      <div className="mt-1 bg-surface-low border border-outline-variant/30 rounded-xl max-h-52 overflow-y-auto z-20 flex flex-col absolute w-full left-0">
+                        {uniqueSemesters.map(s => (
+                          <label key={s} className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-lowest border-b border-outline-variant/20 last:border-0 cursor-pointer text-sm text-on-surface transition-colors">
+                            <input
+                              type="checkbox"
+                              checked={selSemesters.includes(s)}
+                              onChange={() => setSelSemesters(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s])}
+                              className="w-4 h-4 rounded text-primary focus:ring-primary border-outline-variant"
+                            />
+                            {semLabel(s)}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Cache Control & Ready Status */}
+                  <div className="mt-2 pt-3 border-t border-outline-variant/30 flex items-center justify-center gap-2">
+                    <p className="m-0 text-xs text-muted">
+                      {configsLoaded
+                        ? `Ready! ${allConfigs.length} folders indexed.`
+                        : 'Loading folder index...'}
+                    </p>
+                    {configsLoaded && (
+                      <button
+                        onClick={async () => {
+                          const toFetch = activeConfigs.length > 0 ? activeConfigs : allConfigs;
+                          setIsBustingCache(true);
+                          clearDriveCache();
+                          try {
+                            await Promise.allSettled(
+                              toFetch.map(c => fetch(`/api/drive?folderId=${c.folderId}&refresh=true`))
+                            );
+                          } finally {
+                            setIsBustingCache(false);
+                            if (searchTerm.trim().length >= 2) runSearch(searchTerm, activeConfigs, true);
+                          }
+                        }}
+                        title="Refresh drive cache"
+                        disabled={isBustingCache}
+                        className="p-1 text-muted hover:text-on-surface transition-colors disabled:opacity-50"
+                      >
+                        <RefreshCw size={12} className={isBustingCache ? 'animate-spin text-primary' : ''} />
+                      </button>
+                    )}
+                  </div>
+
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
         </div>
       </main>
 
       {/* ── Results section ──────────────────────────────────────────────────────── */}
-      <div className="search-results-container" id="searchResultsContainer" style={{ marginTop: hasResults ? 8 : 0 }}>
+      <div className={`mt-2 pb-16 ${hasResults ? 'block' : 'hidden'}`}>
 
-        {/* Loading bar */}
-        <div className="max-w-screen-md mx-auto px-4 w-full">
-          <div className={`retro-loading-container${searching ? ' active' : ''}`}>
-            <div className="simple-loading-bar"><div className="loading-bar-fill" /></div>
-          </div>
+        {/* Loading bar (Tailwind) */}
+        <div className="max-w-screen-md mx-auto px-4 w-full h-1.5 bg-surface-container rounded-full overflow-hidden mb-4 opacity-0 transition-opacity aria-[busy=true]:opacity-100" aria-busy={searching}>
+          <div className="h-full bg-primary/70 w-2/3 rounded-full animate-[pulse_1.5s_ease-in-out_infinite] translate-x-[-100%]" style={{ animation: searching ? 'loadingBarFlow 1.4s linear infinite' : 'none' }} />
+          <style dangerouslySetInnerHTML={{__html: `@keyframes loadingBarFlow { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 60%; } 100% { transform: translateX(300%); width: 30%; } }`}} />
         </div>
 
         {(hasResults || (!searching && searchTerm.trim().length >= 2)) && (
           <div className="max-w-screen-md mx-auto px-4 w-full">
 
             {/* Results header */}
-            <div className="results-header" id="resultControls" style={{ display: hasResults || !searching ? 'flex' : 'none' }}>
-              <div className="results-status" id="resultsStats">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-outline-variant/30">
+              <div className="text-sm font-medium text-muted">
                 {searching
-                  ? <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 13 }}>
+                  ? <span className="flex items-center gap-1.5">
                       <Loader2 size={13} className="animate-spin" />
                       Searching {searched}/{total} folders{progressPct > 0 ? ` (${progressPct}%)` : ''}
-                      {driveResults.length > 0 && <span style={{ color: 'var(--primary-blue)', fontWeight: 600 }}>· {driveResults.length} found so far</span>}
+                      {driveResults.length > 0 && <span className="text-primary font-semibold ml-1">· {driveResults.length} found</span>}
                     </span>
                   : driveResults.length === 0
-                  ? <span style={{ color: 'var(--muted)', fontSize: 13 }}>No matching files found. Try different search terms.</span>
+                  ? <span>No matching files found. Try different search terms.</span>
                   : <span>Found {driveResults.length} result{driveResults.length !== 1 ? 's' : ''}</span>
                 }
               </div>
 
               {/* Display options */}
               {driveResults.length > 0 && (
-                <div className="result-controls" ref={ctrlRef}>
+                <div className="relative" ref={ctrlRef}>
                   <button
-                    className={`controls-dropdown-btn${ctrlOpen ? ' open' : ''}`}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border ${ctrlOpen ? 'bg-surface-low border-primary text-primary' : 'bg-surface-lowest border-outline-variant/30 text-muted hover:border-primary/50'}`}
                     onClick={() => setCtrlOpen(s => !s)}
                   >
-                    <Settings2 size={14} /> Display Options <ChevronDown size={12} />
+                    <Settings2 size={13} /> View Options <ChevronDown size={11} />
                   </button>
-                  <div className={`controls-dropdown-menu${ctrlOpen ? ' show' : ''}`}>
-                    <button className="controls-dropdown-item" onClick={() => { expandAll(); setCtrlOpen(false); }}>📂 Expand All</button>
-                    <button className="controls-dropdown-item" onClick={() => { collapseAllSems(); setCtrlOpen(false); }}>📁 Collapse All</button>
-                    <button className="controls-dropdown-item" onClick={() => { collapseAllBatches(); setCtrlOpen(false); }}>🗂️ Minimize Batches</button>
-                    <button className="controls-dropdown-item" onClick={() => { setSemAscending(s => !s); setCtrlOpen(false); }}>
-                      📊 Semester: {semAscending ? 'Ascending' : 'Descending'}
-                    </button>
-                    <button className="controls-dropdown-item" onClick={() => { setBatchDescending(s => !s); setCtrlOpen(false); }}>
-                      🎓 Batch: {batchDescending ? 'Newest first' : 'Oldest first'}
-                    </button>
-                  </div>
+                  <AnimatePresence>
+                    {ctrlOpen && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                        className="absolute right-0 top-full mt-1.5 w-48 bg-surface-lowest border border-outline-variant/30 shadow-ambient rounded-xl z-20 py-1"
+                      >
+                        <button className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-low hover:text-primary transition-colors flex items-center gap-2" onClick={() => { expandAll(); setCtrlOpen(false); }}>📂 Expand All</button>
+                        <button className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-low hover:text-primary transition-colors flex items-center gap-2" onClick={() => { collapseAllSems(); setCtrlOpen(false); }}>📁 Collapse All</button>
+                        <button className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-low hover:text-primary transition-colors flex items-center gap-2" onClick={() => { collapseAllBatches(); setCtrlOpen(false); }}>🗂️ Minimize Batches</button>
+                        <div className="h-px bg-outline-variant/20 my-1"></div>
+                        <button className="w-full text-left px-4 py-2 text-xs text-muted hover:bg-surface-low transition-colors" onClick={() => { setSemAscending(s => !s); setCtrlOpen(false); }}>
+                          Semester: {semAscending ? 'Ascending' : 'Descending'}
+                        </button>
+                        <button className="w-full text-left px-4 py-2 text-xs text-muted hover:bg-surface-low transition-colors" onClick={() => { setBatchDescending(s => !s); setCtrlOpen(false); }}>
+                          Batch: {batchDescending ? 'Newest first' : 'Oldest first'}
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
             </div>
@@ -533,66 +538,68 @@ export default function AcademicResort() {
             )}
 
             {/* Semester → Batch → Tree */}
-            <div id="all-resources">
+            <div className="flex flex-col gap-4">
               {sortedSems.map(semester => {
                 const isSemCollapsed = collapsedSems.has(semester);
                 return (
-                  <div key={semester} className="semester-group">
-                    {/* Semester header (h2 accordion) */}
-                    <div className="semester-header" onClick={() => toggleSem(semester)}>
-                      <h2>
-                        <button className="accordion-btn" aria-expanded={!isSemCollapsed}>
-                          <span className="accordion-icon">{isSemCollapsed ? '▶' : '▼'}</span>
-                          {semLabel(semester).toUpperCase()}
-                        </button>
+                  <div key={semester} className="rounded-2xl border border-outline-variant/30 bg-surface-lowest overflow-hidden shadow-ambient">
+                    {/* Semester header */}
+                    <button 
+                      className="w-full flex items-center gap-3 px-5 py-4 bg-surface text-on-surface hover:bg-surface-low transition-colors select-none"
+                      onClick={() => toggleSem(semester)}
+                      aria-expanded={!isSemCollapsed}
+                    >
+                      <span className="text-[11px] text-muted shrink-0 transition-transform duration-200" style={{ transform: isSemCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}>▼</span>
+                      <h2 className="text-sm font-bold tracking-wide uppercase m-0 flex-1 text-left">
+                        {semLabel(semester)}
                       </h2>
-                    </div>
+                    </button>
 
                     {/* Semester content */}
                     <AnimatePresence initial={false}>
                       {!isSemCollapsed && (
                         <motion.div
-                          key="sem-content"
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.35, ease: [0.04, 0.62, 0.23, 0.98] }}
-                          style={{ overflow: 'hidden' }}
+                          initial={{ height: 0 }}
+                          animate={{ height: "auto" }}
+                          exit={{ height: 0 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="overflow-hidden"
                         >
-                          <div className="semester-content" id={`semester-${semester}`}>
+                          <div className="flex flex-col gap-2 px-3 pb-3 pt-2">
                             {sortedBatchEntries(tree[semester]).map(([batch, batchNode]) => {
                               const batchKey = `${semester}__${batch}`;
                               const isBatchCollapsed = collapsedBatches.has(batchKey);
                               const fileCount = driveResults.filter(r => r.semester === semester && r.batch === batch).length;
 
                               return (
-                                <div key={batch} className="batch-group">
-                                  {/* Batch header (h3 accordion) */}
-                                  <div className="batch-header-item" onClick={() => toggleBatch(batchKey)}>
-                                    <h3>
-                                      <button className="accordion-btn" aria-expanded={!isBatchCollapsed}>
-                                        <span className="accordion-icon">{isBatchCollapsed ? '▶' : '▼'}</span>
-                                        {batch}
-                                      </button>
-                                    </h3>
-                                    <span className="batch-file-count">{fileCount} file{fileCount !== 1 ? 's' : ''}</span>
-                                  </div>
+                                <div key={batch} className="rounded-xl border border-outline-variant/20 bg-surface-lowest overflow-hidden">
+                                  {/* Batch header */}
+                                  <button 
+                                    className="w-full flex items-center justify-between px-4 py-3 bg-surface-low hover:bg-surface-container transition-colors select-none"
+                                    onClick={() => toggleBatch(batchKey)}
+                                    aria-expanded={!isBatchCollapsed}
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-[10px] text-muted shrink-0 transition-transform duration-200" style={{ transform: isBatchCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}>▼</span>
+                                      <h3 className="text-sm font-semibold text-on-surface m-0 text-left">
+                                        Batch {batch}
+                                      </h3>
+                                    </div>
+                                    <span className="text-xs text-muted font-medium">{fileCount} file{fileCount !== 1 ? 's' : ''}</span>
+                                  </button>
 
-                                  {/* Batch content — file tree */}
+                                  {/* Batch content */}
                                   <AnimatePresence initial={false}>
                                     {!isBatchCollapsed && (
                                       <motion.div
-                                        key="batch-content"
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
-                                        style={{ overflow: 'hidden' }}
+                                        initial={{ height: 0 }}
+                                        animate={{ height: "auto" }}
+                                        exit={{ height: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="overflow-hidden bg-surface-lowest"
                                       >
-                                        <div className="batch-content" id={`batch-${semester}-${batch}`}>
-                                          <div className="tree-results">
-                                            <DriveTreeNode node={batchNode} />
-                                          </div>
+                                        <div className="p-3 border-t border-outline-variant/20">
+                                          <DriveTreeNode node={batchNode} />
                                         </div>
                                       </motion.div>
                                     )}
@@ -614,192 +621,6 @@ export default function AcademicResort() {
 
       </div>
 
-      {/* ── Tree & result styles ─────────────────────────────────────────────────── */}
-      <style jsx global>{`
-        .search-results-container {
-          padding-bottom: 60px;
-        }
-        /* Semester group */
-        .semester-group {
-          margin-bottom: 16px;
-        }
-        .semester-header {
-          cursor: pointer;
-          user-select: none;
-        }
-        .semester-header h2 {
-          margin: 0;
-        }
-        .accordion-btn {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          width: 100%;
-          padding: 14px 20px;
-          border: none;
-          border-radius: 12px;
-          background: var(--surface);
-          border: 1px solid var(--border);
-          color: var(--text-primary);
-          font-size: 14px;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          cursor: pointer;
-          text-align: left;
-          transition: background 0.15s, box-shadow 0.15s;
-        }
-        .accordion-btn:hover { 
-          background: var(--hover);
-        }
-        .accordion-icon {
-          font-size: 11px;
-          color: var(--muted);
-          flex-shrink: 0;
-        }
-
-        /* Semester content */
-        .semester-content {
-          margin: 8px 0 0 0;
-          padding-left: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        /* Batch group */
-        .batch-group {
-          border: 1px solid var(--border);
-          border-radius: 12px;
-          overflow: hidden;
-          background: var(--card-bg);
-          box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
-        .batch-header-item {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding-right: 16px;
-          background: var(--card-bg);
-          cursor: pointer;
-          user-select: none;
-          border-bottom: 1px solid transparent;
-          transition: background 0.15s;
-        }
-        .batch-header-item:hover { background: var(--hover); }
-        .batch-header-item h3 {
-          flex: 1;
-          margin: 0;
-        }
-        .batch-header-item .accordion-btn {
-          border: none;
-          border-radius: 0;
-          background: transparent;
-          padding: 12px 18px;
-          font-size: 13.5px;
-          font-weight: 600;
-          letter-spacing: 0.02em;
-        }
-        .batch-header-item .accordion-btn:hover { background: transparent; box-shadow: none; }
-        .batch-file-count {
-          font-size: 12px;
-          color: var(--muted);
-          white-space: nowrap;
-          font-weight: 500;
-          padding-left: 12px;
-        }
-
-        /* Batch content / tree */
-        .batch-content {
-          border-top: 1px solid var(--border);
-          background: var(--card-bg);
-          padding-left: 8px; /* start offset for the root tree */
-        }
-        .tree-results {
-          padding: 8px 0;
-        }
-
-        /* Tree generic item row */
-        .file-item {
-          display: flex;
-          flex-wrap: nowrap; /* Prevent icon wrapping */
-          align-items: center;
-          gap: 8px;
-          padding: 4px 8px;
-          margin: 2px 0;
-          font-size: 13.5px;
-          transition: background 0.12s ease, color 0.12s ease;
-          color: var(--text-primary);
-          cursor: default;
-          border-radius: 6px;
-        }
-        .file-item:hover {
-          background: var(--hover);
-        }
-        /* Folder rows: not interactive, just label */
-        .folder-row {
-          cursor: default;
-        }
-        /* File name link — only the text is clickable */
-        .file-name-link {
-          color: inherit;
-          text-decoration: none;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          flex: 1;
-        }
-        .file-name-link:hover {
-          color: var(--primary-blue);
-          text-decoration: underline;
-        }
-        .matching-folder {
-          color: var(--primary-blue);
-          font-weight: 600;
-        }
-        .parent-folder {
-          color: var(--muted);
-        }
-        .file-icon {
-          font-size: 15px;
-          flex-shrink: 0;
-          line-height: 1;
-        }
-        .file-name {
-          flex: 1;
-          min-width: 0;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        /* Vertical indent guide lines */
-        :root { --tree-guide: rgba(0,0,0,0.15); }
-        @media (prefers-color-scheme: dark) { :root { --tree-guide: rgba(255,255,255,0.15); } }
-        
-        .tree-children {
-          margin-left: 9.5px;   /* Shift child block so its left border sits under the middle of the folder icon */
-          padding-left: 12px;   /* Spacing between the vertical line and the content */
-          border-left: 1.5px dashed var(--tree-guide);
-        }
-
-        /* Folder open-in-Drive icon */
-        .folder-open-link {
-          display: flex;
-          align-items: center;
-          margin-left: auto;
-          padding: 4px;
-          color: var(--muted);
-          opacity: 0;           /* Hidden by default */
-          border-radius: 4px;
-          transition: opacity 0.15s, background 0.15s, color 0.15s;
-        }
-        .folder-row:hover .folder-open-link {
-          opacity: 1;
-        }
-        .folder-open-link:hover {
-          color: var(--primary-blue);
-        }
-      `}</style>
 
     </div>
   );
