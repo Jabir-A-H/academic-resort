@@ -343,7 +343,13 @@ export default function AdminDashboard() {
       supabase.from('courses').select('*').order('code')
     ]);
 
-    const sortedBatches = bRes.data || [];
+    // Sort batches numerically descending (latest at top)
+    const sortedBatches = (bRes.data || []).sort((a: any, b: any) => {
+      const aVal = parseInt(a.name) || 0;
+      const bVal = parseInt(b.name) || 0;
+      return bVal - aVal;
+    });
+
     setBatches(sortedBatches);
     setTeachers(tRes.data || []);
     setAllGlobalCourses(cRes.data || []);
@@ -710,11 +716,11 @@ export default function AdminDashboard() {
 
           /* ── Batches Overview ─────────────────────────────────────── */
           ) : activeTab === 'batches' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 place-items-start">
+            <div className="columns-1 md:columns-2 gap-5 space-y-5">
               {batches.map(batch => {
                 const isExpanded = expandedBatches.includes(batch.id);
                 return (
-                  <div key={batch.id} className="w-full bg-surface rounded-2xl border border-outline-variant/20 shadow-ambient overflow-hidden hover:border-outline-variant/40 transition-all">
+                  <div key={batch.id} className="break-inside-avoid-column mb-5 bg-surface rounded-2xl border border-outline-variant/20 shadow-ambient overflow-hidden hover:border-outline-variant/40 transition-all">
                     <div 
                       onClick={() => toggleBatch(batch.id)}
                       className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-surface-lowest transition-colors"
@@ -789,6 +795,9 @@ export default function AdminDashboard() {
                             </div>
                             <div>
                               <p className="font-bold text-on-surface text-sm">{teacher.name}</p>
+                              {teacher.designation && (
+                                <p className="text-[11px] text-muted font-medium uppercase tracking-wide mt-0.5">{teacher.designation}</p>
+                              )}
                               {teacher.du_profile_url && (
                                 <a href={teacher.du_profile_url} target="_blank" className="text-[10px] text-primary hover:underline flex items-center gap-1 mt-0.5">
                                   University Profile <ExternalLink size={8} />
