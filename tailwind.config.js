@@ -41,10 +41,20 @@ module.exports = {
         // Ambient soft shadow: diffuse 24px-40px, 4-6% opacity with #1b1c1c tint
         ambient: '0 8px 24px rgba(27, 28, 28, 0.05)',
         'ambient-lg': '0 24px 40px rgba(27, 28, 28, 0.06)',
+        'ambient-subtle': '0 2px 8px rgba(27, 28, 28, 0.03)',
+        'ambient-md': '0 12px 32px rgba(27, 28, 28, 0.07)',
       },
       borderRadius: {
         xl: '0.75rem',
         '2xl': '1rem',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.2s ease-out',
+        'slide-up': 'slideUp 0.25s ease-out',
+        'slide-down': 'slideDown 0.25s ease-out',
+        'scale-in': 'scaleIn 0.2s ease-out',
+        'shimmer': 'shimmer 1.5s infinite linear',
+        'toast': 'toastSlide 0.3s ease-out',
       },
     },
   },

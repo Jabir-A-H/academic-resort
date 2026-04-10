@@ -264,7 +264,11 @@ export default function AcademicResort() {
   }, [searchTerm, activeConfigs, runSearch]);
 
   // ── Build tree ────────────────────────────────────────────────────────────────
-  const tree = useMemo(() => buildTree(driveResults, folderRegistryRef.current), [driveResults]);
+  const tree = useMemo(() => {
+    // Sort results by score (highest first) for better relevance
+    const sorted = [...driveResults].sort((a, b) => (b.score || 0) - (a.score || 0));
+    return buildTree(sorted, folderRegistryRef.current);
+  }, [driveResults]);
 
   // ── Sort semesters ────────────────────────────────────────────────────────────
   const sortedSems = useMemo(() =>
@@ -531,7 +535,7 @@ export default function AcademicResort() {
               <div style={{ height: 3, background: 'var(--border)', borderRadius: 2, marginBottom: 12 }}>
                 <div style={{
                   height: '100%', width: `${progressPct}%`,
-                  background: 'linear-gradient(90deg, var(--primary-blue), #60a5fa)',
+                  background: 'linear-gradient(90deg, var(--primary), var(--primary-container))',
                   transition: 'width 0.4s ease', borderRadius: 2,
                 }} />
               </div>

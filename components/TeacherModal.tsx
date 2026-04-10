@@ -70,29 +70,31 @@ export default function TeacherModal({ isOpen, onClose, onSave, teacher }: Teach
 
   if (!isOpen) return null;
 
+  const inputClass = "w-full pl-11 pr-4 py-3 bg-surface-low border border-outline-variant/30 rounded-2xl text-sm outline-none focus:bg-surface-lowest focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all font-medium text-on-surface";
+
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
       <div 
-        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-on-surface/40 backdrop-blur-sm"
         onClick={onClose}
       />
       
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-        <header className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+      <div className="relative bg-surface-lowest rounded-3xl shadow-ambient-lg w-full max-w-lg overflow-hidden animate-scale-in max-h-[90vh] flex flex-col border border-outline-variant/20">
+        <header className="p-6 border-b border-outline-variant/20 flex justify-between items-center bg-surface-low/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-ambient">
               {teacher ? <Save size={20} /> : <User size={20} />}
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900 tracking-tight">
+              <h3 className="text-lg font-bold text-on-surface tracking-tight font-display">
                 {teacher ? 'Edit Teacher Profile' : 'Register New Teacher'}
               </h3>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Registry Entry</p>
+              <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Registry Entry</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
+            className="p-2 text-muted hover:text-on-surface hover:bg-surface-container rounded-xl transition-all"
           >
             <X size={20} />
           </button>
@@ -100,19 +102,19 @@ export default function TeacherModal({ isOpen, onClose, onSave, teacher }: Teach
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
           {error && (
-            <div className="p-4 bg-red-50 text-red-700 text-xs rounded-xl border border-red-100 font-bold flex items-center gap-2">
+            <div className="p-4 bg-error/5 text-error text-xs rounded-xl border border-error/20 font-bold flex items-center gap-2">
               <span className="shrink-0">⚠️</span> {error}
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Full Name</label>
+              <label className="text-[10px] font-bold text-muted uppercase tracking-widest px-1">Full Name *</label>
               <div className="relative group">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" size={18} />
                 <input 
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm"
+                  className={`${inputClass} ${!formData.name ? '' : ''}`}
                   placeholder="Prof. John Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
@@ -121,11 +123,11 @@ export default function TeacherModal({ isOpen, onClose, onSave, teacher }: Teach
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Contact Phone</label>
+              <label className="text-[10px] font-bold text-muted uppercase tracking-widest px-1">Contact Phone</label>
               <div className="relative group">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" size={18} />
                 <input 
-                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm"
+                  className={inputClass}
                   placeholder="+880 1XXX-XXXXXX"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -134,12 +136,12 @@ export default function TeacherModal({ isOpen, onClose, onSave, teacher }: Teach
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Email Address</label>
+              <label className="text-[10px] font-bold text-muted uppercase tracking-widest px-1">Email Address</label>
               <div className="relative group">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" size={18} />
                 <input 
                   type="email"
-                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm"
+                  className={inputClass}
                   placeholder="teacher@du.ac.bd"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -148,11 +150,11 @@ export default function TeacherModal({ isOpen, onClose, onSave, teacher }: Teach
             </div>
 
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">DU Profile URL</label>
+              <label className="text-[10px] font-bold text-muted uppercase tracking-widest px-1">DU Profile URL</label>
               <div className="relative group">
-                <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" size={18} />
                 <input 
-                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm"
+                  className={inputClass}
                   placeholder="https://du.ac.bd/faculty/detail/..."
                   value={formData.du_profile_url}
                   onChange={(e) => setFormData({...formData, du_profile_url: e.target.value})}
@@ -161,11 +163,11 @@ export default function TeacherModal({ isOpen, onClose, onSave, teacher }: Teach
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest px-1 text-blue-700">LinkedIn Profile</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest px-1 text-primary">LinkedIn Profile</label>
               <div className="relative group">
-                <Linkedin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-400 group-focus-within:text-blue-600 transition-colors" size={18} />
+                <Linkedin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-primary/50 group-focus-within:text-primary transition-colors" size={18} />
                 <input 
-                  className="w-full pl-11 pr-4 py-3 bg-blue-50/30 border border-blue-100 rounded-2xl text-sm outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all font-medium text-gray-700 shadow-sm placeholder:text-blue-200"
+                  className={`${inputClass} bg-primary/5 border-primary/20 placeholder:text-primary/30`}
                   placeholder="linkedin.com/in/..."
                   value={formData.linkedin_url}
                   onChange={(e) => setFormData({...formData, linkedin_url: e.target.value})}
@@ -174,11 +176,11 @@ export default function TeacherModal({ isOpen, onClose, onSave, teacher }: Teach
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest px-1 text-indigo-700">Facebook Profile</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest px-1 text-secondary">Facebook Profile</label>
               <div className="relative group">
-                <Facebook className="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
+                <Facebook className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary/50 group-focus-within:text-secondary transition-colors" size={18} />
                 <input 
-                  className="w-full pl-11 pr-4 py-3 bg-indigo-50/30 border border-indigo-100 rounded-2xl text-sm outline-none focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all font-medium text-gray-700 shadow-sm placeholder:text-indigo-200"
+                  className={`${inputClass} bg-secondary/5 border-secondary/20 placeholder:text-secondary/30`}
                   placeholder="facebook.com/..."
                   value={formData.facebook_url}
                   onChange={(e) => setFormData({...formData, facebook_url: e.target.value})}
@@ -188,18 +190,18 @@ export default function TeacherModal({ isOpen, onClose, onSave, teacher }: Teach
           </div>
         </form>
 
-        <footer className="p-6 border-t border-gray-100 bg-gray-50/50 flex gap-3">
+        <footer className="p-6 border-t border-outline-variant/20 bg-surface-low/50 flex gap-3">
           <button 
             type="button"
             onClick={onClose}
-            className="flex-1 py-3 px-4 bg-white text-gray-600 border border-gray-200 rounded-2xl font-bold hover:bg-gray-100 transition-all active:scale-95 text-sm"
+            className="flex-1 py-3 px-4 bg-surface-container text-on-surface border border-outline-variant/20 rounded-2xl font-bold hover:bg-surface-high transition-all active:scale-95 text-sm"
           >
             Cancel
           </button>
           <button 
             onClick={handleSubmit}
             disabled={loading}
-            className="flex-[2] py-3 px-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 active:scale-95 text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-[2] py-3 px-4 bg-primary text-white rounded-2xl font-bold hover:bg-primary-container transition-all shadow-ambient active:scale-95 text-sm flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {loading ? <Loader2 className="animate-spin" size={20} /> : (teacher ? 'Update Registry' : 'Add to Registry')}
           </button>

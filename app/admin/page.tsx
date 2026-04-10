@@ -267,6 +267,31 @@ function ClassUpdatesEditor({ bcId, initialValue, onSaved }: {
   );
 }
 
+// ─── Inline Toast System ──────────────────────────────────────────────────────
+function Toast({ message, type, onDismiss }: { message: string; type: 'success' | 'error' | 'info'; onDismiss: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 3500);
+    return () => clearTimeout(t);
+  }, [onDismiss]);
+
+  const styles = {
+    success: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    error: 'bg-error/5 border-error/20 text-error',
+    info: 'bg-primary/5 border-primary/20 text-primary',
+  };
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+
+  return (
+    <div className={`fixed bottom-6 right-6 z-[200] px-5 py-3 rounded-xl border shadow-ambient-lg flex items-center gap-3 animate-toast max-w-sm ${styles[type]}`}>
+      <span className="font-bold text-sm">{icons[type]}</span>
+      <span className="text-sm font-medium">{message}</span>
+      <button onClick={onDismiss} className="ml-2 opacity-60 hover:opacity-100 transition-opacity">
+        <X size={14} />
+      </button>
+    </div>
+  );
+}
+
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
@@ -276,8 +301,13 @@ export default function AdminDashboard() {
   const [allGlobalCourses, setAllGlobalCourses] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'batches' | 'teachers' | 'access'>('batches');
   const [selectedSemester, setSelectedSemester] = useState<any>(null);
+  const [selectedBatchName, setSelectedBatchName] = useState<string | null>(null);
   const [courses, setCourses] = useState<any[]>([]);
   const [expandedBatches, setExpandedBatches] = useState<string[]>([]);
+  
+  // Toast notifications
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => setToast({ message, type });
   
   // Modals & Context States
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
@@ -378,7 +408,8 @@ export default function AdminDashboard() {
       .update({ teacher_id: teacherId || null })
       .eq('id', secId);
 
-    if (error) { console.error('Update teacher error:', error); return; }
+    if (error) { showToast('Failed to update teacher assignment', 'error'); return; }
+    showToast('Teacher assignment updated', 'success');
     if (selectedSemester) loadSemesterData(selectedSemester.id);
   }
 
@@ -386,6 +417,7 @@ export default function AdminDashboard() {
   async function handleSaveTeacher(data: any) {
     const payload = editingTeacher ? { ...data, id: editingTeacher.id } : data;
     await upsertTeacher(payload);
+    showToast(editingTeacher ? 'Teacher profile updated' : 'Teacher added to registry', 'success');
     if (userProfile) await loadData(userProfile);
   }
 
@@ -396,6 +428,7 @@ export default function AdminDashboard() {
       message: `Are you sure you want to remove ${name} from the registry? This will unassign them from all courses globally.`,
       onConfirm: async () => {
         await deleteTeacher(id);
+        showToast(`${name} removed from registry`, 'info');
         if (userProfile) await loadData(userProfile);
       }
     });
@@ -448,8 +481,10 @@ export default function AdminDashboard() {
   async function handleAddBatch(name: string) {
     try {
       await createBatch(name);
+      showToast(`Batch ${name} created with BBA & MBA semesters`, 'success');
       if (userProfile) await loadData(userProfile);
     } catch (err) {
+      showToast('Failed to create batch', 'error');
       console.error('Create batch error:', err);
     }
   }
@@ -552,7 +587,22 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="flex-1 md:ml-64 p-4 md:p-8 min-w-0 w-full overflow-x-hidden">
         <div className="max-w-5xl mx-auto">
-          <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          {/* Breadcrumb Navigation */}
+          <nav className="flex items-center gap-1.5 text-xs font-medium text-muted mb-4 flex-wrap">
+            <span className="text-on-surface font-bold">Admin</span>
+            <ChevronRight size={12} />
+            <button onClick={() => { setSelectedSemester(null); setSelectedBatchName(null); }} className="hover:text-primary transition-colors capitalize">
+              {activeTab === 'access' ? 'Access' : activeTab}
+            </button>
+            {selectedBatchName && (
+              <><ChevronRight size={12} /><button onClick={() => setSelectedSemester(null)} className="hover:text-primary transition-colors">Batch {selectedBatchName}</button></>
+            )}
+            {selectedSemester && (
+              <><ChevronRight size={12} /><span className="text-primary font-bold">{selectedSemester.name} Semester</span></>
+            )}
+          </nav>
+
+          <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 {selectedSemester && (
@@ -606,6 +656,24 @@ export default function AdminDashboard() {
               )}
             </div>
           </header>
+
+          {/* Quick Stats Bar (only on batches overview) */}
+          {activeTab === 'batches' && !selectedSemester && batches.length > 0 && (
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="bg-surface rounded-xl border border-outline-variant/20 px-4 py-3">
+                <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-0.5">Batches</p>
+                <p className="text-lg font-bold text-on-surface">{batches.length}</p>
+              </div>
+              <div className="bg-surface rounded-xl border border-outline-variant/20 px-4 py-3">
+                <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-0.5">Teachers</p>
+                <p className="text-lg font-bold text-on-surface">{teachers.length}</p>
+              </div>
+              <div className="bg-surface rounded-xl border border-outline-variant/20 px-4 py-3">
+                <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-0.5">Courses</p>
+                <p className="text-lg font-bold text-on-surface">{allGlobalCourses.length}</p>
+              </div>
+            </div>
+          )}
 
           {/* ── Access Management ────────────────────────────────────── */}
           {activeTab === 'access' && isMasterAdmin ? (
@@ -741,7 +809,7 @@ export default function AdminDashboard() {
                         {batch.semesters?.sort((a: any, b: any) => a.name.localeCompare(b.name, undefined, {numeric: true})).map((sem: any) => (
                           <div key={sem.id} className="group bg-surface border border-outline-variant/10 rounded-xl hover:border-primary/30 hover:bg-primary/5 transition-all outline-none focus:border-primary">
                             <div
-                              onClick={() => setSelectedSemester(sem)}
+                              onClick={() => { setSelectedSemester(sem); setSelectedBatchName(batch.name); }}
                               className="flex items-center justify-between p-3.5 cursor-pointer"
                             >
                               <div className="flex items-center gap-3">
@@ -873,6 +941,9 @@ export default function AdminDashboard() {
         {...confirmConfig}
         onClose={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
       />
+
+      {/* Toast Notifications */}
+      {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
     </div>
   );
 }

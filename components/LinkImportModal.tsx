@@ -76,23 +76,23 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden text-gray-900 border border-gray-100">
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm animate-fade-in">
+      <div className="bg-surface-lowest rounded-2xl shadow-ambient-lg w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden text-on-surface border border-outline-variant/20 animate-scale-in">
+        <div className="p-6 border-b border-outline-variant/20 flex justify-between items-center">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Smart Link Import</h2>
-            <p className="text-sm text-gray-500">Paste multiple URLs to automatically categorize them.</p>
+            <h2 className="text-xl font-bold text-on-surface font-display">Smart Link Import</h2>
+            <p className="text-sm text-muted">Paste multiple URLs to automatically categorize them.</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-surface-container rounded-lg transition-colors text-muted hover:text-on-surface">
             <X size={20} />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           <div className="space-y-3">
-            <label className="text-sm font-semibold text-gray-700">Paste URLs (one per line)</label>
+            <label className="text-sm font-semibold text-on-surface">Paste URLs (one per line)</label>
             <textarea 
-              className="w-full h-32 p-4 border border-gray-200 rounded-xl outline-none focus:border-blue-500 transition-all text-sm font-mono"
+              className="w-full h-32 p-4 border border-outline-variant/30 bg-surface-low rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm font-mono text-on-surface"
               placeholder="https://drive.google.com/..."
               value={urlInput}
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setUrlInput(e.target.value)}
@@ -100,7 +100,7 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
             <button 
               onClick={handleProcess}
               disabled={!urlInput.trim()}
-              className="w-full py-2.5 bg-gray-900 text-white rounded-lg font-bold hover:bg-black transition-all disabled:opacity-50 text-sm"
+              className="w-full py-2.5 bg-primary text-white rounded-lg font-bold hover:bg-primary-container transition-all disabled:opacity-50 text-sm"
             >
               Analyze & Categorize
             </button>
@@ -108,45 +108,45 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
 
           {extractedLinks.length > 0 && (
             <div className="space-y-3">
-              <label className="text-sm font-semibold text-gray-700 flex justify-between">
+              <label className="text-sm font-semibold text-on-surface flex justify-between">
                 Review Links ({extractedLinks.length})
-                <button onClick={() => setExtractedLinks([])} className="text-red-500 hover:underline text-xs">Clear All</button>
+                <button onClick={() => setExtractedLinks([])} className="text-error hover:underline text-xs">Clear All</button>
               </label>
-              <div className="border border-gray-200 rounded-xl overflow-hidden">
+              <div className="border border-outline-variant/30 rounded-xl overflow-hidden">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-200">
+                  <thead className="bg-surface-low border-b border-outline-variant/20">
                     <tr>
-                      <th className="px-4 py-3 font-semibold text-gray-600">Category</th>
-                      <th className="px-4 py-3 font-semibold text-gray-600">Title</th>
-                      <th className="px-4 py-3 font-semibold text-gray-600">URL</th>
-                      <th className="px-6 py-3 text-right">Actions</th>
+                      <th className="px-4 py-3 font-semibold text-muted">Category</th>
+                      <th className="px-4 py-3 font-semibold text-muted">Title</th>
+                      <th className="px-4 py-3 font-semibold text-muted">URL</th>
+                      <th className="px-6 py-3 text-right"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-outline-variant/10">
                     {extractedLinks.map((link, i) => (
-                      <tr key={i} className="hover:bg-gray-50 transition-colors">
+                      <tr key={i} className="hover:bg-surface-low/50 transition-colors">
                         <td className="px-4 py-2 w-48">
                           <select 
-                            className="w-full p-1.5 bg-white border border-gray-200 rounded text-xs outline-none focus:border-blue-500 text-gray-900"
+                            className="w-full p-1.5 bg-surface-lowest border border-outline-variant/30 rounded text-xs outline-none focus:border-primary text-on-surface"
                             value={link.category}
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => updateField(i, 'category', e.target.value)}
                           >
                             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                           </select>
                         </td>
-                        <td className="px-4 py-2 w-64 text-gray-900">
+                        <td className="px-4 py-2 w-64 text-on-surface">
                           <input 
                             type="text"
-                            className="w-full p-1.5 bg-white border border-gray-200 rounded text-xs outline-none focus:border-blue-500"
+                            className="w-full p-1.5 bg-surface-lowest border border-outline-variant/30 rounded text-xs outline-none focus:border-primary"
                             value={link.title}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => updateField(i, 'title', e.target.value)}
                           />
                         </td>
                         <td className="px-4 py-2">
-                          <div className="truncate max-w-[200px] text-blue-600 font-mono text-[10px]">{link.url}</div>
+                          <div className="truncate max-w-[200px] text-primary font-mono text-[10px]">{link.url}</div>
                         </td>
                         <td className="px-6 py-2 text-right">
-                          <button onClick={() => removeLink(i)} className="text-gray-400 hover:text-red-500 p-1.5">
+                          <button onClick={() => removeLink(i)} className="text-muted hover:text-error p-1.5 transition-colors">
                             <Trash2 size={14} />
                           </button>
                         </td>
@@ -159,20 +159,20 @@ export default function LinkImportModal({ isOpen, onClose, onSave, categories }:
           )}
         </div>
 
-        <div className="p-6 border-t border-gray-100 flex flex-col gap-3 bg-gray-50/50">
+        <div className="p-6 border-t border-outline-variant/20 flex flex-col gap-3 bg-surface-low/50">
           {saveError && (
-            <div className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+            <div className="text-error text-sm bg-error/5 border border-error/20 rounded-lg px-4 py-2">
               {saveError}
             </div>
           )}
           <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="px-6 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg transition-all text-sm">
+          <button onClick={onClose} className="px-6 py-2 text-on-surface font-bold hover:bg-surface-container rounded-lg transition-all text-sm">
             Cancel
           </button>
           <button 
             onClick={handleSaveAll}
             disabled={extractedLinks.length === 0 || isProcessing}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-all shadow-md flex items-center gap-2 disabled:opacity-50 text-sm"
+            className="px-6 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary-container transition-all shadow-ambient flex items-center gap-2 disabled:opacity-50 text-sm"
           >
             {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
             Save {extractedLinks.length} Links

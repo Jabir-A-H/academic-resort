@@ -167,3 +167,34 @@ export async function getCourseDetails(code: string) {
     occurrences: occurrences || []
   }
 }
+
+// ─── Site Configuration ────────────────────────────────────────────────────────
+const SITE_DEFAULTS: Record<string, string> = {
+  site_title: 'Academic Resort',
+  site_tagline: 'Your academic companion for A&IS, University of Dhaka',
+  department_url: 'https://du.ac.bd/body/ACC',
+  department_name: 'Accounting & Information Systems',
+}
+
+export async function getSiteConfig(): Promise<Record<string, string>> {
+  const { data, error } = await supabase
+    .from('site_config')
+    .select('key, value')
+
+  if (error || !data) return { ...SITE_DEFAULTS }
+
+  const config = { ...SITE_DEFAULTS }
+  for (const row of data) {
+    config[row.key] = row.value
+  }
+  return config
+}
+
+export async function upsertSiteConfig(key: string, value: string) {
+  const { error } = await supabase
+    .from('site_config')
+    .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+
+  if (error) throw error
+  return { success: true }
+}

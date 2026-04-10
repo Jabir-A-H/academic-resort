@@ -15,6 +15,7 @@ export interface DriveSearchResult {
   semester: string;
   batch: string;
   folderId: string;
+  score: number;
 }
 
 export interface FolderConfig {
@@ -123,25 +124,61 @@ export async function fetchFolderContents(
   return results;
 }
 
-// ─── Smart string match (mirrors legacy smartMatch) ───────────────────────────
-function smartMatch(searchTerm: string, fileName: string, filePath: string): boolean {
+// ─── Lightweight bigram fuzzy scoring (zero dependencies) ─────────────────────
+function getBigrams(str: string): Set<string> {
+  const s = str.toLowerCase();
+  const bigrams = new Set<string>();
+  for (let i = 0; i < s.length - 1; i++) bigrams.add(s.slice(i, i + 2));
+  return bigrams;
+}
+
+function fuzzyScore(query: string, target: string): number {
+  if (!query || !target) return 0;
+  const q = query.toLowerCase();
+  const t = target.toLowerCase();
+  // Exact substring → high score
+  if (t.includes(q)) return 1.0;
+  // Bigram similarity (Dice coefficient)
+  const qBigrams = getBigrams(q);
+  const tBigrams = getBigrams(t);
+  if (qBigrams.size === 0 || tBigrams.size === 0) return 0;
+  let intersection = 0;
+  for (const b of qBigrams) if (tBigrams.has(b)) intersection++;
+  return (2 * intersection) / (qBigrams.size + tBigrams.size);
+}
+
+// ─── Smart string match with fuzzy scoring ────────────────────────────────────
+function smartMatch(searchTerm: string, fileName: string, filePath: string): number {
   const search = searchTerm.toLowerCase().trim();
   const name = fileName.toLowerCase();
   const path = filePath.toLowerCase();
-  if (!search) return false;
-  if (name.includes(search) || path.includes(search)) return true;
+  if (!search) return 0;
 
-  // All words must be present
+  // Exact substring match → highest score
+  if (name.includes(search)) return 1.0;
+  if (path.includes(search)) return 0.9;
+
+  // All words present → high score
   const words = search.split(/\s+/).filter(w => w.length > 0);
   if (words.length > 1) {
     const allPresent = words.every(w => name.includes(w) || path.includes(w));
-    if (allPresent) return true;
+    if (allPresent) return 0.85;
   }
 
-  // Flexible no-space match
+  // No-space match → good score
   const searchNoSpaces = search.replace(/\s+/g, '');
-  return name.replace(/\s+/g, '').includes(searchNoSpaces) ||
-         path.replace(/\s+/g, '').includes(searchNoSpaces);
+  if (name.replace(/\s+/g, '').includes(searchNoSpaces) ||
+      path.replace(/\s+/g, '').includes(searchNoSpaces)) return 0.8;
+
+  // Fuzzy match — only for queries ≥ 3 chars to avoid noise
+  if (search.length >= 3) {
+    const nameScore = fuzzyScore(search, name);
+    const pathScore = fuzzyScore(search, path);
+    const best = Math.max(nameScore, pathScore * 0.9);
+    if (best >= 0.45) return best * 0.7; // cap fuzzy at 0.7 relevance
+  }
+
+  return 0;
 }
 
 // ─── Remove duplicates by path+name ───────────────────────────────────────────
@@ -184,7 +221,11 @@ export async function searchFilesInFolders(
             config.folderId, '', maxDepth, signal, 0, folderRegistry, refresh
           );
           return files
-            .filter(f => smartMatch(searchTerm, f.name, f.path))
+            .map(f => {
+              const score = smartMatch(searchTerm, f.name, f.path);
+              return { ...f, score, semester: config.semester, batch: config.batch };
+            })
+            .filter(f => f.score > 0)
             .map(f => ({
               name: f.name,
               link: f.link,
@@ -193,6 +234,7 @@ export async function searchFilesInFolders(
               semester: config.semester,
               batch: config.batch,
               folderId: f.folderId,
+              score: f.score,
             }));
         } catch {
           return [];

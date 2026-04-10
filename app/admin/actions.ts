@@ -157,7 +157,7 @@ export async function createBatch(name: string) {
 
   if (batchError) throw batchError;
 
-  const names = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
+  const names = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', 'mba-1st', 'mba-2nd'];
   const semestersData = names.map(n => ({
     batch_id: batch.id,
     name: n
