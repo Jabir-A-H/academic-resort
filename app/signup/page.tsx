@@ -57,8 +57,13 @@ export default function SignupPage() {
             <p className="text-gray-600 leading-relaxed">
               Your representative account has been registered successfully.
             </p>
-            <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100 text-sm text-blue-700 font-medium">
-              Important: You cannot access the dashboard until the Master Admin verifies your account and assigns you to a batch.
+            <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100 text-sm text-blue-700 font-medium space-y-2">
+              <p>
+                Important: You cannot access the dashboard until the Master Admin verifies your account and assigns you to a batch.
+              </p>
+              <p className="pt-2 border-t border-blue-200/50">
+                Please also check your inbox and <strong>confirm your email address</strong> using the link we sent you.
+              </p>
             </div>
             <button 
               onClick={() => router.push('/login')}

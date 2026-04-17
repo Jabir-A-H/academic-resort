@@ -30,63 +30,40 @@ Visit: [jabir-a-h.github.io/academic-resort](https://jabir-a-h.github.io/academi
 
 ## 🚀 Technology Stack
 
-### Frontend Technologies
-- **HTML5** - Semantic markup with modern accessibility features (WCAG 2.1 AA compliant)
-- **CSS3** - Modern CSS with custom properties, flexbox, grid, and mobile-first design
-- **Vanilla JavaScript** - Pure ES6+ JavaScript with advanced data structures and algorithms
+### Core Technologies
+- **Next.js & React** - Modern React framework leveraging App Router and Server Components
+- **Tailwind CSS** - Utility-first CSS framework establishing the "Digital Curator" aesthetic
+- **Framer Motion** - Fluid, app-like animations and interactive accordions
+- **Lucide Icons** - Clean, semantic iconography
 
 ### Advanced Architecture
-- **Static Website** - Client-side only, no backend server required
-- **GitHub Pages** - Free hosting with automatic CI/CD deployment
-- **Google Drive API** - Multi-key rotation system for reliable content fetching
-- **Batch JSON System** - Consolidated data architecture with 83% file reduction
-- **Template Engine** - Dynamic course page generation from standardized templates
-- **Progressive Web App** - Responsive design, intelligent caching, offline capabilities
+- **Supabase (PostgreSQL) Backend** - Relational data model replacing legacy JSON files, complete with robust Authentication and Role-Based Access Control
+- **Edge Deployment** - Hosted on Vercel with zero-config CI/CD
+- **Google Drive API Proxy** - Secure server API routes masking keys while intelligently crawling and caching nested Google Drive structures
+- **Fuzzy Search Engine** - Two-phase global search (instant Supabase query + asynchronous Drive fetching)
 
 ### Performance Optimizations
-- **Sub-50ms filtering** across complex datasets
-- **Intelligent caching** with 24-hour localStorage persistence
-- **Progressive loading** for optimal Core Web Vitals
-- **Mobile-first responsive** design with touch optimization
+- **Server-Side Data Fetching** for superior caching and speed
+- **Instant Search Response** mapping complex academic curricula
+- **Optimized Asset Delivery** keeping Core Web Vitals in check
+- **Mobile-first responsive** design with touch-friendly pill-style UI elements
 
 
 ## 📁 Project Structure
 
 ```
 academic-resort/
-├── index.html                          # Enhanced homepage with search-focused design
+├── app/                               # Next.js App Router (Pages, Layouts, API Routes)
+│   ├── (public)/                      # Publicly accessible routes (Home, Login)
+│   ├── (auth)/                        # Protected routes (Admin Dashboard)
+│   ├── api/                           # Server-side API endpoints (e.g. Google Drive Proxy)
+│   └── globals.css                    # Global Tailwind imports & CSS custom properties
+├── components/                        # Reusable React components (UI, Navigation, DriveFolder)
+├── lib/                               # Core utilities, Supabase client, fuzzy search logic
 ├── devlog.md                          # Comprehensive technical development documentation
-├── assets/
-│   ├── styles.css                     # Advanced CSS with custom properties and responsive design
-│   ├── utilities.css                  # Shared utility classes for consistent styling
-│   ├── homepage.css                   # Homepage-specific styles (extracted from inline)
-│   ├── script.js                      # Core JavaScript functionality and utilities
-│   ├── api-keys.js                    # Multi-API key management system
-│   ├── batch-loader.js                # Dynamic batch data loading and processing
-│   ├── cache-utils.js                 # Shared cache management utilities
-│   ├── api-limiter.js                 # Centralized API rate limiting system
-│   ├── drive-utils.js                 # Google Drive API integration utilities
-│   ├── course-template.html           # Standardized template for course page generation
-│   ├── faculty-mapping.json           # Official faculty database with positions and rankings
-│   └── includes/
-│       ├── header.html                # Reusable navigation component
-│       └── footer.html                # Reusable footer component
-├── batches/                           # Consolidated batch data management system
-│   ├── batch-24.json → batch-31.json # Individual batch configurations (8 active batches)
-│   ├── batch-template.json           # Template for creating new batch files
-│   ├── create_new_batch.bat          # Automated batch creation script
-│   └── README.md                     # Batch system documentation and management guide
-├── courses/                           # Template-generated course pages
-│   ├── 1101-introduction-to-financial-accounting.html
-│   ├── ... (50+ standardized course pages)
-│   └── 7209-advanced-auditing-and-assurance-services.html
-├── semester/                          # Semester navigation and overview pages
-│   ├── 1st.html → 8th.html          # BBA semester pages with enhanced filtering
-│   └── mba-1st.html, mba-2nd.html   # MBA semester pages
-└── backups/                          # Legacy system backups and migration artifacts
-    ├── index_original.html           # Original homepage backup
-    ├── drive-mapping.json           # Legacy drive mapping (replaced by batch system)
-    └── old-subjects/                 # Pre-migration subject files
+├── next.config.js                     # Next.js configuration
+├── tailwind.config.js                 # Tailwind CSS design constraints & variables
+└── README.md                          # Project documentation
 ```
 
 ## 🔧 Setup & Development
@@ -103,22 +80,24 @@ academic-resort/
    cd academic-resort
    ```
 
-2. **Start a local server** (recommended for development):
+2. **Install dependencies:**
    ```bash
-   # Using Python 3
-   python -m http.server 8000
-   
-   # Using Node.js
-   npx serve .
-   
-   # Using PHP
-   php -S localhost:8000
+   npm install
    ```
 
-3. **Open in browser:**
+3. **Configure environment variables:**
+   Copy `.env.example` to `.env.local` and populate it with your Supabase keys and Google Drive API configurations.
+   ```bash
+   cp .env.example .env.local
    ```
-   http://localhost:8000
+
+4. **Start the development server:**
+   ```bash
+   npm run dev
    ```
+
+5. **Open in browser:**
+   Navigate to `http://localhost:3000`
 
 
 ### Configuration
@@ -280,9 +259,10 @@ The project uses advanced CI/CD practices:
 ## 📈 Project Evolution
 
 ### Major Milestones
-- **August 2025**: Initial development with basic filtering and Google Drive integration
+- **August 2025**: Initial development with basic HTML/JS and manual Drive links
 - **September 2025**: Architectural revolution with batch JSON system and template engine
-- **Current**: Advanced performance optimization and user experience enhancements
+- **March 2026**: High-fidelity Supabase & Next.js master migration
+- **April 2026**: "Digital Curator" design system, Tailwind CSS overhaul, and legacy codebase cleanup
 
 ### Key Achievements
 - **83% file reduction** through architectural consolidation

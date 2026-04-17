@@ -1200,3 +1200,26 @@ The flagship feature of Academic Resort—the deep integration with Google Drive
 **Recursive Folder Expansion:**
 - On the Course detail page, the `DriveFolder` React Component utilizes client-side memory caching and recursive fetching.
 - Users can click any Drive resource to expand it inline dynamically, browsing nested sub-folders endlessly without navigating away from the portal. Iconography automatically maps Google Drive File MIME types to relevant emojis (e.g., 📄 for docs, 📁 for folders, 📕 for PDFs).
+
+---
+
+## 16. Platform Modernization & Refinement (April 2026)
+
+### 16.1 Tailwind CSS & "Digital Curator" Aesthetic
+Following the Next.js migration, the platform underwent a massive visual overhaul designed to cement its identity as a "Digital Curator."
+- **Tailwind Migration:** Replaced the legacy bespoke CSS implementations with a clean, utility-first Tailwind CSS structure. This radically simplified styling, removed hundreds of lines of custom CSS, and dramatically accelerated iteration.
+- **Professional Refinement:** Eliminated heavy, distracting CSS animations in favor of semantic design tokens, clean spacing, and subtle Framer Motion interactions.
+- **Pill-Style Course Info:** Large blocky course metadata (Teacher and Batch information) was condensed into compact, pill-style UI badges to dedicate maximum screen real estate to the actual Google Drive hierarchy and course materials.
+
+### 16.2 UI Architecture Overhauls
+- **Semester Page Redesign:** Updated all semester pages to support flexible toggle views (tabbed vs. vertical list flow) and introduced a swift local search filter to instantly narrow down courses without server latency.
+- **Component-Driven Course Pages:** Transformed static Drive links on Course Pages into the interactive, hierarchical Google Drive dropdown component (reused from the global search), completely unifying the file browsing experience across the platform.
+
+### 16.3 Administrative and Data Capabilities
+- **Legacy Hydration:** Hydrated historical batch data (24th-27th batches) reflecting the 2013-2014 curricula. Course sections were standardized to ensure database integrity.
+- **Admin Dashboard Improvements:** Optimized the batch material interface with gap-free accordion layouts and improved sorting logic.
+- **Batch Creation Engine:** Added support in the batch creation logic for diverse hierarchical structures, cleanly handling both BBA and MBA semester branching.
+
+### 16.4 Global Refactoring and Legacy Cleanup
+- **Fuzzy Search Integration:** Replaced rigid substring search with a high-fidelity fuzzy search engine, capable of matching complex search intents instantly.
+- **Repository Purge:** Conducted a comprehensive audit of the project structure, systematically deleting the `legacy/` directory, deprecated local HTML files, and redundant one-time scripts, drastically reducing technical debt and cementing the new Next.js structure.
